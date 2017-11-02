@@ -31,7 +31,7 @@ const output = getOutput({
 });
 const modules = getModules();
 const stats = getStats();
-const devServer = getDevServer();
+const devServer = getDevServer({port: 4000});
 const resolve = getResolve();
 const node = getNode();
 

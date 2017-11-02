@@ -302,7 +302,7 @@ function getStats() {
     }
 }
 
-function getDevServer(host = 'localhost', port = 3000) {
+function getDevServer(props = {}) {
     return {
         devServer: {
             headers: {
@@ -310,7 +310,7 @@ function getDevServer(host = 'localhost', port = 3000) {
                 "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
                 "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
             },
-            port: port,
+            port: props.port || 3000,
             noInfo: true,
             quiet: false,
             lazy: false,
@@ -324,7 +324,7 @@ function getDevServer(host = 'localhost', port = 3000) {
                 ignored: /node_modules/
             },
             historyApiFallback: true,
-            host: host
+            host: props.host || 'localhost'
         }
     }
 }
@@ -337,11 +337,11 @@ function getResolve() {
     }
 }
 
-function getNode() {
+function getNode(modules = {}) {
     return {
-        node: {
+        node: Object.assign({
             fs: 'empty'
-        }
+        }, modules)
     }
 }
 
