@@ -7,6 +7,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const ExtractTextPlugin  = require('extract-text-webpack-plugin');
 const moment = require('moment');
+const OpenBrowserPlugin = require('open-browser-webpack-plugin');
 const { argv } = require('yargs');
 
 function getArgs() {
@@ -83,7 +84,7 @@ function getOutput(props = {}) {
 }
 
 function getModules() {
-    let isDevelopment = process.env.NODE_ENV === 'development';
+    let isNotProduction = process.env.NODE_ENV === 'production';
 
     return {
         html: {
@@ -91,7 +92,7 @@ function getModules() {
             use: 'file-loader?name=[name].[ext]'
         },
 
-        css: isDevelopment ? {
+        css: isNotProduction ? {
             test: /\.css$/,
             loader: [
                 'style-loader',
@@ -105,7 +106,7 @@ function getModules() {
             })
         },
 
-        scss: isDevelopment ? {
+        scss: isNotProduction ? {
             test: /\.scss/,
             loader: [
                 'style-loader',
@@ -123,7 +124,7 @@ function getModules() {
             })
         },
 
-        less: isDevelopment ? {
+        less: isNotProduction ? {
             test: /\.less/,
             loader: [
                 'style-loader',
@@ -379,6 +380,10 @@ function createConfig(props) {
 
     if (banner) {
         config.plugins.push(new webpack.BannerPlugin(banner));
+    }
+
+    if (devServer) {
+        new OpenBrowserPlugin({ url: `http://${devServer.host}:${devServer.port}` });
     }
 
     return config;
