@@ -7,6 +7,11 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const ExtractTextPlugin  = require('extract-text-webpack-plugin');
 const moment = require('moment');
+const { argv } = require('yargs');
+
+function getArgs() {
+    return argv;
+}
 
 function getBuildVersion() {
     return moment().format('DDMM-hhmm');
@@ -300,6 +305,7 @@ function createConfig(
 }
 
 module.exports = {
+    getArgs,
     getWebpack,
     getBuildVersion,
     getTitle,
