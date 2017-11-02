@@ -62,7 +62,7 @@ plugins.push(
     new webpack.IgnorePlugin(/xmldom$/)
 );
 
-module.exports = createConfig(
+module.exports = createConfig({
     entry,
     devtool,
     output,
@@ -73,5 +73,5 @@ module.exports = createConfig(
     node,
     resolve,
     banner
-);
+});
 ```

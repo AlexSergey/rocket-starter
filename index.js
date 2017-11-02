@@ -67,7 +67,9 @@ function getOutput(props = {}) {
         output: {
             publicPath: props.publicPath || '/',
             path: props.path || path.resolve(__dirname, 'dist'),
-            filename: props.filename || `[name].js`
+            filename: props.filename || `[name].js`,
+            library: props.library || null,
+            libraryTarget: props.libraryTarget || null
         }
     }
 }
@@ -274,18 +276,21 @@ function makePlugins(plugins, props = {}) {
     return Object.keys(plugins).map(plName => plugins[plName](props[plName]));
 }
 
-function createConfig(
-    entry = getEntry(),
-    devtool = getDevtool(),
-    output = getOutput(),
-    modules = getModules(),
-    plugins = [],
-    stats = getStats(),
-    devServer = getDevServer(),
-    node = getNode(),
-    resolve = getResolve(),
-    banner
-) {
+function createConfig(props) {
+    let {
+        entry = getEntry(),
+        devtool = getDevtool(),
+        output = getOutput(),
+        modules = getModules(),
+        plugins = [],
+        externals = [],
+        stats = getStats(),
+        devServer = getDevServer(),
+        node = getNode(),
+        resolve = getResolve(),
+        banner
+    } = props;
+
     let config = {};
 
     Object.assign(config, entry, devtool, output, stats, node, resolve, devServer);
@@ -296,6 +301,7 @@ function createConfig(
     }
 
     config.plugins = plugins;
+    config.externals = externals;
 
     if (banner) {
         config.plugins.push(new webpack.BannerPlugin(banner));
