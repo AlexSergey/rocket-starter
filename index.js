@@ -349,13 +349,13 @@ function makePlugins(plugins, props = {}) {
     return Object.keys(plugins).map(plName => plugins[plName](props[plName]));
 }
 
-function createConfig(props) {
+function createConfig(props = {}) {
     let {
         entry = getEntry(),
         devtool = getDevtool(),
         output = getOutput(),
         modules = getModules(),
-        plugins = [],
+        plugins = makePlugins(getPlugins()),
         externals = [],
         stats = getStats(),
         devServer = getDevServer(),
