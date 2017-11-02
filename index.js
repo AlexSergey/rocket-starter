@@ -383,7 +383,7 @@ function createConfig(props) {
     }
 
     if (devServer) {
-        new OpenBrowserPlugin({ url: `http://${devServer.host}:${devServer.port}` });
+        config.plugins.push(new OpenBrowserPlugin({ url: `http://${devServer.host}:${devServer.port}` }));
     }
 
     return config;
