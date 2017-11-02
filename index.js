@@ -84,7 +84,7 @@ function getOutput(props = {}) {
 }
 
 function getModules() {
-    let isNotProduction = process.env.NODE_ENV === 'production';
+    let isNotProduction = process.env.NODE_ENV !== 'production';
 
     return {
         html: {
@@ -382,8 +382,8 @@ function createConfig(props) {
         config.plugins.push(new webpack.BannerPlugin(banner));
     }
 
-    if (devServer) {
-        config.plugins.push(new OpenBrowserPlugin({ url: `http://${devServer.host}:${devServer.port}` }));
+    if (devServer && devServer.devServer && devServer.devServer.host && devServer.devServer.port) {
+        config.plugins.push(new OpenBrowserPlugin({ url: `http://${devServer.devServer.host}:${devServer.devServer.port}` }));
     }
 
     return config;
