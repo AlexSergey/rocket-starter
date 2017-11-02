@@ -15,7 +15,7 @@ function getArgs() {
 
 function getBuildVersion() {
     return moment().format('DDMM-hhmm');
-};
+}
 
 function getWebpack() {
     return webpack;
@@ -23,10 +23,10 @@ function getWebpack() {
 
 function getTitle(packageJson) {
     return `${packageJson.name} ${packageJson.version}`;
-};
+}
 
 function makeBanner(packageJson) {
-    var banner = existsSync('./banner')
+    let banner = existsSync('./banner')
         ? readFileSync('./banner', 'utf8')
         : '';
 
@@ -37,10 +37,9 @@ function makeBanner(packageJson) {
             if (banner.indexOf(type) > 0 && !!packageJson[type]) {
                 banner = banner.replace(`$\{${type}\}`, packageJson[type]);
             }
-        })
-        types.forEach(type => {
-            banner = banner.replace(`$\{${type}\}`, "");
         });
+        types.forEach(type => banner = banner.replace(`$\{${type}\}`, ""));
+
         banner = banner.split('\n').filter(item => item !== '\r' && item !== '\n').join('');
 
         return banner;
@@ -56,9 +55,11 @@ function getEntry(entry = './source/index.js') {
     }
 }
 
-function getDevtool(isDevelopment = false) {
+function getDevtool(customSourceMap = 'none') {
+    let sourceMap = process.env.NODE_ENV === 'development' ? 'source-map' : false;
+    sourceMap = customSourceMap === 'none' ? sourceMap : customSourceMap;
     return {
-        devtool: isDevelopment ? 'source-map' : false
+        devtool: sourceMap
     }
 }
 
@@ -82,17 +83,61 @@ function getOutput(props = {}) {
 }
 
 function getModules() {
+    let isDevelopment = process.env.NODE_ENV === 'development';
+
     return {
         html: {
             test: /\.html$/,
             use: 'file-loader?name=[name].[ext]'
         },
 
-        css: {
+        css: isDevelopment ? {
+            test: /\.css$/,
+            loader: [
+                'style-loader',
+                'css-loader'
+            ]
+        } : {
             test: /\.css$/,
             use: ExtractTextPlugin.extract({
                 fallback: "style-loader",
                 use: { loader: 'css-loader', options: { minimize: true }}
+            })
+        },
+
+        scss: isDevelopment ? {
+            test: /\.scss/,
+            loader: [
+                'style-loader',
+                'css-loader',
+                'sass-loader'
+            ]
+        } : {
+            test: /\.scss/,
+            use: ExtractTextPlugin.extract({
+                fallback: "style-loader",
+                use: [
+                    { loader: 'css-loader', options: { minimize: true }},
+                    'sass-loader'
+                ]
+            })
+        },
+
+        less: isDevelopment ? {
+            test: /\.less/,
+            loader: [
+                'style-loader',
+                'css-loader',
+                'less-loader'
+            ]
+        } : {
+            test: /\.less/,
+            use: ExtractTextPlugin.extract({
+                fallback: "style-loader",
+                use: [
+                    { loader: 'css-loader', options: { minimize: true }},
+                    'less-loader'
+                ]
             })
         },
 
@@ -114,7 +159,17 @@ function getModules() {
                         ],
                         plugins: [
                             require.resolve('babel-plugin-transform-decorators-legacy')
-                        ]
+                        ],
+                        env: {
+                            production: {
+                                plugins: [
+                                    require.resolve('babel-plugin-transform-react-constant-elements'),
+                                    require.resolve('babel-plugin-transform-react-inline-elements'),
+                                    require.resolve('babel-plugin-transform-react-pure-class-to-function'),
+                                    require.resolve('babel-plugin-transform-react-remove-prop-types'),
+                                ]
+                            }
+                        }
                     }
                 }
                 /*{
@@ -170,50 +225,60 @@ function getModules() {
 }
 
 function getPlugins() {
-    return {
-        ModuleConcatenationPlugin: (props = {}) => new webpack.optimize.ModuleConcatenationPlugin(),
-        ExtractTextPlugin: (props = {}) => new ExtractTextPlugin(props.path || 'css/styles.css'),
-        ImageminPlugin: (props = {}) => new ImageminPlugin({
-            disable: props.disable,
-            optipng: {
-                optimizationLevel: 3
-            },
-            gifsicle: {
-                optimizationLevel: 1
-            },
-            jpegtran: {
-                progressive: false
-            },
-            svgo: {
-            },
-            pngquant: null,
-            plugins: []
-        }),
-        CleanWebpackPlugin: (props = {}) => new CleanWebpackPlugin([props.path || './dist'], {root: props.root || __dirname}),
+    let isProduction = process.env.NODE_ENV === 'production';
+
+    let modules = {
         OccurrenceOrderPlugin: () => new webpack.optimize.OccurrenceOrderPlugin(),
-        UglifyJSPlugin: (props = {}) => new UglifyJSPlugin({
-            sourceMap: props.sourceMap || true,
-            uglifyOptions: {
-                ie8: false,
-                ecma: 5,
-                output: {
-                    comments: false,
-                    beautify: false,
-                },
-                warnings: false
-            }
-        }),
         HtmlWebpackPlugin: (props = {}) => new HtmlWebpackPlugin({
             title: props.title || 'app',
             version: props.version || 1,
-            template: props.path || './index.ejs'
+            template: props.path || path.resolve(__dirname, './index.ejs')
         }),
         DefinePlugin: (vars = {}) => new webpack.DefinePlugin(Object.assign({
             'process.env': {
                 NODE_ENV: JSON.stringify(process.env.NODE_ENV)
             }
         }, vars))
+    };
+
+    if (isProduction) {
+        Object.assign(modules, {
+            ModuleConcatenationPlugin: (props = {}) => new webpack.optimize.ModuleConcatenationPlugin(),
+            ExtractTextPlugin: (props = {}) => new ExtractTextPlugin(props.path || 'css/styles.css'),
+            ImageminPlugin: (props = {}) => new ImageminPlugin({
+                disable: false,
+                optipng: {
+                    optimizationLevel: 3
+                },
+                gifsicle: {
+                    optimizationLevel: 1
+                },
+                jpegtran: {
+                    progressive: false
+                },
+                svgo: {
+                },
+                pngquant: null,
+                plugins: []
+            }),
+            CleanWebpackPlugin: (props = {}) => new CleanWebpackPlugin([props.path || './dist'], {root: props.root || __dirname}),
+
+            UglifyJSPlugin: (props = {}) => new UglifyJSPlugin({
+                sourceMap: false,
+                uglifyOptions: {
+                    ie8: false,
+                    ecma: 5,
+                    output: {
+                        comments: false,
+                        beautify: false,
+                    },
+                    warnings: false
+                }
+            })
+        })
     }
+
+    return modules;
 }
 
 function getStats() {
@@ -298,7 +363,9 @@ function createConfig(props) {
         banner
     } = props;
 
-    let config = {};
+    let config = {
+        cache: true
+    };
 
     Object.assign(config, entry, devtool, output, stats, node, resolve, devServer);
 

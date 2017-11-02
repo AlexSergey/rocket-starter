@@ -39,15 +39,9 @@ let plugins = makePlugins(getPlugins(), {
     ExtractTextPlugin: {
         path: 'css/styles.css'
     },
-    ImageminPlugin: {
-        disable: false
-    },
     CleanWebpackPlugin: {
         path: path.resolve(__dirname, './dist'),
         root: __dirname
-    },
-    UglifyJSPlugin: {
-        sourceMap: false
     },
     HtmlWebpackPlugin: {
         title: title,
