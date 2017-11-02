@@ -63,15 +63,22 @@ function getDevtool(isDevelopment = false) {
 }
 
 function getOutput(props = {}) {
-    return {
+    let outputProps = {
         output: {
             publicPath: props.publicPath || '/',
             path: props.path || path.resolve(__dirname, 'dist'),
-            filename: props.filename || `[name].js`,
-            library: props.library || null,
-            libraryTarget: props.libraryTarget || null
+            filename: props.filename || `[name].js`
         }
+    };
+
+    if (props.library) {
+        Object.assign(outputProps.output, {
+            library: props.library,
+            libraryTarget: props.libraryTarget || 'umd'
+        });
     }
+
+    return outputProps;
 }
 
 function getModules() {
