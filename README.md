@@ -15,7 +15,18 @@ module.exports = iWantTo.library({
     name: 'ReSock'
 });
 ```
-
+### Or:
+```jsx
+module.exports = iWantTo.app({
+    root: __dirname,
+    src: 'examples/index.jsx',
+    dist: 'example-dist',
+    styles: 'app.css',
+    html: {
+        title: 'ReSock Examples'
+    }
+});
+```
 ### If you want build a Application, you need to declarate this config.
 When you start webpack it will be make HTML, media, JS etc
 ```jsx
