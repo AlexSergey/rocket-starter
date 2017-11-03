@@ -1,409 +1,161 @@
-const { existsSync, readFileSync } = require('fs')
-const ImageminPlugin = require('imagemin-webpack-plugin').default;
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 const path = require('path');
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const { validationProps } = require('./modules/validation');
+const { isArray, isObject, isFunction, isString, isBoolean, isUndefined } = require('./modules/typeChecker');
+const { getEntry, makeBanner, getWebpack, getDevtool, getOutput, makeModules, getModules, makePlugins, getPlugins, getStats, getTitle, getBuildVersion, getDevServer, getNode, getResolve } = require('./modules/configGenerators');
+const createConfig = require('./modules/createConfig');
 const ExtractTextPlugin  = require('extract-text-webpack-plugin');
-const moment = require('moment');
-const OpenBrowserPlugin = require('open-browser-webpack-plugin');
-const { argv } = require('yargs');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
-function getArgs() {
-    return argv;
-}
+const webpack = getWebpack();
 
-function getBuildVersion() {
-    return moment().format('DDMM-hhmm');
-}
+function _build(props) {
+    let packageJson = require(path.resolve(props.root, 'package.json'));
 
-function getWebpack() {
-    return webpack;
-}
+    let banner = makeBanner(packageJson, props.root);
 
-function getTitle(packageJson) {
-    return `${packageJson.name} ${packageJson.version}`;
-}
-
-function makeBanner(packageJson) {
-    let banner = existsSync('./banner')
-        ? readFileSync('./banner', 'utf8')
-        : '';
-
-    if (!!banner) {
-        let types = ['name', 'version', 'author', 'email', 'description', 'license'];
-
-        types.forEach(type => {
-            if (banner.indexOf(type) > 0 && !!packageJson[type]) {
-                banner = banner.replace(`$\{${type}\}`, packageJson[type]);
-            }
-        });
-        types.forEach(type => banner = banner.replace(`$\{${type}\}`, ""));
-
-        banner = banner.split('\n').filter(item => item !== '\r' && item !== '\n').join('');
-
-        return banner;
+    if (props.banner) {
+        if (isString(props.banner)) {
+            banner = props.banner;
+        }
     }
     else {
-        return false;
-    }
-}
-
-function getEntry(entry = './source/index.js') {
-    return {
-        entry: entry
-    }
-}
-
-function getDevtool(customSourceMap = 'none') {
-    let sourceMap = process.env.NODE_ENV === 'development' ? 'source-map' : false;
-    sourceMap = customSourceMap === 'none' ? sourceMap : customSourceMap;
-    return {
-        devtool: sourceMap
-    }
-}
-
-function getOutput(props = {}) {
-    let outputProps = {
-        output: {
-            publicPath: props.publicPath || '/',
-            path: props.path || path.resolve(__dirname, 'dist'),
-            filename: props.filename || `[name].js`
+        if (isBoolean(props.banner)) {
+            banner = false;
         }
-    };
+    }
 
-    if (props.library) {
-        Object.assign(outputProps.output, {
-            library: props.library,
-            libraryTarget: props.libraryTarget || 'umd'
+    let entry = getEntry(path.resolve(props.root, props.src));
+
+    let output = getOutput({
+        path: path.resolve(props.root, props.dist)
+    });
+
+    let plugins = makePlugins(getPlugins(), Object.assign({
+        CleanWebpackPlugin: {
+            path: path.resolve(props.root, props.dist),
+            root: props.root
+        },
+        BannerPlugin: {
+            banner
+        },
+        HtmlWebpackPlugin: {
+            title: props.html && props.html.title ? props.html.title : getTitle(packageJson),
+            version: props.html && !isUndefined(props.html.version) ? props.html.version : getBuildVersion(),
+            template: props.html && props.html.path ? props.html.path : path.resolve(__dirname, './index.ejs'),
+        },
+        DefinePlugin: isObject(props.global) ? props.global : {}
+    }));
+
+    if (!banner) {
+        plugins.remove('BannerPlugin');
+    }
+    if (plugins.get('CleanWebpackPlugin')) {
+        plugins.set('CleanWebpackPlugin', new CleanWebpackPlugin([props.dist], {root: props.root}));
+    }
+
+    let devtool = getDevtool(!isUndefined(props.sourcemap) ? props.sourcemap : 'none'),
+        devServer = getDevServer(isObject(props.server) ? props.server : {});
+
+    return {
+        entry,
+        output,
+        plugins,
+        devtool,
+        devServer
+    }
+}
+
+let iWantTo = {
+    library: props => {
+        let isValid = validationProps(props, ['name']);
+        if (!isValid.state) {
+            console.log(isValid.message);
+            return false;
+        }
+        let {
+            entry,
+            plugins,
+            devtool,
+            devServer
+        } = _build(props);
+
+        let output = getOutput({
+            path: path.resolve(props.root, props.dist),
+            library: props.name
+        });
+
+        plugins.remove('HtmlWebpackPlugin');
+
+        return createConfig({
+            entry,
+            output,
+            plugins,
+            devtool,
+            devServer,
+            middlewares: props.middlewares,
+            externalProps: props
+        });
+    },
+
+    app: props => {
+        let isValid = validationProps(props);
+        if (!isValid.state) {
+            console.log(isValid.message);
+            return false;
+        }
+
+        let {
+            entry,
+            output,
+            plugins,
+            devtool,
+            devServer
+        } = _build(props);
+
+        if (props.styles) {
+            if (plugins.get('ExtractTextPlugin')) {
+                plugins.set('ExtractTextPlugin', new ExtractTextPlugin(props.styles));
+            }
+        }
+
+        return createConfig({
+            entry,
+            output,
+            plugins,
+            devtool,
+            devServer,
+            middlewares: props.middlewares,
+            externalProps: props
         });
     }
+};
 
-    return outputProps;
-}
+const customize = (...args) => {
+    let props = args[0];
+    let middlewares = args[1];
 
-function getModules() {
-    let isNotProduction = process.env.NODE_ENV !== 'production';
-
-    return {
-        html: {
-            test: /\.html$/,
-            use: 'file-loader?name=[name].[ext]'
-        },
-
-        css: isNotProduction ? {
-            test: /\.css$/,
-            loader: [
-                'style-loader',
-                'css-loader'
-            ]
-        } : {
-            test: /\.css$/,
-            use: ExtractTextPlugin.extract({
-                fallback: "style-loader",
-                use: { loader: 'css-loader', options: { minimize: true }}
-            })
-        },
-
-        scss: isNotProduction ? {
-            test: /\.scss/,
-            loader: [
-                'style-loader',
-                'css-loader',
-                'sass-loader'
-            ]
-        } : {
-            test: /\.scss/,
-            use: ExtractTextPlugin.extract({
-                fallback: "style-loader",
-                use: [
-                    { loader: 'css-loader', options: { minimize: true }},
-                    'sass-loader'
-                ]
-            })
-        },
-
-        less: isNotProduction ? {
-            test: /\.less/,
-            loader: [
-                'style-loader',
-                'css-loader',
-                'less-loader'
-            ]
-        } : {
-            test: /\.less/,
-            use: ExtractTextPlugin.extract({
-                fallback: "style-loader",
-                use: [
-                    { loader: 'css-loader', options: { minimize: true }},
-                    'less-loader'
-                ]
-            })
-        },
-
-        js: {
-            test: /\.(js|jsx)$/,
-            exclude: /node_modules/,
-            use: [
-                {
-                    loader: 'babel-loader',
-                    query: {
-                        cacheDirectory: true,
-                        babelrc: false,
-                        presets: [[
-                            require.resolve('babel-preset-es2015'), {
-                                modules: false
-                            }
-                        ],  require.resolve('babel-preset-stage-0'),
-                            require.resolve('babel-preset-react')
-                        ],
-                        plugins: [
-                            require.resolve('babel-plugin-transform-decorators-legacy')
-                        ],
-                        env: {
-                            production: {
-                                plugins: [
-                                    require.resolve('babel-plugin-transform-react-constant-elements'),
-                                    require.resolve('babel-plugin-transform-react-inline-elements'),
-                                    require.resolve('babel-plugin-transform-react-pure-class-to-function'),
-                                    require.resolve('babel-plugin-transform-react-remove-prop-types'),
-                                ]
-                            }
-                        }
-                    }
-                }
-                /*{
-                    loader: 'eslint-loader',
-                    options: {
-                        emitErrors: true,
-                        failOnError: true,
-                        failOnWarning: true
-                    }
-                }*/
-            ]
-        },
-
-        images: {
-            test: /\.(jpe?g|png|gif)$/i,
-            loaders: ['url-loader?limit=10000&name=images/[name].[ext]']
-        },
-
-        fonts: {
-            test: /\.(woff(2)?)(\?[a-z0-9=&.]+)?$/,
-            loader: 'url-loader?limit=10000&name=fonts/[name].[ext]'
-        },
-
-        markdown: {
-            test: /\.md$/,
-            loader: 'html-loader!markdown-loader'
-        },
-
-        json: {
-            test: /\.json/,
-            loader: 'json-loader'
-        },
-
-        svg: {
-            test: /\.svg$/,
-            use: [
-                {
-                    loader: 'svg-inline-loader'
-                },
-                {
-                    loader: 'svgo-loader',
-                    options: {
-                        plugins: [
-                            { removeTitle: true },
-                            { convertColors: { shorthex: false } },
-                            { convertPathData: false }
-                        ]
-                    }
-                }
-            ]
-        }
-    };
-}
-
-function getPlugins() {
-    let isProduction = process.env.NODE_ENV === 'production';
-
-    let modules = {
-        OccurrenceOrderPlugin: () => new webpack.optimize.OccurrenceOrderPlugin(),
-        HtmlWebpackPlugin: (props = {}) => new HtmlWebpackPlugin({
-            title: props.title || 'app',
-            version: props.version || 1,
-            template: props.path || path.resolve(__dirname, './index.ejs')
-        }),
-        DefinePlugin: (vars = {}) => new webpack.DefinePlugin(Object.assign({
-            'process.env': {
-                NODE_ENV: JSON.stringify(process.env.NODE_ENV)
-            }
-        }, vars))
-    };
-
-    if (isProduction) {
-        Object.assign(modules, {
-            ModuleConcatenationPlugin: (props = {}) => new webpack.optimize.ModuleConcatenationPlugin(),
-            ExtractTextPlugin: (props = {}) => new ExtractTextPlugin(props.path || 'css/styles.css'),
-            ImageminPlugin: (props = {}) => new ImageminPlugin({
-                disable: false,
-                optipng: {
-                    optimizationLevel: 3
-                },
-                gifsicle: {
-                    optimizationLevel: 1
-                },
-                jpegtran: {
-                    progressive: false
-                },
-                svgo: {
-                },
-                pngquant: null,
-                plugins: []
-            }),
-            CleanWebpackPlugin: (props = {}) => new CleanWebpackPlugin([props.path || './dist'], {root: props.root || __dirname}),
-
-            UglifyJSPlugin: (props = {}) => new UglifyJSPlugin({
-                sourceMap: false,
-                uglifyOptions: {
-                    ie8: false,
-                    ecma: 5,
-                    output: {
-                        comments: false,
-                        beautify: false,
-                    },
-                    warnings: false
-                }
-            })
-        })
-    }
-
-    return modules;
-}
-
-function getStats() {
-    return {
-        stats: {
-            hash: true,
-            version: true,
-            timings: true,
-            assets: true,
-            chunks: true,
-            modules: true,
-            reasons: true,
-            children: true,
-            source: false,
-            errors: true,
-            errorDetails: true,
-            warnings: true,
-            publicPath: true
+    if (isFunction(middlewares)) {
+        props.middlewares = {
+            pre: middlewares
         }
     }
-}
-
-function getDevServer(props = {}) {
-    return {
-        devServer: {
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-                "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
-            },
-            port: props.port || 3000,
-            noInfo: true,
-            quiet: false,
-            lazy: false,
-            inline: true,
-            stats: "minimal",
-            overlay: {
-                errors: true
-            },
-            watchOptions: {
-                aggregateTimeout: 50,
-                ignored: /node_modules/
-            },
-            historyApiFallback: true,
-            host: props.host || 'localhost'
+    else if (isArray(middlewares)) {
+        props.middlewares = {
+            pre: middlewares
         }
     }
-}
-
-function getResolve() {
-    return {
-        resolve: {
-            extensions: ['.js', '.jsx']
+    else if (isObject(middlewares)) {
+        props.middlewares = {
+            pre: middlewares.pre,
+            post: middlewares.post
         }
     }
-}
 
-function getNode(modules = {}) {
-    return {
-        node: Object.assign({
-            fs: 'empty'
-        }, modules)
-    }
-}
-
-function makePlugins(plugins, props = {}) {
-    return Object.keys(plugins).map(plName => plugins[plName](props[plName]));
-}
-
-function createConfig(props = {}) {
-    let {
-        entry = getEntry(),
-        devtool = getDevtool(),
-        output = getOutput(),
-        modules = getModules(),
-        plugins = makePlugins(getPlugins()),
-        externals = [],
-        stats = getStats(),
-        devServer = getDevServer(),
-        node = getNode(),
-        resolve = getResolve(),
-        banner
-    } = props;
-
-    let config = {
-        cache: true
-    };
-
-    Object.assign(config, entry, devtool, output, stats, node, resolve, devServer);
-
-    if (modules) {
-        config.module = {};
-        config.module.rules = Object.keys(modules).map(module => modules[module]);
-    }
-
-    config.plugins = plugins;
-    config.externals = externals;
-
-    if (banner) {
-        config.plugins.push(new webpack.BannerPlugin(banner));
-    }
-
-    if (devServer && devServer.devServer && devServer.devServer.host && devServer.devServer.port) {
-        config.plugins.push(new OpenBrowserPlugin({ url: `http://${devServer.devServer.host}:${devServer.devServer.port}` }));
-    }
-
-    return config;
-}
+    return props;
+};
 
 module.exports = {
-    getArgs,
-    getWebpack,
-    getBuildVersion,
-    getTitle,
-    makeBanner,
-    getEntry,
-    getDevtool,
-    getOutput,
-    getModules,
-    getPlugins,
-    getStats,
-    getDevServer,
-    getResolve,
-    getNode,
-    makePlugins,
-    createConfig
+    iWantTo,
+    customize,
+    getWebpack
 };
