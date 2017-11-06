@@ -276,7 +276,7 @@ compile(customize({
 </details>
 
 <details>
-  <summary>Config for DEVELOPMENT version</summary>
+  <summary>Config for PRODUCTION version</summary>
   <pre>
   {
       "cache": true,
