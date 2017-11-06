@@ -19,6 +19,7 @@ module.exports = function(props = {}) {
     newProps.sourcemap = props.sourcemap || defaultProps.sourcemap;
     newProps.global = props.global || {};
     newProps.library = props.library || false;
+    newProps.middlewares = props.middlewares;
 
     let banner = makeBanner(packageJson, props.root);
 

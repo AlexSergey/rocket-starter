@@ -89,3 +89,410 @@ compile(customize({
     }
 }
 ```
+
+<details>
+  <summary>Config for DEVELOPMENT version</summary>
+  ```jsx
+  {
+      "cache": true,
+      "entry": [
+          "/index.js"
+      ],
+      "devtool": "source-map",
+      "output": {
+          "publicPath": "/",
+          "path": "/dist",
+          "filename": "[name].js"
+      },
+      "stats": {
+          "hash": true,
+          "version": true,
+          "timings": true,
+          "assets": true,
+          "chunks": true,
+          "modules": true,
+          "reasons": true,
+          "children": true,
+          "source": false,
+          "errors": true,
+          "errorDetails": true,
+          "warnings": true,
+          "publicPath": true
+      },
+      "node": {
+          "fs": "empty"
+      },
+      "resolve": {
+          "extensions": [
+              ".js",
+              ".jsx"
+          ]
+      },
+      "devServer": {
+          "headers": {
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+              "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
+          },
+          "port": 3000,
+          "noInfo": true,
+          "quiet": false,
+          "lazy": false,
+          "inline": true,
+          "stats": "minimal",
+          "overlay": {
+              "errors": true
+          },
+          "watchOptions": {
+              "aggregateTimeout": 50,
+              "ignored": {}
+          },
+          "historyApiFallback": true,
+          "host": "localhost"
+      },
+      "module": {
+          "rules": [
+              {
+                  "test": /\.html$/,
+                  "use": "file-loader?name=[name].[ext]"
+              },
+              {
+                  "test": /\.css$/,
+                  "loader": [
+                      "style-loader",
+                      "css-loader"
+                  ]
+              },
+              {
+                  "test": /\.scss/,
+                  "loader": [
+                      "style-loader",
+                      "css-loader",
+                      "sass-loader"
+                  ]
+              },
+              {
+                  "test": /\.less/,
+                  "loader": [
+                      "style-loader",
+                      "css-loader",
+                      "less-loader"
+                  ]
+              },
+              {
+                  "test": /\.(js|jsx)$/,
+                  "exclude": /node_modules/,
+                  "use": [
+                      {
+                          "loader": "babel-loader",
+                          "query": {
+                              "cacheDirectory": true,
+                              "babelrc": false,
+                              "presets": [
+                                  [
+                                      require.resolve('babel-preset-es2015'), {
+                                          modules: false
+                                      }
+                                  ],
+                                  require.resolve('babel-preset-stage-0'),
+                                  require.resolve('babel-preset-react')
+                              ],
+                              "plugins": [
+                                  require.resolve('babel-plugin-transform-decorators-legacy')
+                              ],
+                              "env": {
+                                  "production": {
+                                      "plugins": [
+                                          require.resolve('babel-plugin-transform-react-constant-elements'),
+                                          require.resolve('babel-plugin-transform-react-inline-elements'),
+                                          require.resolve('babel-plugin-transform-react-pure-class-to-function'),
+                                          require.resolve('babel-plugin-transform-react-remove-prop-types'),
+                                      ]
+                                  }
+                              }
+                          }
+                      }
+                  ]
+              },
+              {
+                  "test": /\.(jpe?g|png|gif)$/i,
+                  "loaders": [
+                      "url-loader?limit=10000&name=images/[name].[ext]"
+                  ]
+              },
+              {
+                  "test": /\.(woff(2)?)(\?[a-z0-9=&.]+)?$/,
+                  "loader": "url-loader?limit=10000&name=fonts/[name].[ext]"
+              },
+              {
+                  "test": /\.md$/,
+                  "loader": "html-loader!markdown-loader"
+              },
+              {
+                  "test": /\.json/,
+                  "loader": "json-loader"
+              },
+              {
+                  "test": /\.svg$/,
+                  "use": [
+                      {
+                          "loader": "svg-inline-loader"
+                      },
+                      {
+                          "loader": "svgo-loader",
+                          "options": {
+                              "plugins": [
+                                  {
+                                      "removeTitle": true
+                                  },
+                                  {
+                                      "convertColors": {
+                                          "shorthex": false
+                                      }
+                                  },
+                                  {
+                                      "convertPathData": false
+                                  }
+                              ]
+                          }
+                      }
+                  ]
+              }
+          ]
+      },
+      "plugins": [
+          new webpack.optimize.OccurrenceOrderPlugin(),
+          new HtmlWebpackPlugin(props.html),
+          new webpack.DefinePlugin(Object.assign({
+              'process.env': {
+                  NODE_ENV: JSON.stringify(process.env.NODE_ENV)
+              }
+          }, props.global),
+          new OpenBrowserPlugin({ url: `http://${props.server.host}:${props.server.port}` }))
+      ],
+      "externals": []
+  }
+  ```
+</details>
+
+<details>
+  <summary>Config for DEVELOPMENT version</summary>
+  ```jsx
+  {
+      "cache": true,
+      "entry": [
+          "/index.js"
+      ],
+      "devtool": "source-map",
+      "output": {
+          "publicPath": "/",
+          "path": "/dist",
+          "filename": "[name].js"
+      },
+      "stats": {
+          "hash": true,
+          "version": true,
+          "timings": true,
+          "assets": true,
+          "chunks": true,
+          "modules": true,
+          "reasons": true,
+          "children": true,
+          "source": false,
+          "errors": true,
+          "errorDetails": true,
+          "warnings": true,
+          "publicPath": true
+      },
+      "node": {
+          "fs": "empty"
+      },
+      "resolve": {
+          "extensions": [
+              ".js",
+              ".jsx"
+          ]
+      },
+      "devServer": {
+          "headers": {
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+              "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
+          },
+          "port": 3000,
+          "noInfo": true,
+          "quiet": false,
+          "lazy": false,
+          "inline": true,
+          "stats": "minimal",
+          "overlay": {
+              "errors": true
+          },
+          "watchOptions": {
+              "aggregateTimeout": 50,
+              "ignored": {}
+          },
+          "historyApiFallback": true,
+          "host": "localhost"
+      },
+      "module": {
+          "rules": [
+              {
+                  "test": /\.html$/,
+                  "use": "file-loader?name=[name].[ext]"
+              },
+              {
+                  "test": /\.css$/,
+                  "use": [
+                      ExtractTextPlugin.extract({
+                          fallback: "style-loader",
+                          use: { loader: 'css-loader', options: { minimize: true }}
+                      })
+                  ]
+              },
+              {
+                  "test": /\.scss/,
+                  "use": ExtractTextPlugin.extract({
+                     fallback: "style-loader",
+                     use: [
+                         { loader: 'css-loader', options: { minimize: true }},
+                         'sass-loader'
+                     ]
+                 })
+              },
+              {
+                  "test": /\.less/,
+                  "use":  ExtractTextPlugin.extract({
+                     fallback: "style-loader",
+                     use: [
+                         { loader: 'css-loader', options: { minimize: true }},
+                         'less-loader'
+                     ]
+                 })
+              },
+              {
+                  "test": /\.(js|jsx)$/,
+                  "exclude": /node_modules/,
+                  "use": [
+                      {
+                          "loader": "babel-loader",
+                          "query": {
+                              "cacheDirectory": true,
+                              "babelrc": false,
+                              "presets": [
+                                  [
+                                      require.resolve('babel-preset-es2015'), {
+                                          modules: false
+                                      }
+                                  ],
+                                  require.resolve('babel-preset-stage-0'),
+                                  require.resolve('babel-preset-react')
+                              ],
+                              "plugins": [
+                                  require.resolve('babel-plugin-transform-decorators-legacy')
+                              ],
+                              "env": {
+                                  "production": {
+                                      "plugins": [
+                                          require.resolve('babel-plugin-transform-react-constant-elements'),
+                                          require.resolve('babel-plugin-transform-react-inline-elements'),
+                                          require.resolve('babel-plugin-transform-react-pure-class-to-function'),
+                                          require.resolve('babel-plugin-transform-react-remove-prop-types'),
+                                      ]
+                                  }
+                              }
+                          }
+                      }
+                  ]
+              },
+              {
+                  "test": /\.(jpe?g|png|gif)$/i,
+                  "loaders": [
+                      "url-loader?limit=10000&name=images/[name].[ext]"
+                  ]
+              },
+              {
+                  "test": /\.(woff(2)?)(\?[a-z0-9=&.]+)?$/,
+                  "loader": "url-loader?limit=10000&name=fonts/[name].[ext]"
+              },
+              {
+                  "test": /\.md$/,
+                  "loader": "html-loader!markdown-loader"
+              },
+              {
+                  "test": /\.json/,
+                  "loader": "json-loader"
+              },
+              {
+                  "test": /\.svg$/,
+                  "use": [
+                      {
+                          "loader": "svg-inline-loader"
+                      },
+                      {
+                          "loader": "svgo-loader",
+                          "options": {
+                              "plugins": [
+                                  {
+                                      "removeTitle": true
+                                  },
+                                  {
+                                      "convertColors": {
+                                          "shorthex": false
+                                      }
+                                  },
+                                  {
+                                      "convertPathData": false
+                                  }
+                              ]
+                          }
+                      }
+                  ]
+              }
+          ]
+      },
+      "plugins": [
+          new webpack.optimize.OccurrenceOrderPlugin(),
+          new HtmlWebpackPlugin(props.html),
+          new webpack.DefinePlugin(Object.assign({
+              'process.env': {
+                  NODE_ENV: JSON.stringify(process.env.NODE_ENV)
+              }
+          }, props.global),
+          new webpack.optimize.ModuleConcatenationPlugin(),
+          new ExtractTextPlugin(props.path || 'css/styles.css'),
+          new ImageminPlugin({
+              disable: false,
+              optipng: {
+                  optimizationLevel: 3
+              },
+              gifsicle: {
+                  optimizationLevel: 1
+              },
+              jpegtran: {
+                  progressive: false
+              },
+              svgo: {
+              },
+              pngquant: null,
+              plugins: []
+          }),
+          new CleanWebpackPlugin(props),
+          new UglifyJSPlugin({
+              sourceMap: false,
+              uglifyOptions: {
+                  ie8: false,
+                  ecma: 5,
+                  output: {
+                      comments: false,
+                      beautify: false,
+                  },
+                  warnings: false
+              }
+          }),
+          new webpack.BannerPlugin(banner)
+      ],
+      "externals": []
+  }
+  ```
+</details>

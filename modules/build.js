@@ -90,7 +90,6 @@ const customize = (...args) => {
             post: middlewares.post
         }
     }
-
     return props;
 };
 
