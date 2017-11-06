@@ -92,7 +92,7 @@ compile(customize({
 
 <details>
   <summary>Config for DEVELOPMENT version</summary>
-  ```jsx
+  <pre>
   {
       "cache": true,
       "entry": [
@@ -272,12 +272,12 @@ compile(customize({
       ],
       "externals": []
   }
-  ```
+  </pre>
 </details>
 
 <details>
   <summary>Config for DEVELOPMENT version</summary>
-  ```jsx
+  <pre>
   {
       "cache": true,
       "entry": [
@@ -494,5 +494,5 @@ compile(customize({
       ],
       "externals": []
   }
-  ```
+  </pre>
 </details>
