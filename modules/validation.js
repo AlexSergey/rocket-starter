@@ -1,5 +1,7 @@
+let requiredFields = [];
+
 const validationProps = (props, addProps = []) => {
-    let isRequired = ['root', 'src', 'dist'].concat(addProps);
+    let isRequired = requiredFields.concat(addProps);
     let message = '';
     let keys = Object.keys(props);
     if (keys.length === 0) {

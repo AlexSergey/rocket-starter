@@ -1,4 +1,3 @@
-const OpenBrowserPlugin = require('open-browser-webpack-plugin');
 const { getEntry, getDevtool, getOutput, makeModules, getModules, makePlugins, getPlugins, getStats, getDevServer, getNode, getResolve } = require('./configGenerators');
 const { isArray, isObject, isFunction } = require('./typeChecker');
 
@@ -48,10 +47,6 @@ function createConfig(
 
     config.plugins = plugins.get();
     config.externals = externals;
-
-    if (devServer && devServer.devServer && devServer.devServer.host && devServer.devServer.port) {
-        config.plugins.push(new OpenBrowserPlugin({ url: `http://${devServer.devServer.host}:${devServer.devServer.port}` }));
-    }
 
     if (middlewares.post) {
         if (isArray(middlewares.post) && middlewares.post.length > 0) {

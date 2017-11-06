@@ -8,6 +8,7 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const ExtractTextPlugin  = require('extract-text-webpack-plugin');
 const moment = require('moment');
 const { argv } = require('yargs');
+const { isArray } = require('./typeChecker');
 const Collection = require('./Collection');
 
 function getArgs() {
@@ -52,7 +53,7 @@ function makeBanner(packageJson) {
 
 function getEntry(entry = './source/index.js') {
     return {
-        entry: entry
+        entry: isArray(entry) ? entry : [entry]
     }
 }
 
@@ -68,16 +69,16 @@ function getDevtool(customSourceMap = 'none') {
 function getOutput(props = {}) {
     let outputProps = {
         output: {
-            publicPath: props.publicPath || '/',
-            path: props.path || path.resolve(__dirname, 'dist'),
-            filename: props.filename || `[name].js`
+            publicPath: '/',
+            path: props.path,
+            filename: '[name].js'
         }
     };
 
     if (props.library) {
         Object.assign(outputProps.output, {
             library: props.library,
-            libraryTarget: props.libraryTarget || 'umd'
+            libraryTarget: 'umd'
         });
     }
 

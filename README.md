@@ -3,41 +3,23 @@
 You need to create webpack config file in new app directory.
 
 ```jsx
-const { iWantTo, customize } = require('rocket-starter');
+const { compile, customize } = require('rocket-starter');
 ```
 ### If you want build a library, you need to declarate this config.
-When you start webpack it will be make only JS file, without styles and HTML and other media resources.
+When you start webpack it will be make only JS file, without styles and HTML and other media resources. JS will be build as UMD format.
 ```jsx
-module.exports = iWantTo.library({
-    root: __dirname,
-    src: 'source/index.js',
-    dist: 'dist',
-    name: 'ReSock'
-});
+compile({library: 'MyLib'});
 ```
 ### Or:
 ```jsx
-module.exports = iWantTo.app({
-    root: __dirname,
-    src: 'examples/index.jsx',
-    dist: 'example-dist',
-    styles: 'app.css',
-    html: {
-        title: 'ReSock Examples'
-    }
-});
+compile();
 ```
 ### If you want build a Application, you need to declarate this config.
 When you start webpack it will be make HTML, media, JS etc
 ```jsx
-module.exports = iWantTo.library({
-    root: __dirname,
-    src: 'source/index.js',
-    dist: 'dist',
-    name: 'ReSock'
-});
+compile({src: 'app.js' ... });
 ```
-You can run it with NODE_ENV=production - it is active uglifier and styles extraction
+You can run it with NODE_ENV=production - it is active uglifier. If you want a styles extraction you need to set styles: 'mystyle.css'
 
 ### If you need to customize your config, you can use middlewares.
 
@@ -48,25 +30,60 @@ In POST case, you catch created config file.
 
 Middlewares might be as object ({pre: []|fn, post:[]|fn}) or function.
 If you send middleware as function it will be run as PRE middleware.
-```
-module.exports = iWantTo.library(customize({
-    root: __dirname,
+```jsx
+module.exports = compile(customize({
     src: 'source/index.js',
     dist: 'dist',
-    name: 'ReSock'
 }, (...args) => {
 
 }));
 ```
 ### Or:
-```
-module.exports = iWantTo.library(customize({
-    root: __dirname,
+```jsx
+module.exports = compile(customize({
     src: 'source/index.js',
     dist: 'dist',
-    name: 'ReSock'
+    library: 'MyLib'
 }, {
     pre: [fn, fn] || fn,
     post: [fn, fn] || fn
 };
+```
+
+### Default properties:
+
+```jsx
+{
+    dist: 'dist',
+    src: 'src/index.js',
+    sourcemap: 'source-map',
+    server: {
+        port: 3000,
+        host: 'localhost'
+    }
+}
+```
+
+### All properties
+
+```jsx
+dist: 'dist',
+    src: 'src/index.js',
+    sourcemap: 'source-map',
+    server: {
+        port: 3000,
+        host: 'localhost'
+    }
+    // secondary properties
+    library: 'test',
+    styles: String,
+    html: {
+        title: String,
+        version: Boolean,
+        template: String, path to file
+    }
+    banner: String,
+    global: {
+        var: 'var1'
+    }
 ```
