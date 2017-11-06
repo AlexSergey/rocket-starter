@@ -31,7 +31,7 @@ In POST case, you catch created config file.
 Middlewares might be as object ({pre: []|fn, post:[]|fn}) or function.
 If you send middleware as function it will be run as PRE middleware.
 ```jsx
-module.exports = compile(customize({
+compile(customize({
     src: 'source/index.js',
     dist: 'dist',
 }, (...args) => {
@@ -40,7 +40,7 @@ module.exports = compile(customize({
 ```
 ### Or:
 ```jsx
-module.exports = compile(customize({
+compile(customize({
     src: 'source/index.js',
     dist: 'dist',
     library: 'MyLib'
@@ -67,7 +67,8 @@ module.exports = compile(customize({
 ### All properties
 
 ```jsx
-dist: 'dist',
+{
+    dist: 'dist',
     src: 'src/index.js',
     sourcemap: 'source-map',
     server: {
@@ -86,4 +87,5 @@ dist: 'dist',
     global: {
         var: 'var1'
     }
+}
 ```
