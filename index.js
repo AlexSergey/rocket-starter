@@ -91,10 +91,8 @@ let iWantTo = {
             output,
             plugins,
             devtool,
-            devServer,
-            middlewares: props.middlewares,
-            externalProps: props
-        });
+            devServer
+        }, props.middlewares, props);
     },
 
     app: props => {
@@ -123,10 +121,8 @@ let iWantTo = {
             output,
             plugins,
             devtool,
-            devServer,
-            middlewares: props.middlewares,
-            externalProps: props
-        });
+            devServer
+        }, props.middlewares, props);
     }
 };
 

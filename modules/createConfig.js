@@ -2,15 +2,13 @@ const OpenBrowserPlugin = require('open-browser-webpack-plugin');
 const { getEntry, getDevtool, getOutput, makeModules, getModules, makePlugins, getPlugins, getStats, getDevServer, getNode, getResolve } = require('./configGenerators');
 const { isArray, isObject, isFunction } = require('./typeChecker');
 
-function createConfig(props = {}) {
-    let {
-        middlewares = {
-            pre: [],
-            post: []
-        },
-        externalProps
-    } = props;
-
+function createConfig(
+    props = {},
+    middlewares = {
+        pre: [],
+        post: []
+    }, externalProps = {}) {
+    
     if (middlewares.pre) {
         if (isArray(middlewares.pre) && middlewares.pre.length > 0) {
             middlewares.forEach(middleware => {
