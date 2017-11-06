@@ -2,11 +2,12 @@ const { build } = require('./build');
 const { getWebpack } = require('./configGenerators');
 const WebpackDevServer = require('webpack-dev-server');
 const gutil = require('gutil');
+const moment = require('moment');
 
 const log = (err, stats) => {
     if (err) { throw new gutil.PluginError('webpack:build', err); }
-
-    gutil.log('[COMPILE]', `${stats.endTime - stats.startTime}ms`);
+    let duration = moment.duration(stats.endTime - stats.startTime, 'milliseconds');
+    gutil.log('[COMPILE]', `${duration.minutes()}:${duration.seconds()} minutes`);
 };
 
 const getStrategy = (config) => {

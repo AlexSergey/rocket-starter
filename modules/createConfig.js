@@ -2,7 +2,18 @@ const { getEntry, getDevtool, getOutput, makeModules, getModules, makePlugins, g
 const { isArray, isObject, isFunction } = require('./typeChecker');
 
 function createConfig(
-    props = {},
+    props = {
+        entry: getEntry(),
+        devtool: getDevtool(),
+        output: getOutput(),
+        modules: makeModules(getModules()),
+        plugins: makePlugins(getPlugins()),
+        externals: [],
+        stats: getStats(),
+        devServer: getDevServer(),
+        node: getNode(),
+        resolve: getResolve()
+    },
     middlewares = {
         pre: [],
         post: []
@@ -11,13 +22,11 @@ function createConfig(
     if (middlewares.pre) {
         if (isArray(middlewares.pre) && middlewares.pre.length > 0) {
             middlewares.forEach(middleware => {
-                let _props = middleware(props, externalProps);
-                props = isObject(_props) || props;
+                middleware(props, externalProps);
             })
         }
         else if (isFunction(middlewares.pre)) {
-            let _props = middlewares.pre(props, externalProps);
-            props = isObject(_props) || props;
+            middlewares.pre(props, externalProps);
         }
     }
 

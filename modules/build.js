@@ -1,7 +1,7 @@
 const path = require('path');
 const { validationProps } = require('./validation');
 const { isArray, isObject, isFunction } = require('./typeChecker');
-const { getEntry, getDevtool, getOutput, makePlugins, getPlugins, getDevServer } = require('./configGenerators');
+const { getEntry, getDevtool, getOutput, makePlugins, getPlugins, getDevServer, makeModules, getModules, getStats, getNode, getResolve } = require('./configGenerators');
 const createConfig = require('./createConfig');
 const ExtractTextPlugin  = require('extract-text-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
@@ -17,7 +17,9 @@ const build = props => {
         console.log(isValid.message);
         return false;
     }
-    let entry = getEntry(path.resolve(props.root, props.src));
+    let entry = getEntry(isArray(props.src) ?
+        props.src.map(p => path.resolve(props.root, p)) :
+        path.resolve(props.root, props.src));
 
     let output = getOutput({
         path: path.resolve(props.root, props.dist),
@@ -61,7 +63,18 @@ const build = props => {
 
     let devServer = getDevServer(props.server);
 
+    let modules = makeModules(getModules()),
+        externals = [],
+        stats = getStats(),
+        node = getNode(),
+        resolve = getResolve();
+
     return createConfig({
+        modules,
+        externals,
+        stats,
+        node,
+        resolve,
         entry,
         output,
         plugins,
@@ -70,30 +83,6 @@ const build = props => {
     }, props.middlewares, props);
 };
 
-const customize = (...args) => {
-    let props = args[0];
-    let middlewares = args[1];
-
-    if (isFunction(middlewares)) {
-        props.middlewares = {
-            pre: middlewares
-        }
-    }
-    else if (isArray(middlewares)) {
-        props.middlewares = {
-            pre: middlewares
-        }
-    }
-    else if (isObject(middlewares)) {
-        props.middlewares = {
-            pre: middlewares.pre,
-            post: middlewares.post
-        }
-    }
-    return props;
-};
-
 module.exports = {
-    build,
-    customize
+    build
 };
