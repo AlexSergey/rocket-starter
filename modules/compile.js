@@ -3,6 +3,8 @@ const { getWebpack } = require('./configGenerators');
 const WebpackDevServer = require('webpack-dev-server');
 const gutil = require('gutil');
 const moment = require('moment');
+const getPort = require('get-port');
+const OpenBrowserPlugin = require('open-browser-webpack-plugin');
 
 const log = (err, stats) => {
     if (err) { throw new gutil.PluginError('webpack:build', err); }
@@ -24,12 +26,22 @@ const getStrategy = (config) => {
             }, config.devServer.watchOptions), log)
         },
         'dev-server': () => {
-            config.entry.unshift(`webpack-dev-server/client?http://${config.devServer.host}:${config.devServer.port}/`);
-            let compiler = webpack(config);
-            let server = new WebpackDevServer(compiler, config.devServer);
-            server.listen(config.devServer.port, config.devServer.host, () => {
-                console.log(`Starting server on http://${config.devServer.host}:${config.devServer.port}/`);
-            });
+            getPort({port: config.devServer.port})
+                .then(port => {
+                    config.entry.unshift(`webpack-dev-server/client?http://${config.devServer.host}:${port}/`);
+                    config.plugins.push(new OpenBrowserPlugin({ url: `http://${config.devServer.host}:${port}` }));
+
+                    let compiler = webpack(config);
+                    let server = new WebpackDevServer(compiler, config.devServer);
+
+
+                    server.listen(port, config.devServer.host, () => {
+                        console.log(`Starting server on http://${config.devServer.host}:${port}/`);
+                    });
+                })
+                .catch(err => {
+                    console.log(err);
+                })
         }
     }
 };

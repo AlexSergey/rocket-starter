@@ -35,6 +35,8 @@ module.exports = function(props = {}) {
     }
     newProps.banner = banner;
 
+    newProps.build_version = props.html && props.html.version || getBuildVersion();
+
     newProps.html = {};
     newProps.html.title = props.html && props.html.title || getTitle(packageJson);
     newProps.html.version =  props.html && props.html.version || getBuildVersion();

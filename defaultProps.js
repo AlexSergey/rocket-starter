@@ -1,12 +1,13 @@
 const defaultProps = {
     dist: 'dist',
     src: 'src/index.js',
-    sourcemap: 'source-map',
     server: {
         port: 3000,
         host: 'localhost'
     }
     /*
+    Other Props:
+    * sourcemap: 'source-map',
     * library: 'test',
     * styles: String,
     * html: {

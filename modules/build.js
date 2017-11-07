@@ -1,12 +1,10 @@
 const path = require('path');
 const { validationProps } = require('./validation');
-const { isArray, isObject, isFunction } = require('./typeChecker');
+const { isArray } = require('./typeChecker');
 const { getEntry, getDevtool, getOutput, makePlugins, getPlugins, getDevServer, makeModules, getModules, getStats, getNode, getResolve } = require('./configGenerators');
 const createConfig = require('./createConfig');
 const ExtractTextPlugin  = require('extract-text-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 const mixedWithDefault = require('./mixWithDefault');
-const OpenBrowserPlugin = require('open-browser-webpack-plugin');
 
 const build = props => {
     props = mixedWithDefault(props);
@@ -24,46 +22,58 @@ const build = props => {
     let output = getOutput({
         path: path.resolve(props.root, props.dist),
         library: props.library
-    });
-
-    let plugins = makePlugins(getPlugins(), Object.assign({
-        CleanWebpackPlugin: {
-            path: path.resolve(props.root, props.dist),
-            root: props.root
-        },
-        BannerPlugin: {
-            banner: props.banner
-        },
-        HtmlWebpackPlugin: props.html,
-        DefinePlugin: props.global
-    }));
-
-    if (!props.banner) {
-        plugins.remove('BannerPlugin');
-    }
-    if (plugins.get('CleanWebpackPlugin')) {
-        plugins.set('CleanWebpackPlugin', new CleanWebpackPlugin([props.dist], {root: props.root}));
-    }
-
-    if (props.library) {
-        plugins.remove('HtmlWebpackPlugin');
-    }
-
-    if (props.styles) {
-        if (plugins.get('ExtractTextPlugin')) {
-            plugins.set('ExtractTextPlugin', new ExtractTextPlugin(props.styles));
-        }
-    }
-
-    if (!props.library && process.env.NODE_ENV === 'development') {
-        plugins.add('OpenBrowserPlugin', new OpenBrowserPlugin({ url: `http://${props.server.host}:${props.server.port}` }));
-    }
+    }, props.build_version);
 
     let devtool = getDevtool(props.sourcemap);
 
+    let needToIncludeSourcemaps = !!devtool.devtool;
+
+    let forProductionPlugins = process.env.NODE_ENV === 'production' ? Object.assign({
+        UglifyJSPlugin: {
+            sourceMap: needToIncludeSourcemaps
+        }
+    }, (props.styles ? {
+        ExtractTextPlugin: {
+            styles: props.styles,
+            build_version: props.build_version
+        }
+    } : {})) : {};
+
+    let excludePlugins = [];
+
+    if (!props.banner) {
+        excludePlugins.push('BannerPlugin');
+    }
+
+    if (props.library) {
+        excludePlugins.push('HtmlWebpackPlugin');
+    }
+    if (!props.styles) {
+        excludePlugins.push('ExtractTextPlugin');
+    }
+
+    let plugins = makePlugins(
+        getPlugins(),
+        Object.assign({
+            CleanWebpackPlugin: {
+                path: path.resolve(props.root, props.dist),
+                root: props.root
+            },
+            BannerPlugin: {
+                banner: props.banner
+            },
+            HtmlWebpackPlugin: props.html,
+            DefinePlugin: props.global
+        }, forProductionPlugins),
+        excludePlugins
+    );
+
     let devServer = getDevServer(props.server);
 
-    let modules = makeModules(getModules()),
+    let modules = makeModules(getModules({
+            extractStyles: !!props.styles,
+            sourcemap: needToIncludeSourcemaps
+        })),
         externals = [],
         stats = getStats(),
         node = getNode(),

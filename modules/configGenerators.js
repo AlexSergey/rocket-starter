@@ -16,7 +16,8 @@ function getArgs() {
 }
 
 function getBuildVersion() {
-    return moment().format('DDMM-hhmm');
+    return process.env.ROCKET_BUILD_VERSION ||
+        moment().format('DDMM-hhmm');
 }
 
 function getWebpack() {
@@ -66,12 +67,12 @@ function getDevtool(customSourceMap = 'none') {
     }
 }
 
-function getOutput(props = {}) {
+function getOutput(props = {}, version = '') {
     let outputProps = {
         output: {
             publicPath: '/',
             path: props.path,
-            filename: '[name].js'
+            filename: `[name]${version !== '' ? '-' + version : ''}.js`
         }
     };
 
@@ -85,8 +86,9 @@ function getOutput(props = {}) {
     return outputProps;
 }
 
-function getModules() {
+function getModules(props = {}) {
     let isNotProduction = process.env.NODE_ENV !== 'production';
+    let extractStyles = props.extractStyles && process.env.NODE_ENV === 'production';
 
     return {
         html: {
@@ -94,54 +96,54 @@ function getModules() {
             use: 'file-loader?name=[name].[ext]'
         },
 
-        css: isNotProduction ? {
-            test: /\.css$/,
-            loader: [
-                'style-loader',
-                'css-loader'
-            ]
-        } : {
+        css: extractStyles ? {
             test: /\.css$/,
             use: ExtractTextPlugin.extract({
                 fallback: "style-loader",
-                use: { loader: 'css-loader', options: { minimize: true }}
+                use: { loader: 'css-loader', options: {minimize: true, sourceMap: !!props.sourcemap}}
             })
+        } : {
+            test: /\.css$/,
+            loader: [
+                { loader: 'style-loader', options: {sourceMap: !!props.sourcemap}},
+                { loader: 'css-loader', options: {sourceMap: !!props.sourcemap}}
+            ]
         },
 
-        scss: isNotProduction ? {
-            test: /\.scss/,
-            loader: [
-                'style-loader',
-                'css-loader',
-                'sass-loader'
-            ]
-        } : {
+        scss: extractStyles ? {
             test: /\.scss/,
             use: ExtractTextPlugin.extract({
                 fallback: "style-loader",
                 use: [
-                    { loader: 'css-loader', options: { minimize: true }},
-                    'sass-loader'
+                    { loader: 'css-loader', options: {minimize: true, sourceMap: !!props.sourcemap}},
+                    { loader: 'sass-loader', options: {sourceMap: !!props.sourcemap}}
                 ]
             })
+        } : {
+            test: /\.scss/,
+            loader: [
+                { loader: 'style-loader', options: {sourceMap: !!props.sourcemap}},
+                { loader: 'css-loader', options: {sourceMap: !!props.sourcemap}},
+                { loader: 'sass-loader', options: {sourceMap: !!props.sourcemap}}
+            ]
         },
 
-        less: isNotProduction ? {
-            test: /\.less/,
-            loader: [
-                'style-loader',
-                'css-loader',
-                'less-loader'
-            ]
-        } : {
+        less: extractStyles ? {
             test: /\.less/,
             use: ExtractTextPlugin.extract({
                 fallback: "style-loader",
                 use: [
-                    { loader: 'css-loader', options: { minimize: true }},
-                    'less-loader'
+                    { loader: 'css-loader', options: {minimize: true, sourceMap: !!props.sourcemap}},
+                    { loader: 'less-loader', options: {sourceMap: !!props.sourcemap}}
                 ]
             })
+        } : {
+            test: /\.less/,
+            loader: [
+                { loader: 'style-loader', options: {sourceMap: !!props.sourcemap}},
+                { loader: 'css-loader', options: {sourceMap: !!props.sourcemap}},
+                { loader: 'less-loader', options: {sourceMap: !!props.sourcemap}}
+            ]
         },
 
         js: {
@@ -247,7 +249,20 @@ function getPlugins() {
     if (isProduction) {
         Object.assign(modules, {
             ModuleConcatenationPlugin: (props = {}) => new webpack.optimize.ModuleConcatenationPlugin(),
-            ExtractTextPlugin: (props = {}) => new ExtractTextPlugin(props.path || 'css/styles.css'),
+            ExtractTextPlugin: (props = {}) => {
+                let addVersion = !!process.env.ROCKET_ADD_VERSION;
+                let styleName = props.styles && props.styles.indexOf('.css') >= 0 ? props.styles : 'css/styles.css';
+                styleName = styleName.split('.');
+
+                if (styleName.length > 1 && addVersion && props.build_version) {
+                    let last = styleName.length - 1;
+                    let filename = last - 1;
+                    styleName[filename] = styleName[filename] + '-' + props.build_version;
+                }
+                styleName = styleName.join('.');
+
+                return new ExtractTextPlugin(styleName);
+            },
             ImageminPlugin: (props = {}) => new ImageminPlugin({
                 disable: false,
                 optipng: {
@@ -267,7 +282,7 @@ function getPlugins() {
             CleanWebpackPlugin: (props = {}) => new CleanWebpackPlugin([props.path || './dist'], {root: props.root || __dirname}),
 
             UglifyJSPlugin: (props = {}) => new UglifyJSPlugin({
-                sourceMap: false,
+                sourceMap: props.sourceMap || false,
                 uglifyOptions: {
                     ie8: false,
                     ecma: 5,
@@ -349,16 +364,22 @@ function getNode(modules = {}) {
     }
 }
 
-function makeModules(modules, props = {}) {
+function makeModules(modules, props = {}, excludeModules = []) {
     return new Collection({
-        data: modules,
+        data: excludeModules.reduce((modules, propsToDelete) => {
+            delete modules[propsToDelete];
+            return modules;
+        }, modules),
         props
     });
 }
 
-function makePlugins(plugins, props = {}) {
+function makePlugins(plugins, props = {}, excludePlugins = []) {
     return new Collection({
-        data: plugins,
+        data: excludePlugins.reduce((plugins, propsToDelete) => {
+            delete plugins[propsToDelete];
+            return plugins;
+        }, plugins),
         props
     });
 }

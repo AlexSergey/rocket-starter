@@ -1,6 +1,6 @@
 # This is experimental!
 
-You need to create webpack config file in new app directory.
+This is the simplest way to make webpack config with many default settings.
 
 ```jsx
 const { compile, customize } = require('rocket-starter');
@@ -56,7 +56,6 @@ compile(customize({
 {
     dist: 'dist',
     src: 'src/index.js',
-    sourcemap: 'source-map',
     server: {
         port: 3000,
         host: 'localhost'
@@ -68,6 +67,7 @@ compile(customize({
 
 ```jsx
 {
+    sourcemap: 'source-map',
     dist: 'dist',
     src: 'src/index.js',
     sourcemap: 'source-map',
@@ -89,6 +89,12 @@ compile(customize({
     }
 }
 ```
+
+You can use build version set in process.env.ROCKET_BUILD_VERSION
+
+You can activate sourcemap in production version. You could set sourcemap: 'source-map' in your config.
+
+If you don't need to extract styles to css file in production version you can set styles: false
 
 <details>
   <summary>Config for DEVELOPMENT version</summary>
