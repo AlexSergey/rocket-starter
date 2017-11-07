@@ -67,15 +67,14 @@ compile(customize({
 
 ```jsx
 {
-    sourcemap: 'source-map',
     dist: 'dist',
     src: 'src/index.js',
-    sourcemap: 'source-map',
     server: {
         port: 3000,
         host: 'localhost'
     }
     // secondary properties
+    sourcemap: 'source-map',
     library: 'test',
     styles: String,
     html: {
