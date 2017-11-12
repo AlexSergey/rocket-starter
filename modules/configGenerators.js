@@ -246,6 +246,12 @@ function getPlugins() {
         }, vars))
     };
 
+    if (!isProduction) {
+        Object.assign(modules, {
+            HotModuleReplacementPlugin: () => new webpack.HotModuleReplacementPlugin()
+        });
+    }
+
     if (isProduction) {
         Object.assign(modules, {
             ModuleConcatenationPlugin: (props = {}) => new webpack.optimize.ModuleConcatenationPlugin(),
@@ -333,6 +339,7 @@ function getDevServer(props = {}) {
             noInfo: true,
             quiet: false,
             lazy: false,
+            hot: true,
             inline: true,
             stats: "minimal",
             overlay: {

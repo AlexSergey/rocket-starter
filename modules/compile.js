@@ -29,6 +29,7 @@ const getStrategy = (config) => {
             getPort({port: config.devServer.port})
                 .then(port => {
                     config.entry.unshift(`webpack-dev-server/client?http://${config.devServer.host}:${port}/`);
+                    config.entry.unshift('webpack/hot/dev-server');
                     config.plugins.push(new OpenBrowserPlugin({ url: `http://${config.devServer.host}:${port}` }));
 
                     let compiler = webpack(config);

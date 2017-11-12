@@ -143,6 +143,7 @@ If you don't need to extract styles to css file in production version you can se
           "noInfo": true,
           "quiet": false,
           "lazy": false,
+          "hot": false,
           "inline": true,
           "stats": "minimal",
           "overlay": {
@@ -328,6 +329,7 @@ If you don't need to extract styles to css file in production version you can se
           "noInfo": true,
           "quiet": false,
           "lazy": false,
+          "hot": false,
           "inline": true,
           "stats": "minimal",
           "overlay": {
