@@ -85,9 +85,12 @@ compile(customize({
     banner: String,
     global: {
         var: 'var1'
-    }
+    },
+    copy: {from: ... to: ...} || [] || {files: [], opts: {}},
+    analyzer: true    
 }
 ```
+"copy" is activate CopyWebpackPlugin and we can use default syntax but we can set files and opts. Opts is second parameter in this plugin.
 
 You can use build version set in process.env.ROCKET_BUILD_VERSION
 

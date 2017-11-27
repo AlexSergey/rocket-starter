@@ -1,4 +1,6 @@
 const { existsSync, readFileSync } = require('fs');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const RuntimeAnalyzerPlugin = require('webpack-runtime-analyzer');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
@@ -8,7 +10,7 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const ExtractTextPlugin  = require('extract-text-webpack-plugin');
 const moment = require('moment');
 const { argv } = require('yargs');
-const { isArray } = require('./typeChecker');
+const { isArray, isObject } = require('./typeChecker');
 const Collection = require('./Collection');
 
 function getArgs() {
@@ -229,7 +231,7 @@ function getModules(props = {}) {
     };
 }
 
-function getPlugins() {
+function getPlugins(opts) {
     let isProduction = process.env.NODE_ENV === 'production';
 
     let modules = {
@@ -249,6 +251,37 @@ function getPlugins() {
     if (!isProduction) {
         Object.assign(modules, {
             HotModuleReplacementPlugin: () => new webpack.HotModuleReplacementPlugin()
+        });
+    }
+
+    if (opts.analyzer) {
+        Object.assign(modules, {
+            RuntimeAnalyzer: () => new RuntimeAnalyzerPlugin()
+        });
+    }
+
+    if (opts.copy) {
+        Object.assign(modules, {
+            CopyWebpackPlugin: () => {
+                let prop = null;
+                let opts = {};
+                if (isObject(opts.copy)) {
+                    if (opts.copy.from && opts.copy.to) {
+                        prop = opts.copy;
+                    }
+                    else if (opts.copy.files) {
+                        prop = opts.copy.files;
+                        opts = opts.copy.opts || {};
+                    }
+                }
+                else if (isArray(opts.copy)) {
+                    prop = opts.copy;
+                }
+                if (!prop) {
+                    return function() {};
+                }
+                return new CopyWebpackPlugin(prop, opts);
+            }
         });
     }
 

@@ -53,7 +53,9 @@ const build = props => {
     }
 
     let plugins = makePlugins(
-        getPlugins(),
+        getPlugins({
+            analyzer: props.analyzer
+        }),
         Object.assign({
             CleanWebpackPlugin: {
                 path: path.resolve(props.root, props.dist),

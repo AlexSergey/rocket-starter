@@ -1,12 +1,12 @@
 const deepExtend = require('deep-extend');
-const path = require('path');
-const fs = require('fs');
+const { dirname, resolve } = require('path');
+const { existsSync } = require('fs');
 const { isObject, isString, isFunction, isArray } = require('./typeChecker');
 
 const getCustom = pth => {
-    const root = path.dirname(require.main.filename);
+    const root = dirname(require.main.filename);
 
-    return fs.existsSync(path.resolve(root, pth)) ? require(path.resolve(root, pth)) : {};
+    return existsSync(resolve(root, pth)) ? require(resolve(root, pth)) : {};
 };
 
 const mix = (props, data) => {

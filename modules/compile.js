@@ -1,5 +1,7 @@
 const { build } = require('./build');
 const { getWebpack } = require('./configGenerators');
+const { dirname, resolve } = require('path');
+const { writeFileSync } = require('fs');
 const WebpackDevServer = require('webpack-dev-server');
 const gutil = require('gutil');
 const moment = require('moment');
@@ -16,7 +18,13 @@ const getStrategy = (config) => {
     const webpack = getWebpack();
     return {
         simple: () => {
-            let compiler = webpack(config);
+            let compiler = webpack(config, (err, stats) => {
+                if (process.env.NODE_ENV === 'production') {
+                    const root = dirname(require.main.filename);
+
+                    writeFileSync(`${resolve(root, 'stats.json')}`, JSON.stringify(stats.toJson('normal')));
+                }
+            });
             compiler.run(log);
         },
         'watch-only': () => {
@@ -71,7 +79,9 @@ const compile = (props = {}) => {
         console.log('strategy is empty');
         return false;
     }
+
     let compileStrategy = getStrategy(config)[strategy];
+
     if (!compileStrategy) {
         console.log('compileStrategy is empty');
         return false;
