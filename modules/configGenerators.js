@@ -254,7 +254,7 @@ function getPlugins(opts) {
         });
     }
 
-    if (opts.analyzer) {
+    if (opts.analyzer && process.env.NODE_ENV === 'development') {
         Object.assign(modules, {
             RuntimeAnalyzer: () => new RuntimeAnalyzerPlugin()
         });
@@ -263,24 +263,24 @@ function getPlugins(opts) {
     if (opts.copy) {
         Object.assign(modules, {
             CopyWebpackPlugin: () => {
-                let prop = null;
-                let opts = {};
+                let _prop = null;
+                let _opts = {};
                 if (isObject(opts.copy)) {
                     if (opts.copy.from && opts.copy.to) {
-                        prop = opts.copy;
+                        _prop = opts.copy;
                     }
                     else if (opts.copy.files) {
-                        prop = opts.copy.files;
-                        opts = opts.copy.opts || {};
+                        _prop = opts.copy.files;
+                        _opts = opts.copy.opts || {};
                     }
                 }
                 else if (isArray(opts.copy)) {
-                    prop = opts.copy;
+                    _prop = opts.copy;
                 }
-                if (!prop) {
+                if (!_prop) {
                     return function() {};
                 }
-                return new CopyWebpackPlugin(prop, opts);
+                return new CopyWebpackPlugin(_prop, _opts);
             }
         });
     }

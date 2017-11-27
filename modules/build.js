@@ -54,6 +54,7 @@ const build = props => {
 
     let plugins = makePlugins(
         getPlugins({
+            copy: props.copy,
             analyzer: props.analyzer
         }),
         Object.assign({

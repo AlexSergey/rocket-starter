@@ -92,6 +92,8 @@ compile(customize({
 ```
 "copy" is activate CopyWebpackPlugin and we can use default syntax but we can set files and opts. Opts is second parameter in this plugin.
 
+"analyzer" - activate Webpack Runtime Analyzer in DEVELOPMENT mode
+
 You can use build version set in process.env.ROCKET_BUILD_VERSION
 
 You can activate sourcemap in production version. You could set sourcemap: 'source-map' in your config.
