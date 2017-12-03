@@ -267,7 +267,7 @@ function getPlugins(opts) {
                 let _opts = {};
                 if (isObject(opts.copy)) {
                     if (opts.copy.from && opts.copy.to) {
-                        _prop = opts.copy;
+                        _prop = [opts.copy];
                     }
                     else if (opts.copy.files) {
                         _prop = opts.copy.files;

@@ -18,7 +18,9 @@ const defaultProps = {
     * banner: String,
     * global: {
     *     key: value
-    * }
+    * },
+    * copy: {from: ... to: ...} || [] || {files: [], opts: {}},
+    * analyzer: true
     * */
 };
 
