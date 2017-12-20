@@ -13,13 +13,14 @@ const { argv } = require('yargs');
 const { isArray, isObject } = require('./typeChecker');
 const Collection = require('./Collection');
 
-function getArgs() {
-    return argv;
-}
-
 function getBuildVersion() {
-    return process.env.ROCKET_BUILD_VERSION ||
-        moment().format('DDMM-hhmm');
+    if (typeof argv.version === 'undefined') {
+        return false;
+    }
+    if (typeof argv.version === 'boolean') {
+        return moment().format('DDMM-hhmm');
+    }
+    return argv.version;
 }
 
 function getWebpack() {
@@ -61,7 +62,7 @@ function getEntry(entry = './source/index.js') {
 }
 
 function getDevtool(customSourceMap = 'none') {
-    let sourceMap = process.env.NODE_ENV === 'development' ? 'source-map' : false;
+    let sourceMap = !!argv.debug ? 'source-map' : false;
 
     sourceMap = customSourceMap === 'none' ? sourceMap : customSourceMap;
     return {
@@ -102,13 +103,13 @@ function getModules(props = {}) {
             test: /\.css$/,
             use: ExtractTextPlugin.extract({
                 fallback: "style-loader",
-                use: { loader: 'css-loader', options: {minimize: true, sourceMap: !!props.sourcemap}}
+                use: { loader: 'css-loader', options: {minimize: true, sourceMap: !!argv.debug}}
             })
         } : {
             test: /\.css$/,
             loader: [
-                { loader: 'style-loader', options: {sourceMap: !!props.sourcemap}},
-                { loader: 'css-loader', options: {sourceMap: !!props.sourcemap}}
+                { loader: 'style-loader', options: {sourceMap: !!argv.debug}},
+                { loader: 'css-loader', options: {sourceMap: !!argv.debug}}
             ]
         },
 
@@ -117,16 +118,16 @@ function getModules(props = {}) {
             use: ExtractTextPlugin.extract({
                 fallback: "style-loader",
                 use: [
-                    { loader: 'css-loader', options: {minimize: true, sourceMap: !!props.sourcemap}},
-                    { loader: 'sass-loader', options: {sourceMap: !!props.sourcemap}}
+                    { loader: 'css-loader', options: {minimize: true, sourceMap: !!argv.debug}},
+                    { loader: 'sass-loader', options: {sourceMap: !!argv.debug}}
                 ]
             })
         } : {
             test: /\.scss/,
             loader: [
-                { loader: 'style-loader', options: {sourceMap: !!props.sourcemap}},
-                { loader: 'css-loader', options: {sourceMap: !!props.sourcemap}},
-                { loader: 'sass-loader', options: {sourceMap: !!props.sourcemap}}
+                { loader: 'style-loader', options: {sourceMap: !!argv.debug}},
+                { loader: 'css-loader', options: {sourceMap: !!argv.debug}},
+                { loader: 'sass-loader', options: {sourceMap: !!argv.debug}}
             ]
         },
 
@@ -135,16 +136,16 @@ function getModules(props = {}) {
             use: ExtractTextPlugin.extract({
                 fallback: "style-loader",
                 use: [
-                    { loader: 'css-loader', options: {minimize: true, sourceMap: !!props.sourcemap}},
-                    { loader: 'less-loader', options: {sourceMap: !!props.sourcemap}}
+                    { loader: 'css-loader', options: {minimize: true, sourceMap: !!argv.debug}},
+                    { loader: 'less-loader', options: {sourceMap: !!argv.debug}}
                 ]
             })
         } : {
             test: /\.less/,
             loader: [
-                { loader: 'style-loader', options: {sourceMap: !!props.sourcemap}},
-                { loader: 'css-loader', options: {sourceMap: !!props.sourcemap}},
-                { loader: 'less-loader', options: {sourceMap: !!props.sourcemap}}
+                { loader: 'style-loader', options: {sourceMap: !!argv.debug}},
+                { loader: 'css-loader', options: {sourceMap: !!argv.debug}},
+                { loader: 'less-loader', options: {sourceMap: !!argv.debug}}
             ]
         },
 
@@ -289,7 +290,7 @@ function getPlugins(opts) {
         Object.assign(modules, {
             ModuleConcatenationPlugin: (props = {}) => new webpack.optimize.ModuleConcatenationPlugin(),
             ExtractTextPlugin: (props = {}) => {
-                let addVersion = !!process.env.ROCKET_ADD_VERSION;
+                let addVersion = !!argv.version;
                 let styleName = props.styles && props.styles.indexOf('.css') >= 0 ? props.styles : 'css/styles.css';
                 styleName = styleName.split('.');
 
@@ -321,7 +322,7 @@ function getPlugins(opts) {
             CleanWebpackPlugin: (props = {}) => new CleanWebpackPlugin([props.path || './dist'], {root: props.root || __dirname}),
 
             UglifyJSPlugin: (props = {}) => new UglifyJSPlugin({
-                sourceMap: props.sourceMap || false,
+                sourceMap: !!argv.debug,
                 uglifyOptions: {
                     ie8: false,
                     ecma: 5,
@@ -425,7 +426,6 @@ function makePlugins(plugins, props = {}, excludePlugins = []) {
 }
 
 module.exports = {
-    getArgs,
     getBuildVersion,
     getWebpack,
     getTitle,

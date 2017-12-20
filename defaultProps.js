@@ -7,7 +7,6 @@ const defaultProps = {
     }
     /*
     Other Props:
-    * sourcemap: 'source-map',
     * library: 'test',
     * styles: String,
     * html: {

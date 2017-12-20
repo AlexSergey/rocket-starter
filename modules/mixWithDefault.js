@@ -34,12 +34,17 @@ module.exports = function(props = {}) {
         }
     }
     newProps.banner = banner;
+    let version = getBuildVersion();
 
-    newProps.build_version = props.html && props.html.version || getBuildVersion();
+    if (version) {
+        newProps.build_version = version;
+    }
 
     newProps.html = {};
     newProps.html.title = props.html && props.html.title || getTitle(packageJson);
-    newProps.html.version =  props.html && props.html.version || getBuildVersion();
+    if (version) {
+        newProps.html.version =  version;
+    }
     newProps.html.template =  props.html && props.html.template || path.resolve(__dirname, '..', './index.ejs');
     newProps.analyzer = props.analyzer || false;
     newProps.copy = props.copy || false;

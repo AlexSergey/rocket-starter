@@ -33,10 +33,7 @@ const build = props => {
             sourceMap: needToIncludeSourcemaps
         }
     }, (props.styles ? {
-        ExtractTextPlugin: {
-            styles: props.styles,
-            build_version: props.build_version
-        }
+        ExtractTextPlugin: Object.assign({}, { styles: props.styles }, props.build_version ? {build_version: props.build_version} : {})
     } : {})) : {};
 
     let excludePlugins = [];

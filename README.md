@@ -74,7 +74,6 @@ compile(customize({
         host: 'localhost'
     }
     // secondary properties
-    sourcemap: 'source-map',
     library: 'test',
     styles: String,
     html: {
@@ -94,9 +93,9 @@ compile(customize({
 
 "analyzer" - activate Webpack Runtime Analyzer in DEVELOPMENT mode
 
-You can use build version set in process.env.ROCKET_BUILD_VERSION
+You can use build version set "--version" flag. 
 
-You can activate sourcemap in production version. You could set sourcemap: 'source-map' in your config.
+You can activate sourcemap in production version. You can call build script with "--source" flag.
 
 If you don't need to extract styles to css file in production version you can set styles: false
 
