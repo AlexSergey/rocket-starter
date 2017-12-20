@@ -93,9 +93,9 @@ compile(customize({
 
 "analyzer" - activate Webpack Runtime Analyzer in DEVELOPMENT mode
 
-You can use build version set "--version" flag. 
+You can use build version set "-v" flag. 
 
-You can activate sourcemap in production version. You can call build script with "--source" flag.
+You can activate sourcemap in production version. You can call build script with "-d" flag.
 
 If you don't need to extract styles to css file in production version you can set styles: false
 
