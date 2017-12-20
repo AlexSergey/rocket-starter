@@ -286,7 +286,7 @@ function getPlugins(opts) {
         Object.assign(modules, {
             ModuleConcatenationPlugin: (props = {}) => new webpack.optimize.ModuleConcatenationPlugin(),
             ExtractTextPlugin: (props = {}) => {
-                let addVersion = !!argv.vsion;
+                let addVersion = !!argv.v;
                 let styleName = props.styles && props.styles.indexOf('.css') >= 0 ? props.styles : 'css/styles.css';
                 styleName = styleName.split('.');
 
