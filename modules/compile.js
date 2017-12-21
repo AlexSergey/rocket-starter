@@ -12,19 +12,19 @@ const log = (err, stats) => {
     if (err) { throw new gutil.PluginError('webpack:build', err); }
     let duration = moment.duration(stats.endTime - stats.startTime, 'milliseconds');
     gutil.log('[COMPILE]', `${duration.minutes()}:${duration.seconds()} minutes`);
+
+    if (process.env.NODE_ENV === 'production') {
+        const root = dirname(require.main.filename);
+
+        writeFileSync(`${resolve(root, 'stats.json')}`, JSON.stringify(stats.toJson('normal')));
+    }
 };
 
 const getStrategy = (config) => {
     const webpack = getWebpack();
     return {
         simple: () => {
-            let compiler = webpack(config, (err, stats) => {
-                if (process.env.NODE_ENV === 'production') {
-                    const root = dirname(require.main.filename);
-
-                    writeFileSync(`${resolve(root, 'stats.json')}`, JSON.stringify(stats.toJson('normal')));
-                }
-            });
+            let compiler = webpack(config);
             compiler.run(log);
         },
         'watch-only': () => {
