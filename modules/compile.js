@@ -13,11 +13,11 @@ const log = (err, stats) => {
     let duration = moment.duration(stats.endTime - stats.startTime, 'milliseconds');
     gutil.log('[COMPILE]', `${duration.minutes()}:${duration.seconds()} minutes`);
 
-    if (process.env.NODE_ENV === 'production') {
+    /*if (process.env.NODE_ENV === 'production') {
         const root = dirname(require.main.filename);
 
         writeFileSync(`${resolve(root, 'stats.json')}`, JSON.stringify(stats.toJson('normal')));
-    }
+    }*/
 };
 
 const getStrategy = (config) => {

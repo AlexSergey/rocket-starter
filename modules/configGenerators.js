@@ -1,6 +1,5 @@
 const { existsSync, readFileSync } = require('fs');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const RuntimeAnalyzerPlugin = require('webpack-runtime-analyzer');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
@@ -251,11 +250,11 @@ function getPlugins(opts) {
         });
     }
 
-    if (opts.analyzer && process.env.NODE_ENV === 'development') {
+    /*if (opts.analyzer && process.env.NODE_ENV === 'development') {
         Object.assign(modules, {
             RuntimeAnalyzer: () => new RuntimeAnalyzerPlugin()
         });
-    }
+    }*/
 
     if (opts.copy) {
         Object.assign(modules, {
