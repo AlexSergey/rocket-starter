@@ -1,6 +1,7 @@
 /**
  * Created by Sergey Aleksandrov (gooddev.sergey@gmail.com) on 06.11.2017.
  */
+const { existsSync } = require('fs');
 let defaultProps = require('../defaultProps');
 const path = require('path');
 const { isString, isBoolean } = require('./typeChecker');
@@ -9,7 +10,7 @@ const { getTitle, getBuildVersion, makeBanner } = require('./configGenerators');
 module.exports = function(props = {}) {
     let newProps = {};
     const root = path.dirname(require.main.filename);
-    const packageJson = require(path.resolve(root, 'package.json'));
+    const packageJson = existsSync(path.resolve(root, 'package.json')) ? require(path.resolve(root, 'package.json')) : {};
 
     newProps.packageJson = packageJson;
     newProps.root = root;
@@ -27,8 +28,7 @@ module.exports = function(props = {}) {
         if (isString(props.banner)) {
             banner = props.banner;
         }
-    }
-    else {
+    } else {
         if (isBoolean(props.banner)) {
             banner = false;
         }
@@ -41,11 +41,11 @@ module.exports = function(props = {}) {
     }
 
     newProps.html = {};
-    newProps.html.title = props.html && props.html.title || getTitle(packageJson);
+    newProps.html.title = (props.html && props.html.title) || getTitle(packageJson);
     if (version) {
-        newProps.html.version =  version;
+        newProps.html.version = version;
     }
-    newProps.html.template =  props.html && props.html.template || path.resolve(__dirname, '..', './index.ejs');
+    newProps.html.template = (props.html && props.html.template) || path.resolve(__dirname, '..', './index.ejs');
     newProps.analyzer = props.analyzer || false;
     newProps.copy = props.copy || false;
     newProps.server = Object.assign({}, defaultProps.server, props.server);

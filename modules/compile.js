@@ -9,7 +9,9 @@ const getPort = require('get-port');
 const OpenBrowserPlugin = require('open-browser-webpack-plugin');
 
 const log = (err, stats) => {
-    if (err) { throw new gutil.PluginError('webpack:build', err); }
+    if (err) {
+        throw new gutil.PluginError('webpack:build', err);
+    }
     let duration = moment.duration(stats.endTime - stats.startTime, 'milliseconds');
     gutil.log('[COMPILE]', `${duration.minutes()}:${duration.seconds()} minutes`);
 
@@ -20,7 +22,7 @@ const log = (err, stats) => {
     }*/
 };
 
-const getStrategy = (config) => {
+const getStrategy = config => {
     const webpack = getWebpack();
     return {
         simple: () => {
@@ -29,20 +31,26 @@ const getStrategy = (config) => {
         },
         'watch-only': () => {
             let compiler = webpack(config);
-            compiler.watch(Object.assign({
-                poll: true
-            }, config.devServer.watchOptions), log)
+            compiler.watch(
+                Object.assign(
+                    {
+                        poll: true
+                    },
+                    config.devServer.watchOptions
+                ),
+                log
+            );
         },
         'dev-server': () => {
-            getPort({port: config.devServer.port})
+            getPort({ port: config.devServer.port })
                 .then(port => {
-                    config.entry.unshift(`webpack-dev-server/client?http://${config.devServer.host}:${port}/`);
-                    config.entry.unshift('webpack/hot/dev-server');
+                    config.entry.unshift(`${require.resolve('webpack-dev-server/client')}?http://${config.devServer.host}:${port}/`);
+                    //config.entry.unshift(`webpack-dev-server/client?http://${config.devServer.host}:${port}/`);
+                    config.entry.unshift(require.resolve('webpack/hot/dev-server'));
                     config.plugins.push(new OpenBrowserPlugin({ url: `http://${config.devServer.host}:${port}` }));
 
                     let compiler = webpack(config);
                     let server = new WebpackDevServer(compiler, config.devServer);
-
 
                     server.listen(port, config.devServer.host, () => {
                         console.log(`Starting server on http://${config.devServer.host}:${port}/`);
@@ -50,9 +58,9 @@ const getStrategy = (config) => {
                 })
                 .catch(err => {
                     console.log(err);
-                })
+                });
         }
-    }
+    };
 };
 
 const compile = (props = {}) => {
@@ -65,12 +73,10 @@ const compile = (props = {}) => {
 
     if (process.env.NODE_ENV === 'production') {
         strategy = 'simple';
-    }
-    else if (process.env.NODE_ENV === 'development') {
+    } else if (process.env.NODE_ENV === 'development') {
         if (itsLibrary) {
             strategy = 'watch-only';
-        }
-        else {
+        } else {
             strategy = 'dev-server';
         }
     }
