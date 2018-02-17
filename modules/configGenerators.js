@@ -47,7 +47,7 @@ function makeBanner(packageJson) {
         banner = banner
             .split('\n')
             .filter(item => item !== '\r' && item !== '\n')
-            .join('');
+            .join('\n');
 
         return banner;
     } else {
@@ -186,6 +186,7 @@ function getModules(props = {}) {
                         env: {
                             production: {
                                 plugins: [
+                                    require.resolve('babel-plugin-transform-es2015-modules-commonjs'),
                                     require.resolve('babel-plugin-transform-react-constant-elements'),
                                     require.resolve('babel-plugin-transform-react-inline-elements'),
                                     require.resolve('babel-plugin-transform-react-pure-class-to-function'),
@@ -195,14 +196,6 @@ function getModules(props = {}) {
                         }
                     }
                 }
-                /*{
-                    loader: 'eslint-loader',
-                    options: {
-                        emitErrors: true,
-                        failOnError: true,
-                        failOnWarning: true
-                    }
-                }*/
             ]
         },
 
