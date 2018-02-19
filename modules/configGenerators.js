@@ -200,8 +200,12 @@ function getModules(props = {}) {
         },
 
         video: {
-            test: /\.mp4$/,
-            loader: 'file'
+            test: /\.(mp4|webm|ogg|mp3)$/,
+            use: [
+                {
+                    loader: require.resolve('file-loader')
+                }
+            ]
         },
 
         images: {
