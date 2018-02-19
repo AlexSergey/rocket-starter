@@ -199,6 +199,11 @@ function getModules(props = {}) {
             ]
         },
 
+        video: {
+            test: /\.mp4$/,
+            loader: 'file'
+        },
+
         images: {
             test: /\.(jpe?g|png|gif)$/i,
             use: [
@@ -213,7 +218,7 @@ function getModules(props = {}) {
         },
 
         fonts: {
-            test: /\.(woff(2)?)(\?[a-z0-9=&.]+)?$/,
+            test: /\.(eot|svg|ttf|woff|woff2)$/,
             use: [
                 {
                     loader: require.resolve('url-loader'),
