@@ -75,7 +75,7 @@ function getDevtool(customSourceMap = 'none') {
 function getOutput(props = {}, version = '') {
     let outputProps = {
         output: {
-            publicPath: '/',
+            publicPath: props.url,
             path: props.path,
             filename: `[name]${version !== '' ? '-' + version : ''}.js`
         }
@@ -215,7 +215,7 @@ function getModules(props = {}) {
                     loader: require.resolve('url-loader'),
                     query: {
                         limit: 10000,
-                        name: 'images/[name].[ext]'
+                        name: 'images/[name][hash].[ext]'
                     }
                 }
             ]
@@ -228,7 +228,7 @@ function getModules(props = {}) {
                     loader: require.resolve('url-loader'),
                     query: {
                         limit: 10000,
-                        name: 'fonts/[name].[ext]'
+                        name: 'fonts/[name][hash].[ext]'
                     }
                 }
             ]

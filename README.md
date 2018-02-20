@@ -56,6 +56,7 @@ compile(customize({
 {
     dist: 'dist',
     src: 'src/index.js',
+    url: '/',
     server: {
         port: 3000,
         host: 'localhost'
@@ -69,6 +70,7 @@ compile(customize({
 {
     dist: 'dist',
     src: 'src/index.js',
+    url: '/',
     server: {
         port: 3000,
         host: 'localhost'

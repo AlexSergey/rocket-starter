@@ -18,7 +18,7 @@ const createConfig = require('./createConfig');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const mixedWithDefault = require('./mixWithDefault');
 
-const build = props => {
+const make = props => {
     props = mixedWithDefault(props);
 
     let isValid = validationProps(props);
@@ -31,6 +31,7 @@ const build = props => {
 
     let output = getOutput(
         {
+            url: props.url,
             path: path.resolve(props.root, props.dist),
             library: props.library
         },
@@ -128,5 +129,5 @@ const build = props => {
 };
 
 module.exports = {
-    build
+    make
 };

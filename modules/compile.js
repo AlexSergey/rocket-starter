@@ -1,4 +1,4 @@
-const { build } = require('./build');
+const { make } = require('./make');
 const { getWebpack } = require('./configGenerators');
 const { dirname, resolve } = require('path');
 const { writeFileSync } = require('fs');
@@ -67,7 +67,7 @@ const compile = (props = {}) => {
     process.env.NODE_ENV = process.env.NODE_ENV || 'development';
     process.env.BABEL_ENV = process.env.NODE_ENV;
 
-    const config = build(props);
+    const config = make(props);
     let strategy = '';
     let itsLibrary = !!config.output.library;
 

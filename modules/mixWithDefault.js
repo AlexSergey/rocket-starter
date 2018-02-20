@@ -18,6 +18,7 @@ module.exports = function(props = {}) {
     newProps.src = props.src || defaultProps.src;
     newProps.styles = props.styles || false;
     newProps.sourcemap = props.sourcemap || defaultProps.sourcemap;
+    newProps.url = props.url || defaultProps.url;
     newProps.global = props.global || {};
     newProps.library = props.library || false;
     newProps.middlewares = props.middlewares;
