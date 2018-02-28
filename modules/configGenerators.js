@@ -2,6 +2,7 @@ const { existsSync, readFileSync } = require('fs');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ReloadHtmlWebpackPlugin = require('reload-html-webpack-plugin');
 const path = require('path');
 const ImageminPlugin = require('imagemin-webpack-plugin').default;
 const CleanWebpackPlugin = require('clean-webpack-plugin');
@@ -282,6 +283,7 @@ function getPlugins(opts) {
                 template: path.resolve(__dirname, '..', './index.ejs')
             }
         ) => new HtmlWebpackPlugin(props),
+        ReloadHtmlWebpackPlugin: () => new ReloadHtmlWebpackPlugin(),
         DefinePlugin: (env = {}) => {
             let opts = Object.assign(
                 {},
