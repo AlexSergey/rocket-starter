@@ -126,6 +126,15 @@ function getModules(props = {}) {
             ]
         },
 
+        shaders: {
+            test: /\.(glsl|vs|fs)$/,
+            use: [
+                {
+                    loader: require.resolve('shader-loader')
+                }
+            ]
+        },
+
         css: extractStyles
             ? {
                   test: /\.css$/,
