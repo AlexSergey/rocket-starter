@@ -108,6 +108,24 @@ function getModules(props = {}) {
             ]
         },
 
+        handlebars: {
+            test: /\.(hbs|handlebars)$/,
+            use: [
+                {
+                    loader: require.resolve('handlebars-loader')
+                }
+            ]
+        },
+
+        jade: {
+            test: /\.(pug|jade)$/,
+            use: [
+                {
+                    loader: require.resolve('pug-loader')
+                }
+            ]
+        },
+
         css: extractStyles
             ? {
                   test: /\.css$/,
