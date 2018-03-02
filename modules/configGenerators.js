@@ -309,7 +309,7 @@ function getModules(props = {}) {
 function getPlugins(opts) {
     let isProduction = process.env.NODE_ENV === 'production';
     let debugMode = !!argv.d;
-    let console = !argv.console;
+    let _console = !argv.console;
 
     let modules = {
         OccurrenceOrderPlugin: () => new webpack.optimize.OccurrenceOrderPlugin(),
@@ -414,7 +414,7 @@ function getPlugins(opts) {
                         },
                         warnings: false,
                         compress: {
-                            drop_console: console
+                            drop_console: _console
                         }
                     }
                 }),
