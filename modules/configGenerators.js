@@ -94,20 +94,17 @@ function getOutput(props = {}, version = '') {
 
 function getModules(props = {}) {
     let extractStyles = props.extractStyles && process.env.NODE_ENV === 'production';
+    const root = path.dirname(require.main.filename);
+
+    const getPostcssConfig = () => {
+        const pth = existsSync(path.resolve(root, './postcss.config.js')) ? path.resolve(root, './postcss.config.js') : path.resolve(__dirname, './postcss.config.js');
+
+        return {
+            path: pth
+        }
+    };
 
     return {
-        html: {
-            test: /\.html$/,
-            use: [
-                {
-                    loader: require.resolve('file-loader'),
-                    query: {
-                        name: '[name].[ext]'
-                    }
-                }
-            ]
-        },
-
         handlebars: {
             test: /\.(hbs|handlebars)$/,
             use: [
@@ -126,6 +123,11 @@ function getModules(props = {}) {
             ]
         },
 
+        nunjucks: {
+            test: /\.(njk|nunjucks)$/,
+            loader: require.resolve('nunjucks-loader')
+        },
+
         shaders: {
             test: /\.(glsl|vs|fs)$/,
             use: [
@@ -140,14 +142,18 @@ function getModules(props = {}) {
                   test: /\.css$/,
                   use: ExtractTextPlugin.extract({
                       fallback: require.resolve('style-loader'),
-                      use: { loader: require.resolve('css-loader'), options: { minimize: true, sourceMap: !!argv.d } }
+                      use: [
+                          { loader: require.resolve('css-loader'), options: { minimize: true, sourceMap: !!argv.d } },
+                          { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(), sourceMap: !!argv.d } }
+                      ]
                   })
               }
             : {
                   test: /\.css$/,
                   loader: [
                       { loader: require.resolve('style-loader'), options: { sourceMap: !!argv.d } },
-                      { loader: require.resolve('css-loader'), options: { sourceMap: !!argv.d } }
+                      { loader: require.resolve('css-loader'), options: { sourceMap: !!argv.d } },
+                      { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(), sourceMap: !!argv.d } }
                   ]
               },
 
@@ -158,6 +164,7 @@ function getModules(props = {}) {
                       fallback: require.resolve('style-loader'),
                       use: [
                           { loader: require.resolve('css-loader'), options: { minimize: true, sourceMap: !!argv.d } },
+                          { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(), sourceMap: !!argv.d } },
                           { loader: require.resolve('sass-loader'), options: { sourceMap: !!argv.d } }
                       ]
                   })
@@ -167,6 +174,7 @@ function getModules(props = {}) {
                   loader: [
                       { loader: require.resolve('style-loader'), options: { sourceMap: !!argv.d } },
                       { loader: require.resolve('css-loader'), options: { sourceMap: !!argv.d } },
+                      { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(), sourceMap: !!argv.d } },
                       { loader: require.resolve('sass-loader'), options: { sourceMap: !!argv.d } }
                   ]
               },
@@ -178,6 +186,7 @@ function getModules(props = {}) {
                       fallback: require.resolve('style-loader'),
                       use: [
                           { loader: require.resolve('css-loader'), options: { minimize: true, sourceMap: !!argv.d } },
+                          { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(), sourceMap: !!argv.d } },
                           { loader: require.resolve('less-loader'), options: { sourceMap: !!argv.d } }
                       ]
                   })
@@ -187,6 +196,7 @@ function getModules(props = {}) {
                   loader: [
                       { loader: require.resolve('style-loader'), options: { sourceMap: !!argv.d } },
                       { loader: require.resolve('css-loader'), options: { sourceMap: !!argv.d } },
+                      { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(), sourceMap: !!argv.d } },
                       { loader: require.resolve('less-loader'), options: { sourceMap: !!argv.d } }
                   ]
               },
