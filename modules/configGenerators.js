@@ -201,6 +201,17 @@ function getModules(props = {}) {
                   ]
               },
 
+        jsPre: {
+            enforce: 'pre',
+            test: /\.(js|jsx)$/,
+            exclude: /node_modules/,
+            use: [
+                {
+                    loader: require.resolve('eslint-loader')
+                }
+            ]
+        },
+
         js: {
             test: /\.(js|jsx)$/,
             exclude: /node_modules/,
@@ -310,8 +321,22 @@ function getPlugins(opts) {
     let isProduction = process.env.NODE_ENV === 'production';
     let debugMode = !!argv.d;
     let _console = !argv.console;
+    const root = path.dirname(require.main.filename);
 
     let modules = {
+        LoadOptions: () => new webpack.LoaderOptionsPlugin({
+            test: /\.(js|jsx)$/,
+            options: {
+                eslint: {
+                    configFile: existsSync(path.resolve(root, 'eslintrc.js')) ? path.resolve(root, 'eslintrc.js') : path.resolve(__dirname, 'eslintrc.js'),
+                    eslintPath: require.resolve('eslint'),
+                    formatter: require(require.resolve('eslint-formatter-pretty')),
+                    ignore: false,
+                    useEslintrc: false,
+                    cache: false,
+                }
+            },
+        }),
         OccurrenceOrderPlugin: () => new webpack.optimize.OccurrenceOrderPlugin(),
         HtmlWebpackPlugin: (
             props = {

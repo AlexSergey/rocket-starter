@@ -1,7 +1,5 @@
 const { make } = require('./make');
 const { getWebpack } = require('./configGenerators');
-const { dirname, resolve } = require('path');
-const { writeFileSync } = require('fs');
 const WebpackDevServer = require('webpack-dev-server');
 const gutil = require('gutil');
 const moment = require('moment');
@@ -14,12 +12,6 @@ const log = (err, stats) => {
     }
     let duration = moment.duration(stats.endTime - stats.startTime, 'milliseconds');
     gutil.log('[COMPILE]', `${duration.minutes()}:${duration.seconds()} minutes`);
-
-    /*if (process.env.NODE_ENV === 'production') {
-        const root = dirname(require.main.filename);
-
-        writeFileSync(`${resolve(root, 'stats.json')}`, JSON.stringify(stats.toJson('normal')));
-    }*/
 };
 
 const getStrategy = config => {
