@@ -7,11 +7,17 @@ const getPort = require('get-port');
 const OpenBrowserPlugin = require('open-browser-webpack-plugin');
 
 const log = (err, stats) => {
-    if (err) {
-        throw new gutil.PluginError('webpack:build', err);
+    if (stats.hasErrors()) {
+        console.log(stats.toString({
+            "errors-only": true,
+            colors: true,
+            children: false
+        }));
     }
-    let duration = moment.duration(stats.endTime - stats.startTime, 'milliseconds');
-    gutil.log('[COMPILE]', `${duration.minutes()}:${duration.seconds()} minutes`);
+    else {
+        let duration = moment.duration(stats.endTime - stats.startTime, 'milliseconds');
+        gutil.log('[COMPILE]', `${duration.minutes()}:${duration.seconds()} minutes`);
+    }
 };
 
 const getStrategy = config => {
@@ -19,16 +25,20 @@ const getStrategy = config => {
     return {
         simple: () => {
             let compiler = webpack(config);
-            compiler.run(log);
+            compiler.run((err, stats) => {
+                log(err, stats);
+
+                process.exit(err ? 1 : 0);
+            });
         },
         'watch-only': () => {
             let compiler = webpack(config);
             compiler.watch(
                 Object.assign(
-                    {
+                    {},
+                    config.devServer.watchOptions, {
                         poll: true
-                    },
-                    config.devServer.watchOptions
+                    }
                 ),
                 log
             );

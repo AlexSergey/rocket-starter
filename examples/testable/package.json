@@ -1,0 +1,13 @@
+{
+  "name": "testable",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "NODE_ENV=development node build",
+    "build": "NODE_ENV=production node build",
+    "test": "NODE_ENV=development node test",
+    "test:watch": "NODE_ENV=development node test --watch"
+  },
+  "devDependencies": {
+    "rocket-tester": "git+https://github.com/AlexSergey/rocket-tester.git"
+  }
+}

@@ -509,3 +509,9 @@ If you don't need to extract styles to css file in production version you can se
   }
   </pre>
 </details>
+
+We can add eslint config. Just add eslintrc.js in your main (project) dir.
+
+We can add postcss config. Just add postcss.config.js  in your main (project) dir.
+
+Add .flowconfig to root folder and that activation flow-type checking

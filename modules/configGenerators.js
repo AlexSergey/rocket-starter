@@ -12,6 +12,7 @@ const moment = require('moment');
 const { argv } = require('yargs');
 const { isArray, isObject } = require('./typeChecker');
 const Collection = require('./Collection');
+const FlowBabelWebpackPlugin = require('flow-babel-webpack-plugin');
 
 function getBuildVersion() {
     if (typeof argv.v === 'boolean') {
@@ -231,7 +232,10 @@ function getModules(props = {}) {
                             require.resolve('babel-preset-stage-0'),
                             require.resolve('babel-preset-react')
                         ],
-                        plugins: [require.resolve('babel-plugin-transform-decorators-legacy')],
+                        plugins: [
+                            require.resolve('babel-plugin-transform-flow-comments'),
+                            require.resolve('babel-plugin-transform-decorators-legacy')
+                        ],
                         env: {
                             production: {
                                 plugins: [
@@ -362,6 +366,10 @@ function getPlugins(opts) {
             });
         }
     };
+
+    if (existsSync(path.resolve(root, '.flowconfig'))) {
+        modules.FlowBabelWebpackPlugin = () => new FlowBabelWebpackPlugin();
+    }
 
     if (!isProduction) {
         Object.assign(modules, {
