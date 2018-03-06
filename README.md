@@ -1,6 +1,21 @@
-# This is experimental!
-
 This is the simplest way to make webpack config with many default settings.
+This config-generator include modules and features:
+
+- webpack 3, webpack dev server
+- babel 6, ES2015+
+- React optimizations
+- Flow
+- Postcss: autoprefixer, mqpacker, lost, instagram filters, autoprefixer, rucksack
+- Copy Webpack Plugin
+- ESLint
+- Templates: HTML/Jade/Handlebars,nunjucks
+- CSS: css/sass/less + postcss
+- Imagemin
+- file import support: markdown, video, audio, fonts, svg, script, shaders etc
+- svg + svgo
+- uglifyjs
+
+See to examples folder
 
 ```jsx
 const { compile, customize } = require('rocket-starter');
@@ -78,8 +93,9 @@ compile(customize({
     // secondary properties
     library: 'test',
     styles: String,
-    html: {
+    html: { // You can also add array for multi-pages support
         title: String,
+        favicon: ...,
         version: Boolean,
         template: String, path to file
     }
@@ -87,13 +103,10 @@ compile(customize({
     global: {
         var: 'var1'
     },
-    copy: {from: ... to: ...} || [] || {files: [], opts: {}},
-    analyzer: true    
+    copy: {from: ... to: ...} || [] || {files: [], opts: {}}
 }
 ```
 "copy" is activate CopyWebpackPlugin and we can use default syntax but we can set files and opts. Opts is second parameter in this plugin.
-
-"analyzer" - activate Webpack Runtime Analyzer in DEVELOPMENT mode
 
 You can use build version set "-v" flag. 
 
@@ -172,7 +185,8 @@ If you don't need to extract styles to css file in production version you can se
                   "test": /\.css$/,
                   "loader": [
                       "style-loader",
-                      "css-loader"
+                      "css-loader",
+                      { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(), sourceMap: !!argv.d } }
                   ]
               },
               {
@@ -180,6 +194,7 @@ If you don't need to extract styles to css file in production version you can se
                   "loader": [
                       "style-loader",
                       "css-loader",
+                      { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(), sourceMap: !!argv.d } },
                       "sass-loader"
                   ]
               },
@@ -188,7 +203,57 @@ If you don't need to extract styles to css file in production version you can se
                   "loader": [
                       "style-loader",
                       "css-loader",
+                      { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(), sourceMap: !!argv.d } },
                       "less-loader"
+                  ]
+              },
+              {
+                test: /\.(glsl|vs|fs)$/,
+                use: [
+                    {
+                        loader: 'shader-loader'
+                    }
+                ]
+              },
+              {
+                test: /\.(njk|nunjucks)$/,
+                loader: 'nunjucks-isomorphic-loader',
+                query: {
+                    root: [root]
+                }
+              },
+              {
+                  test: /\.(hbs|handlebars)$/,
+                  use: [
+                      {
+                          loader: 'handlebars-loader'
+                      }
+                  ]
+              },
+              {
+                  test: /\.(pug|jade)$/,
+                  use: [
+                      {
+                          loader: 'pug-loader'
+                      }
+                  ]
+              },
+              {
+                  enforce: 'pre',
+                  test: /\.(js|jsx)$/,
+                  exclude: /node_modules/,
+                  use: [
+                      {
+                          loader: 'eslint-loader'
+                      }
+                  ]
+              },
+              {
+                  test: /\.(mp4|webm|ogg|mp3)$/,
+                  use: [
+                      {
+                          loader: require.resolve('file-loader')
+                      }
                   ]
               },
               {
@@ -210,15 +275,17 @@ If you don't need to extract styles to css file in production version you can se
                                   require.resolve('babel-preset-react')
                               ],
                               "plugins": [
+                                  require.resolve('babel-plugin-transform-flow-comments'),
                                   require.resolve('babel-plugin-transform-decorators-legacy')
                               ],
                               "env": {
                                   "production": {
                                       "plugins": [
+                                          require.resolve('babel-plugin-transform-es2015-modules-commonjs'),
                                           require.resolve('babel-plugin-transform-react-constant-elements'),
                                           require.resolve('babel-plugin-transform-react-inline-elements'),
                                           require.resolve('babel-plugin-transform-react-pure-class-to-function'),
-                                          require.resolve('babel-plugin-transform-react-remove-prop-types'),
+                                          require.resolve('babel-plugin-transform-react-remove-prop-types')
                                       ]
                                   }
                               }
@@ -233,8 +300,16 @@ If you don't need to extract styles to css file in production version you can se
                   ]
               },
               {
-                  "test": /\.(woff(2)?)(\?[a-z0-9=&.]+)?$/,
-                  "loader": "url-loader?limit=10000&name=fonts/[name].[ext]"
+                  test: /\.(eot|svg|ttf|woff|woff2)$/,
+                  use: [
+                      {
+                          loader: require.resolve('url-loader'),
+                          query: {
+                              limit: 10000,
+                              name: 'fonts/[name][hash].[ext]'
+                          }
+                      }
+                  ]
               },
               {
                   "test": /\.md$/,
@@ -245,27 +320,15 @@ If you don't need to extract styles to css file in production version you can se
                   "loader": "json-loader"
               },
               {
-                  "test": /\.svg$/,
-                  "use": [
+                  test: /\.svg$/,
+                  use: [
                       {
-                          "loader": "svg-inline-loader"
+                          loader: require.resolve('svg-inline-loader')
                       },
                       {
-                          "loader": "svgo-loader",
-                          "options": {
-                              "plugins": [
-                                  {
-                                      "removeTitle": true
-                                  },
-                                  {
-                                      "convertColors": {
-                                          "shorthex": false
-                                      }
-                                  },
-                                  {
-                                      "convertPathData": false
-                                  }
-                              ]
+                          loader: require.resolve('svgo-loader'),
+                          options: {
+                              plugins: [{ removeTitle: true }, { convertColors: { shorthex: false } }, { convertPathData: false }]
                           }
                       }
                   ]
@@ -275,6 +338,8 @@ If you don't need to extract styles to css file in production version you can se
       "plugins": [
           new webpack.optimize.OccurrenceOrderPlugin(),
           new HtmlWebpackPlugin(props.html),
+          new FlowBabelWebpackPlugin(),
+          new ReloadHtmlWebpackPlugin(),
           new webpack.DefinePlugin(Object.assign({
               'process.env': {
                   NODE_ENV: JSON.stringify(process.env.NODE_ENV)
@@ -350,123 +415,168 @@ If you don't need to extract styles to css file in production version you can se
       },
       "module": {
           "rules": [
-              {
-                  "test": /\.html$/,
-                  "use": "file-loader?name=[name].[ext]"
-              },
-              {
-                  "test": /\.css$/,
-                  "use": [
-                      ExtractTextPlugin.extract({
-                          fallback: "style-loader",
-                          use: { loader: 'css-loader', options: { minimize: true }}
-                      })
-                  ]
-              },
-              {
-                  "test": /\.scss/,
-                  "use": ExtractTextPlugin.extract({
-                     fallback: "style-loader",
-                     use: [
-                         { loader: 'css-loader', options: { minimize: true }},
-                         'sass-loader'
-                     ]
-                 })
-              },
-              {
-                  "test": /\.less/,
-                  "use":  ExtractTextPlugin.extract({
-                     fallback: "style-loader",
-                     use: [
-                         { loader: 'css-loader', options: { minimize: true }},
-                         'less-loader'
-                     ]
-                 })
-              },
-              {
-                  "test": /\.(js|jsx)$/,
-                  "exclude": /node_modules/,
-                  "use": [
+                {
+                    "test": /\.html$/,
+                    "use": "file-loader?name=[name].[ext]"
+                },
+                {
+                    "test": /\.css$/,
+                    "loader": [
+                        "style-loader",
+                        "css-loader",
+                        { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(), sourceMap: !!argv.d } }
+                    ]
+                },
+                {
+                    "test": /\.scss/,
+                    "loader": [
+                        "style-loader",
+                        "css-loader",
+                        { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(), sourceMap: !!argv.d } },
+                        "sass-loader"
+                    ]
+                },
+                {
+                    "test": /\.less/,
+                    "loader": [
+                        "style-loader",
+                        "css-loader",
+                        { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(), sourceMap: !!argv.d } },
+                        "less-loader"
+                    ]
+                },
+                {
+                  test: /\.(glsl|vs|fs)$/,
+                  use: [
                       {
-                          "loader": "babel-loader",
-                          "query": {
-                              "cacheDirectory": true,
-                              "babelrc": false,
-                              "presets": [
-                                  [
-                                      require.resolve('babel-preset-es2015'), {
-                                          modules: false
-                                      }
-                                  ],
-                                  require.resolve('babel-preset-stage-0'),
-                                  require.resolve('babel-preset-react')
-                              ],
-                              "plugins": [
-                                  require.resolve('babel-plugin-transform-decorators-legacy')
-                              ],
-                              "env": {
-                                  "production": {
-                                      "plugins": [
-                                          require.resolve('babel-plugin-transform-react-constant-elements'),
-                                          require.resolve('babel-plugin-transform-react-inline-elements'),
-                                          require.resolve('babel-plugin-transform-react-pure-class-to-function'),
-                                          require.resolve('babel-plugin-transform-react-remove-prop-types'),
-                                      ]
-                                  }
-                              }
-                          }
+                          loader: 'shader-loader'
                       }
                   ]
-              },
-              {
-                  "test": /\.(jpe?g|png|gif)$/i,
-                  "loaders": [
-                      "url-loader?limit=10000&name=images/[name].[ext]"
-                  ]
-              },
-              {
-                  "test": /\.(woff(2)?)(\?[a-z0-9=&.]+)?$/,
-                  "loader": "url-loader?limit=10000&name=fonts/[name].[ext]"
-              },
-              {
-                  "test": /\.md$/,
-                  "loader": "html-loader!markdown-loader"
-              },
-              {
-                  "test": /\.json/,
-                  "loader": "json-loader"
-              },
-              {
-                  "test": /\.svg$/,
-                  "use": [
-                      {
-                          "loader": "svg-inline-loader"
-                      },
-                      {
-                          "loader": "svgo-loader",
-                          "options": {
-                              "plugins": [
-                                  {
-                                      "removeTitle": true
-                                  },
-                                  {
-                                      "convertColors": {
-                                          "shorthex": false
-                                      }
-                                  },
-                                  {
-                                      "convertPathData": false
-                                  }
-                              ]
-                          }
-                      }
-                  ]
-              }
+                },
+                {
+                  test: /\.(njk|nunjucks)$/,
+                  loader: 'nunjucks-isomorphic-loader',
+                  query: {
+                      root: [root]
+                  }
+                },
+                {
+                    test: /\.(hbs|handlebars)$/,
+                    use: [
+                        {
+                            loader: 'handlebars-loader'
+                        }
+                    ]
+                },
+                {
+                    test: /\.(pug|jade)$/,
+                    use: [
+                        {
+                            loader: 'pug-loader'
+                        }
+                    ]
+                },
+                {
+                    enforce: 'pre',
+                    test: /\.(js|jsx)$/,
+                    exclude: /node_modules/,
+                    use: [
+                        {
+                            loader: 'eslint-loader'
+                        }
+                    ]
+                },
+                {
+                    test: /\.(mp4|webm|ogg|mp3)$/,
+                    use: [
+                        {
+                            loader: require.resolve('file-loader')
+                        }
+                    ]
+                },
+                {
+                    "test": /\.(js|jsx)$/,
+                    "exclude": /node_modules/,
+                    "use": [
+                        {
+                            "loader": "babel-loader",
+                            "query": {
+                                "cacheDirectory": true,
+                                "babelrc": false,
+                                "presets": [
+                                    [
+                                        require.resolve('babel-preset-es2015'), {
+                                            modules: false
+                                        }
+                                    ],
+                                    require.resolve('babel-preset-stage-0'),
+                                    require.resolve('babel-preset-react')
+                                ],
+                                "plugins": [
+                                    require.resolve('babel-plugin-transform-flow-comments'),
+                                    require.resolve('babel-plugin-transform-decorators-legacy')
+                                ],
+                                "env": {
+                                    "production": {
+                                        "plugins": [
+                                            require.resolve('babel-plugin-transform-es2015-modules-commonjs'),
+                                            require.resolve('babel-plugin-transform-react-constant-elements'),
+                                            require.resolve('babel-plugin-transform-react-inline-elements'),
+                                            require.resolve('babel-plugin-transform-react-pure-class-to-function'),
+                                            require.resolve('babel-plugin-transform-react-remove-prop-types')
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "test": /\.(jpe?g|png|gif)$/i,
+                    "loaders": [
+                        "url-loader?limit=10000&name=images/[name].[ext]"
+                    ]
+                },
+                {
+                    test: /\.(eot|svg|ttf|woff|woff2)$/,
+                    use: [
+                        {
+                            loader: require.resolve('url-loader'),
+                            query: {
+                                limit: 10000,
+                                name: 'fonts/[name][hash].[ext]'
+                            }
+                        }
+                    ]
+                },
+                {
+                    "test": /\.md$/,
+                    "loader": "html-loader!markdown-loader"
+                },
+                {
+                    "test": /\.json/,
+                    "loader": "json-loader"
+                },
+                {
+                    test: /\.svg$/,
+                    use: [
+                        {
+                            loader: require.resolve('svg-inline-loader')
+                        },
+                        {
+                            loader: require.resolve('svgo-loader'),
+                            options: {
+                                plugins: [{ removeTitle: true }, { convertColors: { shorthex: false } }, { convertPathData: false }]
+                            }
+                        }
+                    ]
+                }
           ]
       },
       "plugins": [
           new webpack.optimize.OccurrenceOrderPlugin(),
           new HtmlWebpackPlugin(props.html),
+          new FlowBabelWebpackPlugin(),
           new webpack.DefinePlugin(Object.assign({
               'process.env': {
                   NODE_ENV: JSON.stringify(process.env.NODE_ENV)

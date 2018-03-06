@@ -11,6 +11,9 @@ compile({
         },
         {
             template:  resolve(__dirname, 'src/handlebars_test.hbs')
+        },
+        {
+            template:  resolve(__dirname, 'src/nunjucks_test.njk')
         }
     ]
 });

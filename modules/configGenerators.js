@@ -126,7 +126,10 @@ function getModules(props = {}) {
 
         nunjucks: {
             test: /\.(njk|nunjucks)$/,
-            loader: require.resolve('nunjucks-loader')
+            loader: require.resolve('nunjucks-isomorphic-loader'),
+            query: {
+                root: [root]
+            }
         },
 
         shaders: {

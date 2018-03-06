@@ -10,8 +10,9 @@ const defaultProps = {
     Other Props:
     * library: 'test',
     * styles: String,
-    * html: {
+    * html: { // You can also add array for multi-pages support
     *     title: String,
+    *     favicon: ...,
     *     version: Boolean,
     *     template: String, path to file
     * }
@@ -19,8 +20,7 @@ const defaultProps = {
     * global: {
     *     key: value
     * },
-    * copy: {from: ... to: ...} || [] || {files: [], opts: {}},
-    * analyzer: true
+    * copy: {from: ... to: ...} || [] || {files: [], opts: {}}
     * */
 };
 

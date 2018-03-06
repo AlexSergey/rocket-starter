@@ -71,7 +71,6 @@ module.exports = function(props = {}) {
         return page;
     });
 
-    newProps.analyzer = props.analyzer || false;
     newProps.copy = props.copy || false;
     newProps.server = Object.assign({}, defaultProps.server, props.server);
 

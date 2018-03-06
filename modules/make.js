@@ -77,8 +77,7 @@ const make = props => {
 
     let plugins = makePlugins(
         getPlugins({
-            copy: props.copy,
-            analyzer: props.analyzer
+            copy: props.copy
         }),
         Object.assign(
             {
