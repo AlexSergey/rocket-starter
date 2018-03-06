@@ -278,7 +278,7 @@ function getModules(props = {}) {
         },
 
         fonts: {
-            test: /\.(eot|svg|ttf|woff|woff2)$/,
+            test: /\.(eot|ttf|woff|woff2)$/,
             use: [
                 {
                     loader: require.resolve('url-loader'),
