@@ -4,7 +4,7 @@
 const { existsSync } = require('fs');
 let defaultProps = require('../defaultProps');
 const path = require('path');
-const { isString, isBoolean } = require('./typeChecker');
+const { isString, isBoolean, isArray } = require('./typeChecker');
 const { getTitle, getBuildVersion, makeBanner } = require('./configGenerators');
 
 module.exports = function(props = {}) {
@@ -40,13 +40,37 @@ module.exports = function(props = {}) {
     if (version) {
         newProps.build_version = version;
     }
+    newProps.html = {
+        pages: []
+    };
 
-    newProps.html = {};
-    newProps.html.title = (props.html && props.html.title) || getTitle(packageJson);
-    if (version) {
-        newProps.html.version = version;
+    if (props.html && isArray(props.html)) {
+        newProps.html.pages = props.html;
     }
-    newProps.html.template = (props.html && props.html.template) || path.resolve(__dirname, '..', './index.ejs');
+    else {
+        newProps.html.pages = [
+            {
+                title: (props.html && props.html.title) || getTitle(packageJson),
+                favicon: (props.html && props.html.favicon) ? props.html.favicon : null,
+                template: (props.html && props.html.template) || path.resolve(__dirname, '..', './index.ejs')
+
+            }
+        ];
+    }
+    newProps.html.pages = newProps.html.pages.map(page => {
+        if (version) {
+            page.version = version;
+        }
+        if (!page.template) {
+            page.template = path.resolve(__dirname, '..', './index.ejs');
+        }
+        if (!page.filename) {
+            page.filename = page.template.slice(page.template.lastIndexOf('/') + 1, page.template.lastIndexOf('.'));
+            page.filename += '.html';
+        }
+        return page;
+    });
+
     newProps.analyzer = props.analyzer || false;
     newProps.copy = props.copy || false;
     newProps.server = Object.assign({}, defaultProps.server, props.server);

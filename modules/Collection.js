@@ -5,11 +5,22 @@ class Collection {
     constructor(opt) {
         this._data = opt.data;
         this._props = opt.props;
+        this.__tempData = {};
 
         this.dict = Object.keys(this._data)
             .reduce((dict, plName) => {
                 if (isFunction(this._data[plName])) {
-                    dict[plName] = this._data[plName](this._props[plName]);
+                    let d = this._data[plName](this._props[plName]);
+
+                    if (isArray(d)) {
+                        d.forEach((_d, index) => {
+                            this.__tempData[`${plName}${index}`] = _d;
+                        });
+                    }
+                    else {
+                        dict[plName] = d;
+                    }
+
                 }
                 else if (isObject(this._data[plName])) {
                     dict[plName] = deepExtend(this._data[plName], this._props[plName]);
@@ -17,6 +28,11 @@ class Collection {
                 return dict;
             }, {});
 
+        for (let key in this.__tempData) {
+            if (this.__tempData[key]) {
+                this.dict[key] = this.__tempData[key];
+            }
+        }
     }
 
     get(name) {

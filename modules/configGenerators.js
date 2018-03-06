@@ -323,6 +323,7 @@ function getModules(props = {}) {
 
 function getPlugins(opts) {
     let isProduction = process.env.NODE_ENV === 'production';
+    let isDevelopment = process.env.NODE_ENV === 'development';
     let debugMode = !!argv.d;
     let _console = !argv.console;
     const root = path.dirname(require.main.filename);
@@ -342,14 +343,7 @@ function getPlugins(opts) {
             },
         }),
         OccurrenceOrderPlugin: () => new webpack.optimize.OccurrenceOrderPlugin(),
-        HtmlWebpackPlugin: (
-            props = {
-                title: 'app',
-                version: 1,
-                template: path.resolve(__dirname, '..', './index.ejs')
-            }
-        ) => new HtmlWebpackPlugin(props),
-        ReloadHtmlWebpackPlugin: () => new ReloadHtmlWebpackPlugin(),
+        HtmlWebpackPlugin: props => props.pages.map(page => new HtmlWebpackPlugin(page)),
         DefinePlugin: (env = {}) => {
             let opts = Object.assign(
                 {},
@@ -366,6 +360,10 @@ function getPlugins(opts) {
             });
         }
     };
+
+    if (isDevelopment) {
+        modules.ReloadHtmlWebpackPlugin = () => new ReloadHtmlWebpackPlugin();
+    }
 
     if (existsSync(path.resolve(root, '.flowconfig'))) {
         modules.FlowBabelWebpackPlugin = () => new FlowBabelWebpackPlugin();
