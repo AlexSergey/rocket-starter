@@ -30,7 +30,7 @@ function getWebpack() {
 }
 
 function getTitle(packageJson) {
-    return `${packageJson.name} ${packageJson.version}`;
+    return `${packageJson.name.split('_').join(' ')}`;
 }
 
 function makeBanner(packageJson) {
