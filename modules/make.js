@@ -76,9 +76,7 @@ const make = props => {
     }
 
     let plugins = makePlugins(
-        getPlugins({
-            copy: props.copy
-        }),
+        getPlugins(props),
         Object.assign(
             {
                 CleanWebpackPlugin: {

@@ -24,7 +24,11 @@ module.exports = function(props = {}) {
     newProps.middlewares = props.middlewares;
 
     let banner = makeBanner(packageJson, props.root);
-
+    if (props.cache) {
+        if (isString(props.cache)) {
+            newProps.cache = props.cache;
+        }
+    }
     if (props.banner) {
         if (isString(props.banner)) {
             banner = props.banner;

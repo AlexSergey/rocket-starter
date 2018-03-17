@@ -13,7 +13,8 @@ This config-generator include modules and features:
 - Imagemin
 - file import support: markdown, video, audio, fonts, svg, script, shaders etc
 - svg + svgo
-- uglifyjs
+- parallel uglifyjs
+- Hard Source Plugin (in production mode)
 
 See to examples folder
 
@@ -91,6 +92,7 @@ compile(customize({
         host: 'localhost'
     }
     // secondary properties
+    cache: 'path to folder',
     library: 'test',
     styles: String,
     html: { // You can also add array for multi-pages support
@@ -601,7 +603,8 @@ If you don't need to extract styles to css file in production version you can se
               plugins: []
           }),
           new CleanWebpackPlugin(props),
-          new UglifyJSPlugin({
+          new HardSourceWebpackPlugin(),
+          new ParallelUglifyJSPlugin({
               sourceMap: false,
               uglifyOptions: {
                   ie8: false,

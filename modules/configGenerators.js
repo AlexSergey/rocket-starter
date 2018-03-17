@@ -6,13 +6,14 @@ const ReloadHtmlWebpackPlugin = require('./reloadHTML');
 const path = require('path');
 const ImageminPlugin = require('imagemin-webpack-plugin').default;
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const moment = require('moment');
 const { argv } = require('yargs');
 const { isArray, isObject } = require('./typeChecker');
 const Collection = require('./Collection');
 const FlowBabelWebpackPlugin = require('flow-babel-webpack-plugin');
+const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 function getBuildVersion() {
     if (typeof argv.v === 'boolean') {
@@ -403,6 +404,9 @@ function getPlugins(opts) {
 
     if (isProduction) {
         Object.assign(modules, {
+            HardSourceWebpackPlugin: () => new HardSourceWebpackPlugin(opts.cache ? {
+                cacheDirectory: `${path.join(opts.cache, 'hard-source')}/[confighash]`
+            } : {}),
             ModuleConcatenationPlugin: (props = {}) => new webpack.optimize.ModuleConcatenationPlugin(),
             ExtractTextPlugin: (props = {}) => {
                 let addVersion = !!argv.v;
@@ -436,12 +440,12 @@ function getPlugins(opts) {
                 }),
             CleanWebpackPlugin: (props = {}) => new CleanWebpackPlugin([props.path || './dist'], { root: props.root || __dirname }),
 
-            UglifyJSPlugin: (props = {}) =>
-                new UglifyJSPlugin({
+            ParallelUglifyPlugin: (props = {}) =>
+                new ParallelUglifyPlugin({
+                    cacheDir: opts.cache ? path.join(opts.cache, 'parallel-uglify') : path.join(root, 'node_modules', '.cache', 'parallel-uglify'),
                     sourceMap: debugMode,
-                    uglifyOptions: {
+                    uglifyJS: {
                         ie8: false,
-                        ecma: 5,
                         output: {
                             comments: false,
                             beautify: false
