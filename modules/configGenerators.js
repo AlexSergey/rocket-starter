@@ -14,6 +14,7 @@ const { isArray, isObject } = require('./typeChecker');
 const Collection = require('./Collection');
 const FlowBabelWebpackPlugin = require('flow-babel-webpack-plugin');
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
+const WebpackBar = require('webpackbar');
 
 function getBuildVersion() {
     if (typeof argv.v === 'boolean') {
@@ -346,6 +347,7 @@ function getPlugins(opts) {
                 }
             },
         }),
+        WebpackBar: () => new WebpackBar(),
         OccurrenceOrderPlugin: () => new webpack.optimize.OccurrenceOrderPlugin(),
         HtmlWebpackPlugin: props => props.pages.map(page => new HtmlWebpackPlugin(page)),
         DefinePlugin: (env = {}) => {

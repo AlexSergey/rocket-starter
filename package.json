@@ -78,6 +78,7 @@
     "webpack": "3.11.0",
     "webpack-dev-server": "2.11.2",
     "webpack-parallel-uglify-plugin": "1.1.0",
+    "webpackbar": "2.6.1",
     "yargs": "11.0.0"
   }
 }
