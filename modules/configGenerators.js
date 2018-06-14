@@ -494,6 +494,7 @@ function getDevServer(props = {}) {
                 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
                 'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization'
             },
+            disableHostCheck: true,
             port: props.port || 3000,
             noInfo: true,
             quiet: false,
