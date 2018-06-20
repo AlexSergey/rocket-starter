@@ -1,3 +1,6 @@
 let { compile } = require('../../index');
 
-compile();
+compile({
+    banner: true,
+    styles: 'style.css'
+});

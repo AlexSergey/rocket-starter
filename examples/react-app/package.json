@@ -6,7 +6,8 @@
     "build": "NODE_ENV=production node build"
   },
   "dependencies": {
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0"
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-scripts": "1.1.4"
   }
 }

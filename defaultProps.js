@@ -2,12 +2,15 @@ const defaultProps = {
     dist: 'dist',
     src: 'src/index.js',
     url: '/',
+    debug: false,
     server: {
+        browserSync: false,
         port: 3000,
         host: 'localhost'
     }
     /*
     Other Props:
+    * version: true,
     * library: 'test',
     * styles: String,
     * html: { // You can also add array for multi-pages support
