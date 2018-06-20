@@ -104,7 +104,9 @@ function getModules(conf = {}, mode, root) {
             exclude: /(node_modules|bower_components)/,
             use: {
                 loader: require.resolve('babel-loader'),
-                options: {
+                query: {
+                    cacheDirectory: true,
+                    babelrc: false,
                     presets: [
                         [require.resolve('babel-preset-env'), {
                             targets: {
