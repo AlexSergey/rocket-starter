@@ -11,6 +11,8 @@ const ImageminPlugin = require('imagemin-webpack-plugin').default;
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const StatsWriterPlugin = require("webpack-stats-plugin").StatsWriterPlugin;
+const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 
 function getTitle(packageJson) {
     return `${packageJson.name.split('_').join(' ')}`;
@@ -18,6 +20,14 @@ function getTitle(packageJson) {
 
 const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
     let plugins = {};
+
+    if (mode === 'production') {
+        plugins.StatsWriterPlugin = new StatsWriterPlugin({
+            fields: null,
+            stats: {chunkModules: true}
+        })
+    }
+
     let banner = makeBanner(packageJson, root);
 
     if (conf.banner) {
@@ -91,8 +101,6 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
         },
     });
 
-    plugins.OccurrenceOrderPlugin = new webpack.optimize.OccurrenceOrderPlugin();
-
     let env = conf.global || {};
     let definePluginOpts = Object.assign(
         {},
@@ -129,10 +137,6 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
         if (_prop) {
             plugins.CopyWebpackPlugin = new CopyWebpackPlugin(_prop, _opts);
         }
-    }
-
-    if (mode === 'development') {
-        plugins.HotModuleReplacementPlugin = new webpack.HotModuleReplacementPlugin();
     }
 
     if (mode === 'production') {
@@ -174,10 +178,14 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
 
         plugins.CleanWebpackPlugin = new CleanWebpackPlugin([conf.dist || './dist'], { root: root || __dirname });
 
+        plugins.OccurrenceOrderPlugin = new webpack.optimize.OccurrenceOrderPlugin();
+
         plugins.BannerPlugin = new webpack.BannerPlugin({
             banner: !banner ? '' : banner,
             entryOnly: true
         });
+
+        plugins.LodashModuleReplacementPlugin = new LodashModuleReplacementPlugin();
     }
 
     return plugins;

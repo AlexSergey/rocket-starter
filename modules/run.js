@@ -1,10 +1,10 @@
 const log = require('../utils/log');
-const WebpackDevServer = require('webpack-dev-server');
-const OpenBrowserPlugin = require('open-browser-webpack-plugin');
-const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 const historyApiFallback = require('connect-history-api-fallback');
+const serve = require('webpack-serve');
+const convert = require('koa-connect');
+const webpackServeWaitpage = require('webpack-serve-waitpage');
 
-const getStrategy = (webpack, webpackConfig) => {
+const getStrategy = (webpack, webpackConfig, conf) => {
     return {
         simple: () => {
             let compiler = webpack(webpackConfig);
@@ -27,34 +27,26 @@ const getStrategy = (webpack, webpackConfig) => {
             );
         },
         'dev-server': () => {
-            webpackConfig.plugins.push(new OpenBrowserPlugin({ url: `http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}` }));
             let compiler = webpack(webpackConfig);
-            let server = new WebpackDevServer(compiler, webpackConfig.devServer);
+            serve({
+                watchOptions: webpackConfig.devServer.watchOptions,
+                add: (app, middleware, options) => {
+                    app.use(webpackServeWaitpage(options));
+                    app.use(convert(historyApiFallback()));
+                    middleware.webpack();
+                    middleware.content();
 
-            server.listen(webpackConfig.devServer.port, webpackConfig.devServer.host, () => {
-                console.log(`Starting server on http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}/`);
-            });
-        },
-        'dev-server-with-browser-sync': () => {
-            webpackConfig.plugins.push(new OpenBrowserPlugin({ url: `http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}` }));
-            webpackConfig.plugins.push(
-                new BrowserSyncPlugin({
-                        host: webpackConfig.devServer.host,
-                        port: webpackConfig.devServer.port,
-                        server: {
-                            baseDir: [webpackConfig.output.path],
-                            middleware: [ historyApiFallback() ]
-                        }
-                    },
-                    {
-                        reload: false
-                    })
-            );
-            let compiler = webpack(webpackConfig);
-            let server = new WebpackDevServer(compiler, webpackConfig.devServer);
+                },
+                dev: {
+                    publicPath: webpackConfig.output.publicPath,
+                    writeToDisk: conf.debug
+                },
+                open: true,
+                host: webpackConfig.devServer.host,
+                port: webpackConfig.devServer.port,
+                hot: webpackConfig.devServer.hot,
+                compiler,
 
-            server.listen(webpackConfig.devServer.port, webpackConfig.devServer.host, () => {
-                console.log(`Starting server on http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}/`);
             });
         }
     };
@@ -73,9 +65,6 @@ const run = (webpackConfig, mode, webpack, conf) => {
         }
         else {
             strategy = 'dev-server';
-            if (conf.server.browserSync) {
-                strategy = 'dev-server-with-browser-sync';
-            }
         }
     }
     else {

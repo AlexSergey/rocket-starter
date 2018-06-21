@@ -121,6 +121,7 @@ function getModules(conf = {}, mode, root) {
                         require.resolve('babel-preset-react')
                     ],
                     plugins: [
+                        require.resolve('babel-plugin-lodash'),
                         require.resolve('babel-plugin-transform-flow-comments'),
                         require.resolve('babel-plugin-transform-decorators-legacy'),
                         require.resolve('babel-plugin-transform-class-properties'),

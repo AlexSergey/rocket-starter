@@ -1,7 +1,7 @@
 This is the simplest way to make webpack config with many default settings.
 This config-generator include modules and features:
 
-- webpack 4+, webpack dev server
+- webpack 4+, webpack-serve
 - babel 6, Babel-preset-env (> 5%)
 - React optimizations
 - Flow
@@ -15,6 +15,7 @@ This config-generator include modules and features:
 - svg + svgo
 - uglifyjs (+parallel)
 - Hard Source Plugin (in production mode)
+- Generate stats.json (in production mode)
 
 See to examples folder
 
@@ -57,7 +58,6 @@ compile({
     url: '/',
     debug: false,
     server: {
-        browserSync: false,
         port: 3000,
         host: 'localhost'
     }
@@ -73,7 +73,6 @@ compile({
     url: '/',
     debug: false, // if you need to debug in production
     server: {
-        browserSync: false,
         port: 3000,
         host: 'localhost'
     }
