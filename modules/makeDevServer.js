@@ -13,7 +13,7 @@ const makeDevServer = (conf, root) => {
         noInfo: true,
         quiet: false,
         lazy: false,
-        hot: false,
+        hot: true,
         inline: true,
         stats: 'minimal',
         overlay: {

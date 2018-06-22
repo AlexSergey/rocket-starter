@@ -1,8 +1,6 @@
 const log = require('../utils/log');
-const historyApiFallback = require('connect-history-api-fallback');
-const serve = require('webpack-serve');
-const convert = require('koa-connect');
-const webpackServeWaitpage = require('webpack-serve-waitpage');
+const WebpackDevServer = require('webpack-dev-server');
+const OpenBrowserPlugin = require('open-browser-webpack-plugin');
 
 const getStrategy = (webpack, webpackConfig, conf) => {
     return {
@@ -27,26 +25,13 @@ const getStrategy = (webpack, webpackConfig, conf) => {
             );
         },
         'dev-server': () => {
+            webpackConfig.plugins.push(new OpenBrowserPlugin({ url: `http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}` }));
+
             let compiler = webpack(webpackConfig);
-            serve({
-                watchOptions: webpackConfig.devServer.watchOptions,
-                add: (app, middleware, options) => {
-                    app.use(webpackServeWaitpage(options));
-                    app.use(convert(historyApiFallback()));
-                    middleware.webpack();
-                    middleware.content();
+            let server = new WebpackDevServer(compiler, webpackConfig.devServer);
 
-                },
-                dev: {
-                    publicPath: webpackConfig.output.publicPath,
-                    writeToDisk: conf.debug
-                },
-                open: true,
-                host: webpackConfig.devServer.host,
-                port: webpackConfig.devServer.port,
-                hot: webpackConfig.devServer.hot,
-                compiler,
-
+            server.listen(webpackConfig.devServer.port, webpackConfig.devServer.host, () => {
+                console.log(`Starting server on http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}/`);
             });
         }
     };

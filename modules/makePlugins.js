@@ -27,6 +27,9 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
             stats: {chunkModules: true}
         })
     }
+    else {
+        plugins.HotModuleReplacementPlugin = new webpack.HotModuleReplacementPlugin();
+    }
 
     let banner = makeBanner(packageJson, root);
 
