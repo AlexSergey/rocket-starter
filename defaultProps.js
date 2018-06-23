@@ -3,6 +3,7 @@ const defaultProps = {
     src: 'src/index.js',
     url: '/',
     debug: false,
+    stats: false,
     server: {
         port: 3000,
         host: 'localhost'

@@ -22,10 +22,12 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
     let plugins = {};
 
     if (mode === 'production') {
-        plugins.StatsWriterPlugin = new StatsWriterPlugin({
-            fields: null,
-            stats: {chunkModules: true}
-        })
+        if (conf.stats) {
+            plugins.StatsWriterPlugin = new StatsWriterPlugin({
+                fields: null,
+                stats: {chunkModules: true}
+            });
+        }
     }
     else {
         plugins.HotModuleReplacementPlugin = new webpack.HotModuleReplacementPlugin();
