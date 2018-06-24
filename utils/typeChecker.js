@@ -6,6 +6,8 @@ const isArray = arr => Array.isArray(arr);
 
 const isString = str => typeof str === 'string';
 
+const isNumber = num => typeof num === 'number';
+
 const isBoolean = bool => typeof bool === 'boolean';
 
 const isUndefined = und => typeof und === 'undefined';
@@ -16,5 +18,6 @@ module.exports = {
     isArray,
     isString,
     isBoolean,
-    isUndefined
+    isUndefined,
+    isNumber
 };

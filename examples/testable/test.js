@@ -1,6 +1,6 @@
 const config = require('./config');
 const { make, getArgs } = require('../../index');
-const tester = require('../../../rocket-tester');
+const tester = require('rocket-tester');
 const { join } = require('path');
 
 (async() => {

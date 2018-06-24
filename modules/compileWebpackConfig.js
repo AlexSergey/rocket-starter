@@ -10,9 +10,9 @@ const compileWebpackConfig = (finalConfig, conf, mode, root, modules, plugins) =
         webpackConfig[p] = finalConfig[p];
     });
 
-    webpackConfig.optimization = {};
-
     if (mode === 'production') {
+        webpackConfig.optimization = {};
+
         webpackConfig.optimization.minimizer = [
             new UglifyJsPlugin({
                 cache: conf.cache ? path.join(conf.cache, 'parallel-uglify') : path.join(root, 'node_modules', '.cache', 'parallel-uglify'),

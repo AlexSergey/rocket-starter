@@ -5,6 +5,7 @@ const defaultProps = {
     debug: false,
     stats: false,
     server: {
+        browserSyncPort: false,
         port: 3000,
         host: 'localhost'
     }

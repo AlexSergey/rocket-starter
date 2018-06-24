@@ -49,6 +49,7 @@ const compile = async (conf = {}, post) => {
     let mode = makeMode();
     const root = path.dirname(require.main.filename);
     conf = await mergeConfWithDefault(conf, mode);
+    conf.progress = true;
     const webpackConfig = await make(conf, post);
     run(webpackConfig, mode, webpack, conf);
 };

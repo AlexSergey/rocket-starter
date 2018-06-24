@@ -1,7 +1,7 @@
 const { existsSync } = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Collection = require('../utils/Collection');
-const { isString, isBoolean, isArray, isObject } = require('../utils/typeChecker');
+const { isString, isBoolean, isArray, isObject, isNumber } = require('../utils/typeChecker');
 const path = require('path');
 const makeBanner = require('./makeBanner');
 const ReloadHtmlWebpackPlugin = require('../utils/reloadHTML');
@@ -13,6 +13,7 @@ const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const StatsWriterPlugin = require("webpack-stats-plugin").StatsWriterPlugin;
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
+const WebpackBar = require('webpackbar');
 
 function getTitle(packageJson) {
     return `${packageJson.name.split('_').join(' ')}`;
@@ -20,6 +21,10 @@ function getTitle(packageJson) {
 
 const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
     let plugins = {};
+
+    if (conf.progress) {
+        plugins.WebpackBar = new WebpackBar();
+    }
 
     if (mode === 'production') {
         if (conf.stats) {
@@ -61,6 +66,7 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
             pages = [
                 {
                     title: (conf.html && conf.html.title) || getTitle(packageJson),
+                    code: (conf.html && conf.html.code) ? conf.html.code : null,
                     favicon: (conf.html && conf.html.favicon) ? conf.html.favicon : null,
                     template: (conf.html && conf.html.template) || path.resolve(__dirname, '..', './index.ejs')
 
@@ -88,7 +94,9 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
             plugins[q] = new HtmlWebpackPlugin(page);
         });
         if (mode === 'development') {
-            plugins.ReloadHtmlWebpackPlugin = new ReloadHtmlWebpackPlugin();
+            if (!isNumber(conf.server.browserSyncPort)) {
+                plugins.ReloadHtmlWebpackPlugin = new ReloadHtmlWebpackPlugin();
+            }
         }
     }
 
