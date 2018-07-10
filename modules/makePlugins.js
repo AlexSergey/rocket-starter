@@ -58,44 +58,51 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
 
     if (!conf.library) {
         let pages = [];
+        let HTMLProcessing = true;
 
-        if (conf.html && isArray(conf.html)) {
-            pages = conf.html;
+        if (typeof conf.html !== 'undefined' && isBoolean(conf.html) && conf.html === false) {
+            HTMLProcessing = false;
         }
-        else {
-            pages = [
-                {
-                    title: (conf.html && conf.html.title) || getTitle(packageJson),
-                    code: (conf.html && conf.html.code) ? conf.html.code : null,
-                    favicon: (conf.html && conf.html.favicon) ? conf.html.favicon : null,
-                    template: (conf.html && conf.html.template) || path.resolve(__dirname, '..', './index.ejs')
+        if (HTMLProcessing) {
+            if (conf.html && isArray(conf.html)) {
+                pages = conf.html;
+            }
+            else {
+                pages = [
+                    {
+                        title: (conf.html && conf.html.title) || getTitle(packageJson),
+                        code: (conf.html && conf.html.code) ? conf.html.code : null,
+                        favicon: (conf.html && conf.html.favicon) ? conf.html.favicon : null,
+                        template: (conf.html && conf.html.template) || path.resolve(__dirname, '..', './index.ejs')
 
+                    }
+                ];
+            }
+
+            pages = pages.map(page => {
+                if (version) {
+                    page.version = version;
                 }
-            ];
-        }
+                if (!page.template) {
+                    page.template = path.resolve(__dirname, '..', './index.ejs');
+                }
+                if (!page.filename) {
+                    page.filename = page.template.slice(page.template.lastIndexOf('/') + 1, page.template.lastIndexOf('.'));
+                    page.filename += '.html';
+                }
+                return page;
+            });
 
-        pages = pages.map(page => {
-            if (version) {
-                page.version = version;
-            }
-            if (!page.template) {
-                page.template = path.resolve(__dirname, '..', './index.ejs');
-            }
-            if (!page.filename) {
-                page.filename = page.template.slice(page.template.lastIndexOf('/') + 1, page.template.lastIndexOf('.'));
-                page.filename += '.html';
-            }
-            return page;
-        });
+            pages.forEach((page, index) => {
+                let q = `HtmlWebpackPlugin${index}`;
 
-        pages.forEach((page, index) => {
-            let q = `HtmlWebpackPlugin${index}`;
+                plugins[q] = new HtmlWebpackPlugin(page);
+            });
 
-            plugins[q] = new HtmlWebpackPlugin(page);
-        });
-        if (mode === 'development') {
-            if (!isNumber(conf.server.browserSyncPort)) {
-                plugins.ReloadHtmlWebpackPlugin = new ReloadHtmlWebpackPlugin();
+            if (mode === 'development') {
+                if (!isNumber(conf.server.browserSyncPort)) {
+                    plugins.ReloadHtmlWebpackPlugin = new ReloadHtmlWebpackPlugin();
+                }
             }
         }
     }
@@ -139,7 +146,7 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
         let _opts = {};
         if (isObject(conf.copy)) {
             if (conf.copy.from && conf.copy.to) {
-                _prop = [opts.copy];
+                _prop = [conf.copy];
             } else if (conf.copy.files) {
                 _prop = conf.copy.files;
                 _opts = conf.copy.opts || {};
