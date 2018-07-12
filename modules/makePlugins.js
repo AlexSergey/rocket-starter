@@ -2,6 +2,7 @@ const { existsSync } = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Collection = require('../utils/Collection');
 const { isString, isBoolean, isArray, isObject, isNumber } = require('../utils/typeChecker');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const path = require('path');
 const makeBanner = require('./makeBanner');
 const ReloadHtmlWebpackPlugin = require('../utils/reloadHTML');
@@ -14,6 +15,8 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const StatsWriterPlugin = require("webpack-stats-plugin").StatsWriterPlugin;
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const WebpackBar = require('webpackbar');
+const FlagDependencyUsagePlugin = require('webpack/lib/FlagDependencyUsagePlugin');
+const FlagIncludedChunksPlugin = require('webpack/lib/optimize/FlagIncludedChunksPlugin');
 
 function getTitle(packageJson) {
     return `${packageJson.name.split('_').join(' ')}`;
@@ -22,21 +25,10 @@ function getTitle(packageJson) {
 const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
     let plugins = {};
 
-    if (conf.progress) {
-        plugins.WebpackBar = new WebpackBar();
-    }
-
-    if (mode === 'production') {
-        if (conf.stats) {
-            plugins.StatsWriterPlugin = new StatsWriterPlugin({
-                fields: null,
-                stats: {chunkModules: true}
-            });
-        }
-    }
-    else {
-        plugins.HotModuleReplacementPlugin = new webpack.HotModuleReplacementPlugin();
-    }
+    /**
+     * COMMON
+     * */
+    plugins.WebpackBar = new WebpackBar();
 
     let banner = makeBanner(packageJson, root);
 
@@ -53,7 +45,10 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
     conf.banner = banner;
 
     if (conf.banner) {
-        plugins.BannerPlugin = new webpack.BannerPlugin(!banner ? '' : banner)
+        plugins.BannerPlugin = new webpack.BannerPlugin({
+            banner: !banner ? '' : banner,
+            entryOnly: true
+        });
     }
 
     if (!conf.library) {
@@ -125,17 +120,14 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
     let definePluginOpts = Object.assign(
         {},
         {
-            NODE_ENV: JSON.stringify(mode)
+            'process.env.NODE_ENV': JSON.stringify(mode)
         },
         Object.keys(env).reduce((prev, curr) => {
-            prev[curr] = JSON.stringify(env[curr]);
+            prev[`process.env.${curr}`] = JSON.stringify(env[curr]);
             return prev;
         }, {})
     );
-
-    plugins.DefinePlugin = new webpack.DefinePlugin({
-        'process.env': definePluginOpts
-    });
+    plugins.DefinePlugin = new webpack.DefinePlugin(definePluginOpts);
 
     if (existsSync(path.resolve(root, '.flowconfig'))) {
         plugins.FlowBabelWebpackPlugin = new FlowBabelWebpackPlugin();
@@ -158,8 +150,27 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
             plugins.CopyWebpackPlugin = new CopyWebpackPlugin(_prop, _opts);
         }
     }
+    /**
+     * DEVELOPMENT
+     * */
+    if (mode === 'development') {
+        plugins.HotModuleReplacementPlugin = new webpack.HotModuleReplacementPlugin();
 
+        plugins.NamedChunksPlugin = new webpack.NamedChunksPlugin();
+
+        plugins.NamedModulesPlugin = new webpack.NamedModulesPlugin();
+    }
+    /**
+     * PRODUCTION
+     * */
     if (mode === 'production') {
+        if (conf.stats) {
+            plugins.StatsWriterPlugin = new StatsWriterPlugin({
+                fields: null,
+                stats: {chunkModules: true}
+            });
+        }
+
         let addVersion = !!version;
         let styleName = conf.styles && conf.styles.indexOf('.css') >= 0 ? conf.styles : 'css/styles.css';
         styleName = styleName.split('.');
@@ -200,12 +211,36 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
 
         plugins.OccurrenceOrderPlugin = new webpack.optimize.OccurrenceOrderPlugin();
 
-        plugins.BannerPlugin = new webpack.BannerPlugin({
-            banner: !banner ? '' : banner,
-            entryOnly: true
-        });
-
         plugins.LodashModuleReplacementPlugin = new LodashModuleReplacementPlugin();
+
+        plugins.FlagDependencyUsagePlugin = new FlagDependencyUsagePlugin();
+
+        plugins.FlagIncludedChunksPlugin = new FlagIncludedChunksPlugin();
+
+        plugins.NoEmitOnErrorsPlugin = new webpack.NoEmitOnErrorsPlugin();
+
+        plugins.SideEffectsFlagPlugin = new webpack.optimize.SideEffectsFlagPlugin();
+
+        plugins.UglifyJS = new UglifyJsPlugin({
+            cache: conf.cache ? path.join(conf.cache, 'parallel-uglify') : path.join(root, 'node_modules', '.cache', 'parallel-uglify'),
+            sourceMap: conf.debug,
+            minify(file, sourceMap) {
+                let terserOptions = {
+                    mangle: true,
+                    output: {
+                        comments: new RegExp('banner')
+                    }
+                };
+
+                if (sourceMap) {
+                    terserOptions.sourceMap = {
+                        content: sourceMap,
+                    };
+                }
+
+                return require('terser').minify(file, terserOptions);
+            }
+        });
     }
 
     return plugins;
