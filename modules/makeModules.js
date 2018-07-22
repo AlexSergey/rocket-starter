@@ -44,10 +44,14 @@ function getModules(conf = {}, mode, root) {
 
         nunjucks: {
             test: /\.(njk|nunjucks)$/,
-            loader: require.resolve('nunjucks-isomorphic-loader'),
-            query: {
-                root: [root]
-            }
+            use: [
+                {
+                    loader: require.resolve('nunjucks-isomorphic-loader'),
+                    query: {
+                        root: [root]
+                    }
+                }
+            ]
         },
 
         shaders: {
@@ -102,45 +106,47 @@ function getModules(conf = {}, mode, root) {
         js: {
             test: /\.(js|jsx)$/,
             exclude: /(node_modules|bower_components)/,
-            use: {
-                loader: require.resolve('babel-loader'),
-                query: {
-                    cacheDirectory: true,
-                    babelrc: false,
-                    presets: [
-                        [require.resolve('babel-preset-env'), {
-                            targets: {
-                                browsers: [
-                                    "> 5%"
+            use: [
+                {
+                    loader: require.resolve('babel-loader'),
+                    query: {
+                        cacheDirectory: true,
+                        babelrc: false,
+                        presets: [
+                            [require.resolve('babel-preset-env'), {
+                                targets: {
+                                    browsers: [
+                                        "> 5%"
+                                    ]
+                                },
+                                useBuiltIns: true,
+                                modules: false,
+                                loose: true,
+                            }],
+                            require.resolve('babel-preset-react')
+                        ],
+                        plugins: [
+                            require.resolve('babel-plugin-syntax-dynamic-import'),
+                            require.resolve('babel-plugin-lodash'),
+                            require.resolve('babel-plugin-transform-flow-comments'),
+                            require.resolve('babel-plugin-transform-decorators-legacy'),
+                            require.resolve('babel-plugin-transform-class-properties'),
+                            require.resolve('babel-plugin-transform-object-rest-spread')
+                        ],
+                        env: {
+                            production: {
+                                plugins: [
+                                    require.resolve('babel-plugin-transform-es2015-modules-commonjs'),
+                                    require.resolve('babel-plugin-transform-react-constant-elements'),
+                                    require.resolve('babel-plugin-transform-react-inline-elements'),
+                                    require.resolve('babel-plugin-transform-react-pure-class-to-function'),
+                                    require.resolve('babel-plugin-transform-react-remove-prop-types')
                                 ]
-                            },
-                            useBuiltIns: true,
-                            modules: false,
-                            loose: true,
-                        }],
-                        require.resolve('babel-preset-react')
-                    ],
-                    plugins: [
-                        require.resolve('babel-plugin-syntax-dynamic-import'),
-                        require.resolve('babel-plugin-lodash'),
-                        require.resolve('babel-plugin-transform-flow-comments'),
-                        require.resolve('babel-plugin-transform-decorators-legacy'),
-                        require.resolve('babel-plugin-transform-class-properties'),
-                        require.resolve('babel-plugin-transform-object-rest-spread')
-                    ],
-                    env: {
-                        production: {
-                            plugins: [
-                                require.resolve('babel-plugin-transform-es2015-modules-commonjs'),
-                                require.resolve('babel-plugin-transform-react-constant-elements'),
-                                require.resolve('babel-plugin-transform-react-inline-elements'),
-                                require.resolve('babel-plugin-transform-react-pure-class-to-function'),
-                                require.resolve('babel-plugin-transform-react-remove-prop-types')
-                            ]
+                            }
                         }
                     }
                 }
-            }
+            ]
         },
 
         video: {
