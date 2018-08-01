@@ -14,18 +14,6 @@ const getStrategy = (webpack, webpackConfig, conf) => {
                 process.exit(err ? 1 : 0);
             });
         },
-        'watch-only': () => {
-            let compiler = webpack(webpackConfig);
-            compiler.watch(
-                Object.assign(
-                    {},
-                    webpackConfig.devServer.watchOptions, {
-                        poll: true
-                    }
-                ),
-                log
-            );
-        },
         'dev-server': () => {
             if (isNumber(conf.server.browserSyncPort)) {
                 webpackConfig.plugins.push(new BrowserSyncPlugin(
@@ -61,20 +49,7 @@ const run = (webpackConfig, mode, webpack, conf) => {
     process.env.NODE_ENV = mode;
     process.env.BABEL_ENV = mode;
 
-    let strategy = '';
-    let itsLibrary = !!webpackConfig.output.library;
-
-    if (mode === 'development') {
-        if (itsLibrary) {
-            strategy = 'watch-only';
-        }
-        else {
-            strategy = 'dev-server';
-        }
-    }
-    else {
-        strategy = 'simple';
-    }
+    let strategy = mode === 'development' ? 'watch-only' : 'simple';
 
     if (!strategy) {
         console.log('strategy is empty');
