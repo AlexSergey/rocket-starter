@@ -49,7 +49,7 @@ const run = (webpackConfig, mode, webpack, conf) => {
     process.env.NODE_ENV = mode;
     process.env.BABEL_ENV = mode;
 
-    let strategy = mode === 'development' ? 'watch-only' : 'simple';
+    let strategy = mode === 'development' ? 'dev-server' : 'simple';
 
     if (!strategy) {
         console.log('strategy is empty');
