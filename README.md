@@ -78,7 +78,6 @@ compile({
     }
     // secondary properties
     version: false,
-    cache: 'path to folder',
     library: 'test',
     styles: String,
     html: { // You can also add array for multi-pages support

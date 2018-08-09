@@ -20,7 +20,6 @@ const defaultProps = {
     *     version: Boolean,
     *     template: String, path to file
     * }
-    * cache: '/tmp',
     * banner: String,
     * global: {
     *     key: value

@@ -10,7 +10,6 @@ const FlowBabelWebpackPlugin = require('flow-babel-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ImageminPlugin = require('imagemin-webpack-plugin').default;
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const StatsWriterPlugin = require("webpack-stats-plugin").StatsWriterPlugin;
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
@@ -180,10 +179,6 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
         }
         styleName = styleName.join('.');
 
-        plugins.HardSourceWebpackPlugin = new HardSourceWebpackPlugin(conf.cache ? {
-            cacheDirectory: `${path.join(conf.cache, 'hard-source')}/[confighash]`
-        } : {});
-
         plugins.ModuleConcatenationPlugin = new webpack.optimize.ModuleConcatenationPlugin();
 
         plugins.MiniCssExtractPlugin = new MiniCssExtractPlugin({
@@ -220,7 +215,6 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
         plugins.SideEffectsFlagPlugin = new webpack.optimize.SideEffectsFlagPlugin();
 
         plugins.UglifyJS = new UglifyJsPlugin({
-            cache: conf.cache ? path.join(conf.cache, 'parallel-uglify') : path.join(root, 'node_modules', '.cache', 'parallel-uglify'),
             sourceMap: conf.debug,
             minify(file, sourceMap) {
                 let terserOptions = {
