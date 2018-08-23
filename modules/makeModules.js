@@ -127,7 +127,6 @@ function getModules(conf = {}, mode, root) {
                         ],
                         plugins: [
                             require.resolve('babel-plugin-syntax-dynamic-import'),
-                            require.resolve('babel-plugin-lodash'),
                             require.resolve('babel-plugin-transform-flow-comments'),
                             require.resolve('babel-plugin-transform-decorators-legacy'),
                             require.resolve('babel-plugin-transform-class-properties'),

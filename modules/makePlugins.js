@@ -12,7 +12,6 @@ const ImageminPlugin = require('imagemin-webpack-plugin').default;
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const StatsWriterPlugin = require("webpack-stats-plugin").StatsWriterPlugin;
-const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const WebpackBar = require('webpackbar');
 const FlagDependencyUsagePlugin = require('webpack/lib/FlagDependencyUsagePlugin');
 const FlagIncludedChunksPlugin = require('webpack/lib/optimize/FlagIncludedChunksPlugin');
@@ -203,8 +202,6 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
         plugins.CleanWebpackPlugin = new CleanWebpackPlugin([conf.dist || './dist'], { root: root || __dirname });
 
         plugins.OccurrenceOrderPlugin = new webpack.optimize.OccurrenceOrderPlugin();
-
-        plugins.LodashModuleReplacementPlugin = new LodashModuleReplacementPlugin();
 
         plugins.FlagDependencyUsagePlugin = new FlagDependencyUsagePlugin();
 
