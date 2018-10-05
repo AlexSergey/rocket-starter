@@ -220,8 +220,8 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
                         comments: new RegExp('banner')
                     },
                     compress: {
-                        drop_console: conf.debug,
-                        drop_debugger: conf.debug
+                        drop_console: !conf.debug,
+                        drop_debugger: !conf.debug
                     }
                 };
 
