@@ -16,6 +16,7 @@ const WebpackBar = require('webpackbar');
 const FlagDependencyUsagePlugin = require('webpack/lib/FlagDependencyUsagePlugin');
 const FlagIncludedChunksPlugin = require('webpack/lib/optimize/FlagIncludedChunksPlugin');
 const Dotenv = require('dotenv-webpack');
+const WriteFilePlugin = require('write-file-webpack-plugin');
 
 function getTitle(packageJson) {
     return `${packageJson.name.split('_').join(' ')}`;
@@ -38,6 +39,10 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
         plugins.Dotenv = new Dotenv({
             path: conf.dotenv
         });
+    }
+
+    if (conf.write && mode !== 'production') {
+        plugins.WriteFilePlugin = new WriteFilePlugin();
     }
 
 

@@ -4,6 +4,7 @@ const defaultProps = {
     url: '/',
     debug: false,
     stats: false,
+    write: false,
     server: {
         browserSyncPort: false,
         port: 3000,

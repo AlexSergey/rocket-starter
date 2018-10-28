@@ -1,20 +1,21 @@
 This is the simplest way to make webpack config with many default settings.
 This config-generator include modules and features:
 
-- webpack 4+, webpack-serve
-- babel 6, Babel-preset-env (> 5%)
+- Webpack 4+, Webpack-serve
+- Babel 6, Babel-preset-env (> 5%)
 - Dotenv support
 - React optimizations
 - Flow
-- Postcss: autoprefixer, mqpacker, lost, instagram filters, autoprefixer, rucksack
+- Write file webpack plugin (in dev mode)
+- Postcss: Autoprefixer, Mqpacker, Lost, Instagram filters, Autoprefixer, Rucksack
 - Copy Webpack Plugin
 - ESLint
 - Templates: HTML/Jade/Handlebars,nunjucks
-- CSS: css/sass/less + postcss
+- CSS: CSS/SASS/LESS + Postcss
 - Imagemin
-- file import support: markdown, video, audio, fonts, svg, script, shaders etc
-- svg + svgo
-- uglifyjs (+parallel)
+- File import support: Markdown, Video, Audio, Fonts, SVG, Script, Shaders etc
+- SVG + SVGO
+- Uglifyjs (+parallel)
 - Hard Source Plugin (in production mode)
 - Generate stats.json (in production mode)
 
@@ -58,6 +59,8 @@ compile({
     src: 'src/index.js',
     url: '/',
     debug: false,
+    stats: false,
+    write: false,
     server: {
         port: 3000,
         host: 'localhost'
@@ -73,6 +76,8 @@ compile({
     src: 'src/index.js',
     url: '/',
     debug: false, // if you need to debug in production
+    stats: false,
+    write: false,
     server: {
         port: 3000,
         host: 'localhost'
@@ -96,6 +101,8 @@ compile({
 }
 ```
 "copy" is activate CopyWebpackPlugin and we can use default syntax but we can set files and opts. Opts is second parameter in this plugin.
+
+"write" will force Webpack to save file in HDD after each update webpack watcher / dev-server
 
 If you don't need to extract styles to css file in production version you can set styles: false
 
