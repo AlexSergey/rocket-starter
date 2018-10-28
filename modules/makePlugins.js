@@ -15,6 +15,7 @@ const StatsWriterPlugin = require("webpack-stats-plugin").StatsWriterPlugin;
 const WebpackBar = require('webpackbar');
 const FlagDependencyUsagePlugin = require('webpack/lib/FlagDependencyUsagePlugin');
 const FlagIncludedChunksPlugin = require('webpack/lib/optimize/FlagIncludedChunksPlugin');
+const Dotenv = require('dotenv-webpack');
 
 function getTitle(packageJson) {
     return `${packageJson.name.split('_').join(' ')}`;
@@ -27,6 +28,18 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
      * COMMON
      * */
     plugins.WebpackBar = new WebpackBar();
+
+    if (existsSync(path.resolve(root, '.env'))) {
+        plugins.Dotenv = new Dotenv({
+            path: path.resolve(root, '.env')
+        });
+    }
+    else if (isString(conf.dotenv)) {
+        plugins.Dotenv = new Dotenv({
+            path: conf.dotenv
+        });
+    }
+
 
     let banner = makeBanner(packageJson, root);
 

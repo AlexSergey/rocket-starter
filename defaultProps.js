@@ -11,6 +11,7 @@ const defaultProps = {
     }
     /*
     Other Props:
+    * dotenv: 'path_to_dotend or put .env file to your project',
     * version: true,
     * library: 'test',
     * styles: String,

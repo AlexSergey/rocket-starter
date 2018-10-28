@@ -3,6 +3,7 @@ This config-generator include modules and features:
 
 - webpack 4+, webpack-serve
 - babel 6, Babel-preset-env (> 5%)
+- Dotenv support
 - React optimizations
 - Flow
 - Postcss: autoprefixer, mqpacker, lost, instagram filters, autoprefixer, rucksack
@@ -77,6 +78,7 @@ compile({
         host: 'localhost'
     }
     // secondary properties
+    dotenv: 'path_to_dotend or put .env file to your project',
     version: false,
     library: 'test',
     styles: String,
