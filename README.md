@@ -2,7 +2,7 @@ This is the simplest way to make webpack config with many default settings.
 This config-generator include modules and features:
 
 - Webpack 4+, Webpack-dev-server
-- Babel 6, Babel-preset-env (> 5%)
+- Babel 7, Babel-preset-env (> 5%)
 - Dotenv support
 - React optimizations
 - Flow

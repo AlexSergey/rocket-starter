@@ -23,7 +23,7 @@ function getModules(conf = {}, mode, root) {
         debug = true;
     }
 
-    return {
+    let finalConf = {
         handlebars: {
             test: /\.(hbs|handlebars)$/,
             use: [
@@ -92,17 +92,6 @@ function getModules(conf = {}, mode, root) {
             ]
         },
 
-        jsPre: {
-            enforce: 'pre',
-            test: /\.(js|jsx)$/,
-            exclude: /node_modules/,
-            use: [
-                {
-                    loader: require.resolve('eslint-loader')
-                }
-            ]
-        },
-
         js: {
             test: /\.(js|jsx)$/,
             exclude: /(node_modules|bower_components)/,
@@ -113,31 +102,31 @@ function getModules(conf = {}, mode, root) {
                         cacheDirectory: true,
                         babelrc: false,
                         presets: [
-                            [require.resolve('babel-preset-env'), {
+                            [require.resolve('@babel/preset-env'), {
                                 targets: {
                                     browsers: [
                                         "> 5%"
                                     ]
                                 },
-                                useBuiltIns: true,
+                                useBuiltIns: 'entry',
                                 modules: false,
                                 loose: true,
                             }],
-                            require.resolve('babel-preset-react')
+                            require.resolve('@babel/preset-react')
                         ],
                         plugins: [
-                            require.resolve('babel-plugin-syntax-dynamic-import'),
-                            require.resolve('babel-plugin-transform-flow-comments'),
-                            require.resolve('babel-plugin-transform-decorators-legacy'),
-                            require.resolve('babel-plugin-transform-class-properties'),
-                            require.resolve('babel-plugin-transform-object-rest-spread')
+                            require.resolve('@babel/plugin-syntax-dynamic-import'),
+                            require.resolve('@babel/plugin-transform-flow-comments'),
+                            [require.resolve('@babel/plugin-proposal-decorators'), { "legacy": true }],
+                            require.resolve('@babel/plugin-proposal-class-properties'),
+                            require.resolve('@babel/plugin-proposal-object-rest-spread')
                         ],
                         env: {
                             production: {
                                 plugins: [
-                                    require.resolve('babel-plugin-transform-es2015-modules-commonjs'),
-                                    require.resolve('babel-plugin-transform-react-constant-elements'),
-                                    require.resolve('babel-plugin-transform-react-inline-elements'),
+                                    require.resolve('@babel/plugin-transform-modules-commonjs'),
+                                    require.resolve('@babel/plugin-transform-react-constant-elements'),
+                                    require.resolve('@babel/plugin-transform-react-inline-elements'),
                                     require.resolve('babel-plugin-transform-react-pure-class-to-function'),
                                     require.resolve('babel-plugin-transform-react-remove-prop-types')
                                 ]
@@ -210,6 +199,19 @@ function getModules(conf = {}, mode, root) {
             ]
         }
     };
+
+    if (existsSync(path.resolve(root, 'eslintrc.js'))) {
+        finalConf.jsPre = {
+            enforce: 'pre',
+            test: /\.(js|jsx)$/,
+            exclude: /node_modules/,
+            use: [{
+                loader: require.resolve('eslint-loader')
+            }]
+        }
+    }
+
+    return finalConf;
 }
 
 const _makeModules = (modules, conf = {}, excludeModules = []) => {

@@ -116,19 +116,21 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
         }
     }
 
-    plugins.LoadOptions = new webpack.LoaderOptionsPlugin({
-        test: /\.(js|jsx)$/,
-        options: {
-            eslint: {
-                configFile: existsSync(path.resolve(root, 'eslintrc.js')) ? path.resolve(root, 'eslintrc.js') : path.resolve(__dirname, '../configs', 'eslintrc.js'),
-                eslintPath: require.resolve('eslint'),
-                formatter: require(require.resolve('eslint-formatter-pretty')),
-                ignore: false,
-                useEslintrc: false,
-                cache: false,
-            }
-        },
-    });
+    if (existsSync(path.resolve(root, 'eslintrc.js'))) {
+        plugins.LoadOptions = new webpack.LoaderOptionsPlugin({
+            test: /\.(js|jsx)$/,
+            options: {
+                eslint: {
+                    configFile: path.resolve(root, 'eslintrc.js'),
+                    eslintPath: require.resolve('eslint'),
+                    formatter: require(require.resolve('eslint-formatter-pretty')),
+                    ignore: false,
+                    useEslintrc: false,
+                    cache: false,
+                }
+            },
+        });
+    }
 
     let env = conf.global || {};
     let definePluginOpts = Object.assign(
