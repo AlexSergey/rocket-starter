@@ -37,6 +37,15 @@ const make = async (conf, post) => {
         devServer,
         resolve
     };
+
+    if (conf.nodejs) {
+        finalConfig.target = 'node';
+
+        if (mode === 'development') {
+            finalConfig.watch = true;
+        }
+    }
+
     if (isFunction(post)) {
         post(finalConfig, modules, plugins);
     }

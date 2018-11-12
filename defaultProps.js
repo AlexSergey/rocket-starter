@@ -5,6 +5,7 @@ const defaultProps = {
     debug: false,
     stats: false,
     write: false,
+    nodejs: false,
     server: {
         browserSyncPort: false,
         port: 3000,

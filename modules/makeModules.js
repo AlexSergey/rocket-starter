@@ -102,16 +102,21 @@ function getModules(conf = {}, mode, root) {
                         cacheDirectory: true,
                         babelrc: false,
                         presets: [
-                            [require.resolve('@babel/preset-env'), {
+                            [require.resolve('@babel/preset-env'), Object.assign({
+                                useBuiltIns: 'entry',
+                                modules: false,
+                                loose: true,
+                            }, conf.nodejs ? {
+                                targets: {
+                                    node: "current"
+                                }
+                            } : {
                                 targets: {
                                     browsers: [
                                         "> 5%"
                                     ]
-                                },
-                                useBuiltIns: 'entry',
-                                modules: false,
-                                loose: true,
-                            }],
+                                }
+                            })],
                             require.resolve('@babel/preset-react')
                         ],
                         plugins: [
@@ -135,6 +140,11 @@ function getModules(conf = {}, mode, root) {
                     }
                 }
             ]
+        },
+
+        node: {
+            test: /\.node$/,
+            use: require.resolve('node-loader')
         },
 
         video: {

@@ -9,12 +9,14 @@ const _getSrc = (src, root) => {
 const makeEntry = (conf, root, mode) => {
     let s = _getSrc(conf.src, root);
 
-    if (mode === 'development') {
-        if (isArray(s)) {
-            return [`${require.resolve('webpack-dev-server/client')}?http://${conf.server.host}:${conf.server.port}/`, require.resolve('webpack/hot/dev-server')].concat(s);
-        }
+    if (!conf.nodejs) {
+        if (mode === 'development') {
+            if (isArray(s)) {
+                return [`${require.resolve('webpack-dev-server/client')}?http://${conf.server.host}:${conf.server.port}/`, require.resolve('webpack/hot/dev-server')].concat(s);
+            }
 
-        return [`${require.resolve('webpack-dev-server/client')}?http://${conf.server.host}:${conf.server.port}/`, require.resolve('webpack/hot/dev-server'), s]
+            return [`${require.resolve('webpack-dev-server/client')}?http://${conf.server.host}:${conf.server.port}/`, require.resolve('webpack/hot/dev-server'), s]
+        }
     }
 
     return s;

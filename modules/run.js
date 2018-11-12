@@ -4,7 +4,7 @@ const WebpackDevServer = require('webpack-dev-server');
 const OpenBrowserPlugin = require('open-browser-webpack-plugin');
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 
-const getStrategy = (webpack, webpackConfig, conf) => {
+const getAppStrategy = (webpack, webpackConfig, conf) => {
     return {
         simple: () => {
             let compiler = webpack(webpackConfig);
@@ -45,6 +45,29 @@ const getStrategy = (webpack, webpackConfig, conf) => {
     };
 };
 
+const getNodeStrategy = (webpack, webpackConfig, conf) => {
+    return {
+        simple: () => {
+            let compiler = webpack(webpackConfig);
+            compiler.run((err, stats) => {
+                log(err, stats);
+
+                process.exit(err ? 1 : 0);
+            });
+        },
+        'dev-server': () => {
+            let compiler = webpack(webpackConfig);
+            compiler.watch({}, (err, stats) => {
+                console.log(stats.toString({
+                    "errors-only": true,
+                    colors: true,
+                    children: false
+                }));
+            });
+        }
+    }
+};
+
 const run = (webpackConfig, mode, webpack, conf) => {
     process.env.NODE_ENV = mode;
     process.env.BABEL_ENV = mode;
@@ -56,7 +79,14 @@ const run = (webpackConfig, mode, webpack, conf) => {
         return false;
     }
 
-    let compileStrategy = getStrategy(webpack, webpackConfig, conf)[strategy];
+    let compileStrategy;
+
+    if (conf.nodejs) {
+        compileStrategy = getNodeStrategy(webpack, webpackConfig, conf)[strategy];
+    }
+    else {
+        compileStrategy = getAppStrategy(webpack, webpackConfig, conf)[strategy];
+    }
 
     if (!compileStrategy) {
         console.log('compileStrategy is empty');

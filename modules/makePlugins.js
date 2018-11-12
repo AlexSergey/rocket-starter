@@ -17,6 +17,7 @@ const FlagDependencyUsagePlugin = require('webpack/lib/FlagDependencyUsagePlugin
 const FlagIncludedChunksPlugin = require('webpack/lib/optimize/FlagIncludedChunksPlugin');
 const Dotenv = require('dotenv-webpack');
 const WriteFilePlugin = require('write-file-webpack-plugin');
+const NodemonPlugin = require('nodemon-webpack-plugin');
 
 function getTitle(packageJson) {
     return `${packageJson.name.split('_').join(' ')}`;
@@ -65,6 +66,10 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
             banner: !banner ? '' : banner,
             entryOnly: true
         });
+    }
+
+    if (conf.nodejs) {
+        plugins.NodemonPlugin = new NodemonPlugin();
     }
 
     let pages = [];
@@ -254,6 +259,12 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
                 return require('terser').minify(file, terserOptions);
             }
         });
+    }
+
+    if (mode === 'development') {
+        if (conf.nodejs) {
+            plugins.CleanWebpackPlugin = new CleanWebpackPlugin([conf.dist || './dist'], { root: root || __dirname });
+        }
     }
 
     return plugins;
