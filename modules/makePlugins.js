@@ -69,7 +69,7 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
     }
 
     if (conf.nodejs) {
-        plugins.NodemonPlugin = new NodemonPlugin();
+        plugins.NodemonPlugin = isString(conf.nodemon) ? new NodemonPlugin({script: conf.nodemon}) : new NodemonPlugin();
     }
 
     let pages = [];

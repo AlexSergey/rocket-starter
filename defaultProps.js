@@ -13,6 +13,7 @@ const defaultProps = {
     }
     /*
     Other Props:
+    * nodemon: path to nodemon run file
     * dotenv: 'path_to_dotend or put .env file to your project',
     * version: true,
     * library: 'test',
