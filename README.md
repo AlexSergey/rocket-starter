@@ -3,6 +3,7 @@ This config-generator include modules and features:
 
 - Webpack 4+, Webpack-dev-server
 - Babel 7, Babel-preset-env (> 5%)
+- Support build nodejs scripts with nodemon
 - Dotenv support
 - React optimizations
 - Flow
@@ -61,6 +62,7 @@ compile({
     debug: false,
     stats: false,
     write: false,
+    nodejs: false,
     server: {
         port: 3000,
         host: 'localhost'
@@ -78,6 +80,7 @@ compile({
     debug: false, // if you need to debug in production
     stats: false,
     write: false,
+    nodejs: false,
     server: {
         port: 3000,
         host: 'localhost'
@@ -103,6 +106,8 @@ compile({
 "copy" is activate CopyWebpackPlugin and we can use default syntax but we can set files and opts. Opts is second parameter in this plugin.
 
 "write" will force Webpack to save file in HDD after each update webpack watcher / dev-server
+
+"nodejs" activation webpack with nodejs strategy. You can use all babel7 features and minify your nodejs script. If you set NODE_ENV=development it will be run nodemon and watcher
 
 If you don't need to extract styles to css file in production version you can set styles: false
 
