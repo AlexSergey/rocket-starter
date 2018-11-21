@@ -7,7 +7,6 @@
   "license": "ISC",
   "dependencies": {
     "@babel/core": "7.1.2",
-    "@babel/plugin-transform-modules-commonjs": "7.1.0",
     "@babel/plugin-syntax-dynamic-import": "7.0.0",
     "@babel/plugin-transform-flow-comments": "7.0.0",
     "@babel/plugin-transform-react-constant-elements": "7.0.0",
