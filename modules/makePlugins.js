@@ -18,6 +18,7 @@ const FlagIncludedChunksPlugin = require('webpack/lib/optimize/FlagIncludedChunk
 const Dotenv = require('dotenv-webpack');
 const WriteFilePlugin = require('write-file-webpack-plugin');
 const NodemonPlugin = require('nodemon-webpack-plugin');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 function getTitle(packageJson) {
     return `${packageJson.name.split('_').join(' ')}`;
@@ -258,6 +259,15 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
 
                 return require('terser').minify(file, terserOptions);
             }
+        });
+
+        plugins.OptimizeCssAssetsPlugin = new OptimizeCssAssetsPlugin({
+            assetNameRegExp: /\.css$/g,
+            cssProcessor: require('cssnano'),
+            cssProcessorPluginOptions: {
+                preset: ['default', { discardComments: { removeAll: true } }],
+            },
+            canPrint: true
         });
     }
 

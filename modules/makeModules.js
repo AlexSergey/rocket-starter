@@ -67,7 +67,7 @@ function getModules(conf = {}, mode, root) {
             test: /\.css$/,
             use: [
                 extractStyles ? MiniCssExtractPlugin.loader : { loader: require.resolve('style-loader'), options: { sourceMap: debug } },
-                { loader: require.resolve('css-loader'), options: { minimize: true, sourceMap: debug } },
+                { loader: require.resolve('css-loader'), options: { sourceMap: debug } },
                 { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(root), sourceMap: debug } }
             ]
         },
@@ -76,7 +76,7 @@ function getModules(conf = {}, mode, root) {
             test: /\.scss/,
             use: [
                 extractStyles ? MiniCssExtractPlugin.loader : { loader: require.resolve('style-loader'), options: { sourceMap: debug } },
-                { loader: require.resolve('css-loader'), options: { minimize: true, sourceMap: debug } },
+                { loader: require.resolve('css-loader'), options: { sourceMap: debug } },
                 { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(root), sourceMap: debug } },
                 { loader: require.resolve('sass-loader'), options: { sourceMap: debug } }
             ]
@@ -86,7 +86,7 @@ function getModules(conf = {}, mode, root) {
             test: /\.less/,
             use: [
                 extractStyles ? MiniCssExtractPlugin.loader : { loader: require.resolve('style-loader'), options: { sourceMap: debug } },
-                { loader: require.resolve('css-loader'), options: { minimize: true, sourceMap: debug } },
+                { loader: require.resolve('css-loader'), options: { sourceMap: debug } },
                 { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(root), sourceMap: debug } },
                 { loader: require.resolve('less-loader'), options: { sourceMap: debug } }
             ]
