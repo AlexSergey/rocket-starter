@@ -181,6 +181,13 @@ function getModules(conf = {}, mode, root) {
             ]
         },
 
+        html: {
+            test: /\.(html)$/,
+            use: {
+                loader: require.resolve('html-loader')
+            }
+        },
+
         markdown: {
             test: /\.md$/,
             use: [
