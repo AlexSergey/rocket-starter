@@ -1,7 +1,7 @@
 const log = require('../utils/log');
 const { isNumber } = require('../utils/typeChecker');
 const WebpackDevServer = require('webpack-dev-server');
-const OpenBrowserPlugin = require('open-browser-webpack-plugin');
+const open = require("open");
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 
 const getAppStrategy = (webpack, webpackConfig, conf) => {
@@ -32,13 +32,12 @@ const getAppStrategy = (webpack, webpackConfig, conf) => {
                 });
             }
             else {
-                webpackConfig.plugins.push(new OpenBrowserPlugin({ url: `http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}` }));
-
                 let compiler = webpack(webpackConfig);
                 let server = new WebpackDevServer(compiler, webpackConfig.devServer);
 
                 server.listen(webpackConfig.devServer.port, webpackConfig.devServer.host, () => {
                     console.log(`Starting server on http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}/`);
+                    open(`http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}/`);
                 });
             }
         }

@@ -61,7 +61,7 @@
     "nodemon-webpack-plugin": "4.0.6",
     "nunjucks": "3.1.4",
     "nunjucks-isomorphic-loader": "2.0.2",
-    "open-browser-webpack-plugin": "0.0.5",
+    "open": "0.0.5",
     "optimize-css-assets-webpack-plugin": "5.0.1",
     "cssnano": "4.1.7",
     "postcss-instagram": "1.0.0",
