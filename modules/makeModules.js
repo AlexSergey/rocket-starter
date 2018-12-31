@@ -3,6 +3,48 @@ const Collection = require('../utils/Collection');
 const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
+function babelOpts(isNodejs = false) {
+    return {
+        cacheDirectory: true,
+        babelrc: false,
+        presets: [
+            [require.resolve('@babel/preset-env'), Object.assign({
+                useBuiltIns: 'entry',
+                modules: false,
+                loose: true,
+            }, isNodejs ? {
+                targets: {
+                    node: "current"
+                }
+            } : {
+                targets: {
+                    browsers: [
+                        "> 5%"
+                    ]
+                }
+            })],
+            require.resolve('@babel/preset-react')
+        ],
+        plugins: [
+            require.resolve('@babel/plugin-syntax-dynamic-import'),
+            require.resolve('@babel/plugin-transform-flow-comments'),
+            [require.resolve('@babel/plugin-proposal-decorators'), { "legacy": true }],
+            require.resolve('@babel/plugin-proposal-class-properties'),
+            require.resolve('@babel/plugin-proposal-object-rest-spread')
+        ],
+        env: {
+            production: {
+                plugins: [
+                    require.resolve('@babel/plugin-transform-react-constant-elements'),
+                    require.resolve('@babel/plugin-transform-react-inline-elements'),
+                    require.resolve('babel-plugin-transform-react-pure-class-to-function'),
+                    require.resolve('babel-plugin-transform-react-remove-prop-types')
+                ]
+            }
+        }
+    }
+}
+
 const getPostcssConfig = (root) => {
     const pth = existsSync(path.resolve(root, './postcss.config.js')) ? path.resolve(root, './postcss.config.js') : path.resolve(__dirname, '../configs/postcss.config.js');
 
@@ -98,45 +140,7 @@ function getModules(conf = {}, mode, root) {
             use: [
                 {
                     loader: require.resolve('babel-loader'),
-                    query: {
-                        cacheDirectory: true,
-                        babelrc: false,
-                        presets: [
-                            [require.resolve('@babel/preset-env'), Object.assign({
-                                useBuiltIns: 'entry',
-                                modules: false,
-                                loose: true,
-                            }, conf.nodejs ? {
-                                targets: {
-                                    node: "current"
-                                }
-                            } : {
-                                targets: {
-                                    browsers: [
-                                        "> 5%"
-                                    ]
-                                }
-                            })],
-                            require.resolve('@babel/preset-react')
-                        ],
-                        plugins: [
-                            require.resolve('@babel/plugin-syntax-dynamic-import'),
-                            require.resolve('@babel/plugin-transform-flow-comments'),
-                            [require.resolve('@babel/plugin-proposal-decorators'), { "legacy": true }],
-                            require.resolve('@babel/plugin-proposal-class-properties'),
-                            require.resolve('@babel/plugin-proposal-object-rest-spread')
-                        ],
-                        env: {
-                            production: {
-                                plugins: [
-                                    require.resolve('@babel/plugin-transform-react-constant-elements'),
-                                    require.resolve('@babel/plugin-transform-react-inline-elements'),
-                                    require.resolve('babel-plugin-transform-react-pure-class-to-function'),
-                                    require.resolve('babel-plugin-transform-react-remove-prop-types')
-                                ]
-                            }
-                        }
-                    }
+                    query: babelOpts(!!conf.nodejs)
                 }
             ]
         },
@@ -246,4 +250,4 @@ const makeModules = (conf, root, packageJson, mode, excludeModules) => {
     return _makeModules(modules, conf);
 };
 
-module.exports = makeModules;
+module.exports = { makeModules, babelOpts };

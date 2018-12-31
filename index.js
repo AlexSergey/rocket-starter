@@ -7,7 +7,7 @@ const makeOutput = require('./modules/makeOutput');
 const makeVersion = require('./modules/makeVersion');
 const mergeConfWithDefault = require('./modules/mergeConfWithDefault');
 const makeDevtool = require('./modules/makeDevtool');
-const makeModules = require('./modules/makeModules');
+const { makeModules, babelOpts } = require('./modules/makeModules');
 const makePlugins = require('./modules/makePlugins');
 const makeResolve = require('./modules/makeResolve');
 const makeDevServer = require('./modules/makeDevServer');
@@ -75,5 +75,6 @@ module.exports = {
     getWebpack,
     compile,
     make,
-    getArgs
+    getArgs,
+    babelOpts
 };
