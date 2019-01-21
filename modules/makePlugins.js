@@ -20,6 +20,7 @@ const WriteFilePlugin = require('write-file-webpack-plugin');
 const NodemonPlugin = require('nodemon-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const imageminMozjpeg = require('imagemin-mozjpeg');
+const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 
 function getTitle(packageJson) {
     return `${packageJson.name.split('_').join(' ')}`;
@@ -114,6 +115,10 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
             let q = `HtmlWebpackPlugin${index}`;
 
             plugins[q] = new HtmlWebpackPlugin(page);
+        });
+
+        plugins.ScriptExtHtmlWebpackPlugin = new ScriptExtHtmlWebpackPlugin({
+            defaultAttribute: 'async'
         });
 
         if (mode === 'development') {
