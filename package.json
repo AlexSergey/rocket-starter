@@ -47,6 +47,7 @@
     "html-loader": "0.5.5",
     "html-webpack-plugin": "3.2.0",
     "imagemin-webpack-plugin": "2.3.0",
+    "imagemin-mozjpeg": "8.0.0",
     "imports-loader": "0.8.0",
     "json-loader": "0.5.7",
     "terser": "3.13.1",

@@ -19,6 +19,7 @@ const Dotenv = require('dotenv-webpack');
 const WriteFilePlugin = require('write-file-webpack-plugin');
 const NodemonPlugin = require('nodemon-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const imageminMozjpeg = require('imagemin-mozjpeg');
 
 function getTitle(packageJson) {
     return `${packageJson.name.split('_').join(' ')}`;
@@ -222,7 +223,12 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
             },
             svgo: {},
             pngquant: null,
-            plugins: []
+            plugins: [
+                imageminMozjpeg({
+                    quality: 85,
+                    progressive: true
+                })
+            ]
         });
 
         plugins.CleanWebpackPlugin = new CleanWebpackPlugin([conf.dist || './dist'], { root: root || __dirname });
