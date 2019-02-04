@@ -20,8 +20,6 @@ const WriteFilePlugin = require('write-file-webpack-plugin');
 const NodemonPlugin = require('nodemon-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const imageminMozjpeg = require('imagemin-mozjpeg');
-const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
-const ResourceHintWebpackPlugin = require('resource-hints-webpack-plugin');
 
 function getTitle(packageJson) {
     return `${packageJson.name.split('_').join(' ')}`;
@@ -117,12 +115,6 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
 
             plugins[q] = new HtmlWebpackPlugin(page);
         });
-
-        plugins.ScriptExtHtmlWebpackPlugin = new ScriptExtHtmlWebpackPlugin({
-            defaultAttribute: 'async'
-        });
-
-        plugins.ResourceHintWebpackPlugin = new ResourceHintWebpackPlugin();
 
         if (mode === 'development') {
             if (!isNumber(conf.server.browserSyncPort)) {
