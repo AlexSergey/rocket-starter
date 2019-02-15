@@ -6,6 +6,7 @@ const defaultProps = {
     stats: false,
     write: false,
     nodejs: false,
+    base64: true,
     server: {
         browserSyncPort: false,
         port: 3000,

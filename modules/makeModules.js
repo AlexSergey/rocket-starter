@@ -159,7 +159,7 @@ function getModules(conf = {}, mode, root) {
             ]
         },
 
-        images: {
+        images: conf.base64 ? {
             test: /\.(jpe?g|png|gif)$/i,
             use: [
                 {
@@ -170,15 +170,35 @@ function getModules(conf = {}, mode, root) {
                     }
                 }
             ]
+        } : {
+            test: /\.(jpe?g|png|gif)$/i,
+            use: [
+                {
+                    loader: require.resolve('file-loader'),
+                    query: {
+                        name: 'images/[name][hash].[ext]'
+                    }
+                }
+            ]
         },
 
-        fonts: {
+        fonts: conf.base64 ? {
             test: /\.(eot|ttf|woff|woff2)$/,
             use: [
                 {
                     loader: require.resolve('url-loader'),
                     query: {
                         limit: 10000,
+                        name: 'fonts/[name][hash].[ext]'
+                    }
+                }
+            ]
+        } : {
+            test: /\.(eot|ttf|woff|woff2)$/,
+            use: [
+                {
+                    loader: require.resolve('file-loader'),
+                    query: {
                         name: 'fonts/[name][hash].[ext]'
                     }
                 }
