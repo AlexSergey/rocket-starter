@@ -277,12 +277,6 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
         });
     }
 
-    if (mode === 'development') {
-        if (conf.nodejs) {
-            plugins.CleanWebpackPlugin = new CleanWebpackPlugin();
-        }
-    }
-
     return plugins;
 };
 
