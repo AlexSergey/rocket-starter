@@ -27,7 +27,7 @@ const make = async (conf, post) => {
     let devtool = makeDevtool(mode, conf);
     let devServer = makeDevServer(conf, root);
     let modules = makeModules(conf, root, packageJson, mode);
-    let plugins = makePlugins(conf, root, packageJson, mode, webpack, version);
+    let plugins = await makePlugins(conf, root, packageJson, mode, webpack, version);
     let resolve = makeResolve();
 
     let finalConfig = {

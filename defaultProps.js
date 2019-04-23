@@ -7,6 +7,7 @@ const defaultProps = {
     write: false,
     nodejs: false,
     base64: true,
+    analyzerPort: false, //port number, for example: 8888
     server: {
         browserSyncPort: false,
         port: 3000,

@@ -29,6 +29,9 @@ const getAppStrategy = (webpack, webpackConfig, conf) => {
 
                 server.listen(webpackConfig.devServer.port, webpackConfig.devServer.host, () => {
                     console.log(`Starting server on http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}/`);
+                    if (!!conf.analyzerPort) {
+                        console.log(`Bundle analyzer ran http://localhot:${conf.analyzerPort}/`);
+                    }
                 });
             }
             else {
@@ -37,6 +40,9 @@ const getAppStrategy = (webpack, webpackConfig, conf) => {
 
                 server.listen(webpackConfig.devServer.port, webpackConfig.devServer.host, () => {
                     console.log(`Starting server on http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}/`);
+                    if (!!conf.analyzerPort) {
+                        console.log(`Bundle analyzer ran http://localhot:${conf.analyzerPort}/`);
+                    }
                     open(`http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}/`);
                 });
             }

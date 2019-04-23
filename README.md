@@ -19,6 +19,8 @@ This config-generator include modules and features:
 - Uglifyjs (+parallel)
 - Hard Source Plugin (in production mode)
 - Generate stats.json (in production mode)
+- SEO Optimizations
+- Bundle Analyzer
 
 See to examples folder
 

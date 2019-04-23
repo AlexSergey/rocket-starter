@@ -20,12 +20,14 @@ const WriteFilePlugin = require('write-file-webpack-plugin');
 const NodemonPlugin = require('nodemon-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const imageminMozjpeg = require('imagemin-mozjpeg');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const fpPromise = require('../utils/findFreePort');
 
 function getTitle(packageJson) {
     return `${packageJson.name.split('_').join(' ')}`;
 }
 
-const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
+const getPlugins = async (conf, mode, root, packageJson, webpack, version) => {
     let plugins = {};
 
     /**
@@ -283,6 +285,13 @@ const getPlugins = (conf, mode, root, packageJson, webpack, version) => {
         }
     }
 
+    if (isNumber(conf.analyzerPort)) {
+        conf.analyzerPort = await fpPromise(8888);
+        plugins.BundleAnalyzerPlugin = new BundleAnalyzerPlugin({
+            analyzerPort: conf.analyzerPort
+        });
+    }
+
     return plugins;
 };
 
@@ -293,8 +302,8 @@ const _makePlugins = (plugins) => {
     });
 };
 
-const makePlugins = (conf, root, packageJson, mode, webpack, version) => {
-    let modules = getPlugins(conf, mode, root, packageJson, webpack, version);
+const makePlugins = async (conf, root, packageJson, mode, webpack, version) => {
+    let modules = await getPlugins(conf, mode, root, packageJson, webpack, version);
 
     return _makePlugins(modules, conf);
 };
