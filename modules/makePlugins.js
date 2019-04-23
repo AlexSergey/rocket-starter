@@ -281,7 +281,7 @@ const getPlugins = async (conf, mode, root, packageJson, webpack, version) => {
 
     if (mode === 'development') {
         if (conf.nodejs) {
-            plugins.CleanWebpackPlugin = new CleanWebpackPlugin([conf.dist || './dist'], { root: root || __dirname });
+            plugins.CleanWebpackPlugin = new CleanWebpackPlugin();
         }
     }
 
