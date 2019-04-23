@@ -233,7 +233,7 @@ const getPlugins = async (conf, mode, root, packageJson, webpack, version) => {
             ]
         });
 
-        plugins.CleanWebpackPlugin = new CleanWebpackPlugin([conf.dist || './dist'], { root: root || __dirname });
+        plugins.CleanWebpackPlugin = new CleanWebpackPlugin();
 
         plugins.OccurrenceOrderPlugin = new webpack.optimize.OccurrenceOrderPlugin();
 
