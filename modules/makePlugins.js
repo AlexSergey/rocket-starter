@@ -279,12 +279,6 @@ const getPlugins = async (conf, mode, root, packageJson, webpack, version) => {
         });
     }
 
-    if (mode === 'development') {
-        if (conf.nodejs) {
-            plugins.CleanWebpackPlugin = new CleanWebpackPlugin();
-        }
-    }
-
     if (isNumber(conf.analyzerPort)) {
         conf.analyzerPort = await fpPromise(8888);
         plugins.BundleAnalyzerPlugin = new BundleAnalyzerPlugin({
