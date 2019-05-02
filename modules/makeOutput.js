@@ -10,7 +10,8 @@ const getOutput = (conf = {}, root, version = '') => {
     if (conf.library) {
         Object.assign(outputProps, {
             library: conf.library,
-            libraryTarget: 'umd'
+            libraryTarget: 'umd',
+            globalObject: 'this'
         });
     }
 

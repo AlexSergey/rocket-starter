@@ -1,5 +1,5 @@
 const log = require('../utils/log');
-const { isNumber } = require('../utils/typeChecker');
+const { isNumber } = require('valid-types');
 const WebpackDevServer = require('webpack-dev-server');
 const open = require("open");
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
@@ -43,7 +43,9 @@ const getAppStrategy = (webpack, webpackConfig, conf) => {
                     if (!!conf.analyzerPort) {
                         console.log(`Bundle analyzer ran http://localhot:${conf.analyzerPort}/`);
                     }
-                    open(`http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}/`);
+                    if (conf.html) {
+                        open(`http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}/`);
+                    }
                 });
             }
         }

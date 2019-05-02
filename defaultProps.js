@@ -5,8 +5,8 @@ const defaultProps = {
     debug: false,
     stats: false,
     write: false,
-    nodejs: false,
     base64: true,
+    html: true,
     analyzerPort: false, //port number, for example: 8888
     server: {
         browserSyncPort: false,
@@ -18,7 +18,6 @@ const defaultProps = {
     * nodemon: path to nodemon run file
     * dotenv: 'path_to_dotend or put .env file to your project',
     * version: true,
-    * library: 'test',
     * styles: String,
     * html: { // You can also add array for multi-pages support
     *     title: String,

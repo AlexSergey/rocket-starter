@@ -1,5 +1,5 @@
 const deepExtend = require('deep-extend');
-const { isFunction, isObject, isArray } = require('./typeChecker');
+const { isFunction, isObject, isArray } = require('valid-types');
 
 class Collection {
     constructor(opt) {

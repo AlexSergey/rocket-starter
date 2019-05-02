@@ -1,7 +1,7 @@
 const { existsSync } = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Collection = require('../utils/Collection');
-const { isString, isBoolean, isArray, isObject, isNumber } = require('../utils/typeChecker');
+const { isString, isBoolean, isArray, isObject, isNumber } = require('valid-types');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const path = require('path');
 const makeBanner = require('./makeBanner');

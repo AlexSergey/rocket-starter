@@ -1,6 +1,3 @@
-let { compile } = require('../../index');
+let { libraryCompiler } = require('../../index');
 
-compile({
-    html: false,
-    library: 'MyLib'
-});
+libraryCompiler('MyLib');

@@ -1,6 +1,6 @@
-let { compile } = require('../../index');
+let { frontendCompiler } = require('../../index');
 
-compile({
+frontendCompiler({
     banner: true,
     styles: 'style.css'
 });

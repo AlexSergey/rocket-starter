@@ -1,13 +1,10 @@
 const path = require('path');
-let { compile } = require('../../index');
+let { backendCompiler } = require('../../index');
 
-compile({
-    nodejs: true
-}, finalConfig => {
+backendCompiler({}, finalConfig => {
     Object.assign(finalConfig.resolve, {
         alias: {
-            text: path.resolve('./text'),
-            ttt: path.resolve('../../../../../ttt/node_modules/fabric'),
+            text: path.resolve('./text')
         }
     });
 });

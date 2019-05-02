@@ -1,4 +1,4 @@
-let { isArray } = require('../utils/typeChecker');
+let { isArray } = require('valid-types');
 let path = require('path');
 
 const _getSrc = (src, root) => {
