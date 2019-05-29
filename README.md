@@ -4,6 +4,7 @@ This is the simplest way to make webpack config with many default settings.
 This config-generator include modules and features:
 
 - Webpack 4+, Webpack-dev-server
+- TypeScript support
 - Babel 7, Babel-preset-env (> 5%)
 - Support build nodejs scripts with nodemon
 - Dotenv support
@@ -137,9 +138,14 @@ markupCompiler(
     copy: {from: ... to: ...} || [] || {files: [], opts: {}}
 }
 ```
+TypeScript activation:
+- make tsconfig.json
+- add config (Example: https://www.typescriptlang.org/docs/handbook/react-&-webpack.html) 
+
 You can run it with NODE_ENV=production - it is active uglifier. 
 
 If you want a styles extraction you need to set styles: 'mystyle.css'
+
 If you don't need to extract styles to css file in production version you can set styles: false
 
 "copy" is activate CopyWebpackPlugin and we can use default syntax but we can set files and opts. Opts is second parameter in this plugin.

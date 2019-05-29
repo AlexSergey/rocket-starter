@@ -65,6 +65,26 @@ function getModules(conf = {}, mode, root) {
         debug = true;
     }
 
+    let tsConfig = false;
+
+    if (existsSync(path.resolve(root, './tsconfig.js'))) {
+        tsConfig = path.resolve(root, './tsconfig.js');
+        if (debug) {
+            if (existsSync(path.resolve(root, './tsconfig.debug.js'))) {
+                tsConfig = path.resolve(root, './tsconfig.debug.js');
+            }
+        }
+    }
+
+    if (existsSync(path.resolve(root, './tsconfig.json'))) {
+        tsConfig = path.resolve(root, './tsconfig.json');
+        if (debug) {
+            if (existsSync(path.resolve(root, './tsconfig.debug.json'))) {
+                tsConfig = path.resolve(root, './tsconfig.debug.json');
+            }
+        }
+    }
+
     let finalConf = {
         handlebars: {
             test: /\.(hbs|handlebars)$/,
@@ -91,6 +111,18 @@ function getModules(conf = {}, mode, root) {
                     loader: require.resolve('nunjucks-isomorphic-loader'),
                     query: {
                         root: [root]
+                    }
+                }
+            ]
+        },
+
+        ts: {
+            test: /\.ts$|\.tsx$/,
+            use: [
+                {
+                    loader: require.resolve('ts-loader'),
+                    options: {
+                        configFile: tsConfig
                     }
                 }
             ]
