@@ -31,7 +31,7 @@ function sortMediaQueries(a, b) {
 
 module.exports = {
     plugins: [
-        autoprefixer({ browsers: ['last 2 versions'] }),
+        autoprefixer({ overrideBrowserslist: [ "> 5%" ] }),
         rucksack(),
         instFilters(),
         lost(),
