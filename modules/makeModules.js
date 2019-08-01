@@ -278,7 +278,11 @@ function getModules(conf = {}, mode, root) {
             test: /\.(js|jsx)$/,
             exclude: /node_modules/,
             use: [{
-                loader: require.resolve('eslint-loader')
+                loader: require.resolve('eslint-loader'),
+                options: {
+                    configFile: path.resolve(root, 'eslintrc.js'),
+                    formatter: require.resolve('eslint-formatter-friendly')
+                }
             }]
         }
     }
