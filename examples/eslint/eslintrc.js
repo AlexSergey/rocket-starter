@@ -7,7 +7,8 @@ module.exports = {
         },
     },
     "plugins": [
-        "react"
+        "react",
+        "react-hooks"
     ],
     "env": {
         "browser": true,
@@ -18,9 +19,12 @@ module.exports = {
     },
     "parser": "babel-eslint",
     "rules": {
-        "jsx-quotes": [2, "prefer-double"], //Двойные кавычки в JSX
-        "react/jsx-uses-react": 2, //no-unused не будет ругаться на import React
-        "indent": [2, 4], //4 пробела отступы
-        "quotes": [2, "single"], //Использовать одинарные кавычки
+        "jsx-quotes": [2, "prefer-double"], //JSX double quotes
+        "react/jsx-uses-react": 2, //no-unused exclude error for import React
+        "indent": [2, 4], //4 spaces indent
+        "quotes": [2, "single"], //single quote in JS code,
+        // Rules of hook - https://reactjs.org/docs/hooks-rules.html
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn"
     }
 };

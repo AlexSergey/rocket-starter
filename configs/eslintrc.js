@@ -7,7 +7,8 @@ module.exports = {
         },
     },
     "plugins": [
-        "react"
+        "react",
+        "react-hooks"
     ],
     "env": {
         "browser": true,
@@ -17,5 +18,8 @@ module.exports = {
         "commonjs": true
     },
     "parser": require.resolve("babel-eslint"),
-    "rules": {}
+    "rules": {
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn"
+    }
 };

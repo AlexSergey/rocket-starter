@@ -2,6 +2,7 @@ const { existsSync } = require('fs');
 const Collection = require('../utils/Collection');
 const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const formatter = require("@becklyn/typescript-error-formatter");
 
 function babelOpts(isNodejs = false) {
     return {
@@ -9,7 +10,8 @@ function babelOpts(isNodejs = false) {
         babelrc: false,
         presets: [
             [require.resolve('@babel/preset-env'), Object.assign({
-                useBuiltIns: 'entry',
+                useBuiltIns: 'usage',
+                corejs: "3",
                 modules: false,
                 loose: true,
             }, isNodejs ? {
@@ -122,7 +124,8 @@ function getModules(conf = {}, mode, root) {
                 {
                     loader: require.resolve('ts-loader'),
                     options: {
-                        configFile: tsConfig
+                        configFile: tsConfig,
+                        errorFormatter: (message, colors) => formatter(message, colors, process.cwd())
                     }
                 }
             ]
