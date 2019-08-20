@@ -21,7 +21,11 @@ const NodemonPlugin = require('nodemon-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const imageminMozjpeg = require('imagemin-mozjpeg');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
+const CircularDependencyPlugin = require('circular-dependency-plugin');
+const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const fpPromise = require('../utils/findFreePort');
+const { DuplicatesPlugin } = require('inspectpack/plugin');
 
 function getTitle(packageJson) {
     return `${packageJson.name.split('_').join(' ')}`;
@@ -34,6 +38,14 @@ const getPlugins = async (conf, mode, root, packageJson, webpack, version) => {
      * COMMON
      * */
     plugins.WebpackBar = new WebpackBar();
+
+    plugins.CircularDependencyPlugin = new CircularDependencyPlugin({
+        exclude: /node_modules/,
+    });
+
+    plugins.DuplicatesPlugin = new DuplicatesPlugin();
+
+    plugins.CaseSensitivePathsPlugin = new CaseSensitivePathsPlugin();
 
     if (existsSync(path.resolve(root, '.env'))) {
         plugins.Dotenv = new Dotenv({

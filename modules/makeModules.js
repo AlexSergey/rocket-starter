@@ -11,7 +11,7 @@ function babelOpts(isNodejs = false) {
         presets: [
             [require.resolve('@babel/preset-env'), Object.assign({
                 useBuiltIns: 'usage',
-                corejs: "3",
+                corejs: 3,
                 modules: false,
                 loose: true,
             }, isNodejs ? {

@@ -4,7 +4,11 @@ const getOutput = (conf = {}, root, version = '') => {
     let outputProps = {
         publicPath: conf.url,
         path: path.resolve(root, conf.dist),
-        filename: version ? `[name]-${version}.js` : `[name].js`
+        filename: (chunkData) => {
+            return chunkData.chunk.name === 'main' ?
+                (version ? `index-${version}.js` : 'index.js')
+                : version ? `[name]-${version}.js` : '[name].js';
+        }
     };
 
     if (conf.library) {
