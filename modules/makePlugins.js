@@ -25,7 +25,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const fpPromise = require('../utils/findFreePort');
-const { DuplicatesPlugin } = require('inspectpack/plugin');
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 function getTitle(packageJson) {
     return `${packageJson.name.split('_').join(' ')}`;
@@ -43,7 +43,7 @@ const getPlugins = async (conf, mode, root, packageJson, webpack, version) => {
         exclude: /node_modules/,
     });
 
-    plugins.DuplicatesPlugin = new DuplicatesPlugin();
+    plugins.VueLoaderPlugin = new VueLoaderPlugin();
 
     plugins.CaseSensitivePathsPlugin = new CaseSensitivePathsPlugin();
 

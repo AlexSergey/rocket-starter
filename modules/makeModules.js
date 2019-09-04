@@ -4,8 +4,8 @@ const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const formatter = require("@becklyn/typescript-error-formatter");
 
-function babelOpts(isNodejs = false) {
-    return {
+function babelOpts(isNodejs = false, framework = false) {
+    var opts = {
         cacheDirectory: true,
         babelrc: false,
         presets: [
@@ -23,27 +23,40 @@ function babelOpts(isNodejs = false) {
                         "> 5%"
                     ]
                 }
-            })],
-            require.resolve('@babel/preset-react')
+            })]
         ],
-        plugins: [
-            require.resolve('@babel/plugin-syntax-dynamic-import'),
-            require.resolve('@babel/plugin-transform-flow-comments'),
-            [require.resolve('@babel/plugin-proposal-decorators'), { "legacy": true }],
-            require.resolve('@babel/plugin-proposal-class-properties'),
-            require.resolve('@babel/plugin-proposal-object-rest-spread')
-        ],
+        plugins: [],
         env: {
-            production: {
+            production: {}
+        }
+    };
+
+    switch (framework) {
+        case 'react':
+            opts.presets.push(
+                require.resolve('@babel/preset-react')
+            );
+
+            opts.plugins = opts.plugins.concat([
+                require.resolve('@babel/plugin-syntax-dynamic-import'),
+                require.resolve('@babel/plugin-transform-flow-comments'),
+                [require.resolve('@babel/plugin-proposal-decorators'), { "legacy": true }],
+                require.resolve('@babel/plugin-proposal-class-properties'),
+                require.resolve('@babel/plugin-proposal-object-rest-spread')
+            ]);
+
+            opts.env.production = Object.assign({}, opts.env.production, {
                 plugins: [
                     require.resolve('@babel/plugin-transform-react-constant-elements'),
                     require.resolve('@babel/plugin-transform-react-inline-elements'),
                     require.resolve('babel-plugin-transform-react-pure-class-to-function'),
                     require.resolve('babel-plugin-transform-react-remove-prop-types')
                 ]
-            }
-        }
+            });
+            break;
     }
+
+    return opts;
 }
 
 const getPostcssConfig = (root) => {
@@ -168,13 +181,34 @@ function getModules(conf = {}, mode, root) {
             ]
         },
 
+        jsx: {
+            test: /\.jsx/,
+            exclude: /(node_modules|bower_components)/,
+            use: [
+                {
+                    loader: require.resolve('babel-loader'),
+                    query: babelOpts(!!conf.nodejs, 'react')
+                }
+            ]
+        },
+
         js: {
-            test: /\.(js|jsx)$/,
+            test: /\.js/,
             exclude: /(node_modules|bower_components)/,
             use: [
                 {
                     loader: require.resolve('babel-loader'),
                     query: babelOpts(!!conf.nodejs)
+                }
+            ]
+        },
+
+        vue: {
+            test: /\.vue/,
+            exclude: /(node_modules|bower_components)/,
+            use: [
+                {
+                    loader: require.resolve('vue-loader')
                 }
             ]
         },

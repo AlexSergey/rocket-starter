@@ -1,6 +1,12 @@
 const makeResolve = () => {
     return {
-        extensions: ['.ts', '.tsx', '.js', '.jsx']
+        extensions: [
+            '.ts',
+            '.tsx',
+            '.js',
+            '.jsx',
+            '.vue'
+        ]
     };
 };
 
