@@ -12,11 +12,12 @@ This config-generator include modules and features:
 - React optimizations
 - Flow
 - Write file webpack plugin (in dev mode)
-- Postcss: Autoprefixer, Mqpacker, Lost, Instagram filters, Autoprefixer, Rucksack
 - Copy Webpack Plugin
 - ESLint
 - Templates: HTML/Jade/Handlebars,nunjucks
 - CSS: CSS/SASS/LESS + Postcss
+- Postcss: Autoprefixer, Mqpacker, Lost, Instagram filters, Autoprefixer, Rucksack
+- CSS Modules support
 - Imagemin
 - File import support: Markdown, Video, Audio, Fonts, SVG, Script, Shaders etc
 - SVG + SVGO
@@ -91,6 +92,7 @@ markupCompiler(
     dist: 'dist',
     src: 'src/index',
     url: '/',
+    cssModules: false,
     debug: false, // Activate debug mode in all plugins or loaders
     stats: false, // Generate stats webpack file
     write: false, // Write files to HDD after changes (watch mode)
@@ -111,6 +113,7 @@ markupCompiler(
     dist: 'dist',
     src: 'src/index',
     url: '/',
+    cssModules: false,
     debug: false, // Activate debug mode in all plugins or loaders
     stats: false, // Generate stats webpack file
     write: false, // Write files to HDD after changes (watch mode)
