@@ -7,6 +7,7 @@ const defaultProps = {
     write: false,
     base64: true,
     html: true,
+    cssModules: false,
     analyzerPort: false, //port number, for example: 8888
     server: {
         browserSyncPort: false,

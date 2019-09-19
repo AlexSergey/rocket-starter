@@ -1,0 +1,9 @@
+@import './variables';
+
+.block {
+  background-color: $backgroundColor;
+
+  h1 {
+    font-weight: normal;
+  }
+}

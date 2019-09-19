@@ -171,17 +171,17 @@ function getModules(conf = {}, mode, root) {
             test: /\.css$/,
             use: [
                 extractStyles ? MiniCssExtractPlugin.loader : { loader: require.resolve('style-loader'), options: { sourceMap: debug } },
-                { loader: require.resolve('css-loader'), options: { sourceMap: debug } },
+                { loader: require.resolve('css-loader'), options: { sourceMap: debug, modules: conf.cssModules } },
                 { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(root), sourceMap: debug } }
             ],
             exclude: /\.async\.(html|css)$/
         },
 
         scss: {
-            test: /\.scss/,
+            test: /\.scss$/,
             use: [
                 extractStyles ? MiniCssExtractPlugin.loader : { loader: require.resolve('style-loader'), options: { sourceMap: debug } },
-                { loader: require.resolve('css-loader'), options: { sourceMap: debug } },
+                { loader: require.resolve('css-loader'), options: { sourceMap: debug, modules: conf.cssModules } },
                 { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(root), sourceMap: debug } },
                 { loader: require.resolve('sass-loader'), options: { sourceMap: debug } }
             ]
@@ -191,14 +191,14 @@ function getModules(conf = {}, mode, root) {
             test: /\.less/,
             use: [
                 extractStyles ? MiniCssExtractPlugin.loader : { loader: require.resolve('style-loader'), options: { sourceMap: debug } },
-                { loader: require.resolve('css-loader'), options: { sourceMap: debug } },
+                { loader: require.resolve('css-loader'), options: { sourceMap: debug, modules: conf.cssModules } },
                 { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(root), sourceMap: debug } },
                 { loader: require.resolve('less-loader'), options: { sourceMap: debug } }
             ]
         },
 
         jsx: {
-            test: /\.jsx/,
+            test: /\.jsx$/,
             exclude: /(node_modules|bower_components)/,
             use: [
                 {
@@ -209,7 +209,7 @@ function getModules(conf = {}, mode, root) {
         },
 
         js: {
-            test: /\.js/,
+            test: /\.js$/,
             exclude: /(node_modules|bower_components)/,
             use: [
                 {
@@ -220,7 +220,7 @@ function getModules(conf = {}, mode, root) {
         },
 
         vue: {
-            test: /\.vue/,
+            test: /\.vue$/,
             exclude: /(node_modules|bower_components)/,
             use: [
                 {
