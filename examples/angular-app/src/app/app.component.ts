@@ -5,5 +5,5 @@ import { Component } from '@angular/core';
     template: require('./app.component.html')
 })
 export class AppComponent {
-    title = 'ng7';
+    title = 'Mega Title';
 }

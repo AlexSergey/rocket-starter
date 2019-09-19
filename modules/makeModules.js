@@ -79,7 +79,7 @@ function getModules(conf = {}, mode, root) {
         debug = true;
     }
 
-    let tsConfig = false;
+    let tsConfig = path.resolve(__dirname, '../configs/tsconfig.json');
 
     if (existsSync(path.resolve(root, './tsconfig.js'))) {
         tsConfig = path.resolve(root, './tsconfig.js');
@@ -106,6 +106,21 @@ function getModules(conf = {}, mode, root) {
                 {
                     loader: require.resolve('handlebars-loader')
                 }
+            ]
+        },
+
+        asyncAssets: {
+            test: /\.async\.(html|css)$/,
+            use: [
+                {
+                    loader: require.resolve('file-loader'),
+                    query: {
+                        name: '[name].[hash].[ext]'
+                    }
+                },
+                {
+                    loader: require.resolve('extract-loader')
+                },
             ]
         },
 
@@ -158,7 +173,8 @@ function getModules(conf = {}, mode, root) {
                 extractStyles ? MiniCssExtractPlugin.loader : { loader: require.resolve('style-loader'), options: { sourceMap: debug } },
                 { loader: require.resolve('css-loader'), options: { sourceMap: debug } },
                 { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(root), sourceMap: debug } }
-            ]
+            ],
+            exclude: /\.async\.(html|css)$/
         },
 
         scss: {
@@ -277,7 +293,8 @@ function getModules(conf = {}, mode, root) {
             test: /\.(html)$/,
             use: {
                 loader: require.resolve('html-loader')
-            }
+            },
+            exclude: /\.async\.(html|css)$/
         },
 
         markdown: {
