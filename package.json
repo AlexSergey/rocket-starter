@@ -1,6 +1,6 @@
 {
   "name": "rocket-starter",
-  "version": "1.6.1",
+  "version": "1.7.0",
   "description": "",
   "main": "index.js",
   "author": "Aleksandrov Sergey <gooddev.sergey@gmail.com> (https://github.com/AlexSergey/rocket-starter)",
@@ -98,7 +98,7 @@
     "webpack-bundle-analyzer": "3.5.0",
     "webpack-dev-server": "3.8.1",
     "webpack-stats-plugin": "0.3.0",
-    "webpackbar": "3.2.0",
+    "webpackbar": "4.0.0",
     "write-file-webpack-plugin": "4.5.1",
     "yargs": "14.0.0"
   }

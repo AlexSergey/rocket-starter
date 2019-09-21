@@ -1,10 +1,21 @@
 const { existsSync } = require('fs');
+const { isString, isObject } = require('valid-types');
 const Collection = require('../utils/Collection');
 const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const formatter = require("@becklyn/typescript-error-formatter");
 
 function babelOpts(isNodejs = false, framework = false) {
+    const root = path.dirname(require.main.filename);
+    const packageJson = existsSync(path.resolve(root, 'package.json')) ? require(path.resolve(root, 'package.json')) : {};
+    let corejs = false;
+
+    if (packageJson && isObject(packageJson.dependencies)) {
+        if (isString(packageJson.dependencies['core-js'])) {
+            corejs = packageJson.dependencies['core-js'];
+        }
+    }
+
     var opts = {
         cacheDirectory: true,
         babelrc: false,
@@ -23,7 +34,9 @@ function babelOpts(isNodejs = false, framework = false) {
                         "> 5%"
                     ]
                 }
-            })]
+            }, isString(corejs) ? {
+                corejs
+            } : {})]
         ],
         plugins: [],
         env: {
@@ -356,7 +369,7 @@ const _makeModules = (modules, conf = {}, excludeModules = []) => {
 const makeModules = (conf, root, packageJson, mode, excludeModules) => {
     let modules = getModules(conf, mode, root);
 
-    return _makeModules(modules, conf);
+    return _makeModules(modules, conf, excludeModules);
 };
 
 module.exports = { makeModules, babelOpts };

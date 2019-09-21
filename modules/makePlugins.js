@@ -37,7 +37,16 @@ const getPlugins = async (conf, mode, root, packageJson, webpack, version) => {
     /**
      * COMMON
      * */
-    plugins.WebpackBar = new WebpackBar();
+    plugins.WebpackBar = new WebpackBar({
+        reporters: [
+            'basic',
+            'fancy',
+            'profile',
+            'stats'
+        ],
+        profile: mode === 'production',
+        stats: mode === 'production'
+    });
 
     plugins.CircularDependencyPlugin = new CircularDependencyPlugin({
         exclude: /node_modules/,

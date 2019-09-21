@@ -6,6 +6,7 @@ const markupCompiler = require('./compilers/markupCompiler');
 const libraryCompiler = require('./compilers/libraryCompiler');
 const frontendCompiler = require('./compilers/frontendCompiler');
 const backendCompiler = require('./compilers/backendCompiler');
+const analyzerCompiler = require('./compilers/analyzerCompiler');
 
 function getArgs() {
     return argv;
@@ -23,5 +24,6 @@ module.exports = {
     markupCompiler,
     libraryCompiler,
     frontendCompiler,
-    backendCompiler
+    backendCompiler,
+    analyzerCompiler
 };

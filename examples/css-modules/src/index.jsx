@@ -1,8 +1,9 @@
+import './global.scss';
 import React from 'react';
 import { render } from 'react-dom';
 import styles from './styles.scss'
 
-render(<div>
+render(<div className="myclass">
     <div className={styles.block}>
         <h1>Test</h1>
     </div>
