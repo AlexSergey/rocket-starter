@@ -84,6 +84,13 @@ markupCompiler(
          });
     });
 ```
+### analyzerCompiler(options[optional], callback[optional]);
+compile your application and run webpack-bundle-analyzer
+```jsx
+const { analyzerCompiler } = require('rocket-starter');
+
+analyzerCompiler(options); //analyzerPort by default 8888
+```
 
 #### Default Options:
 
@@ -92,7 +99,6 @@ markupCompiler(
     dist: 'dist',
     src: 'src/index',
     url: '/',
-    cssModules: false,
     debug: false, // Activate debug mode in all plugins or loaders
     stats: false, // Generate stats webpack file
     write: false, // Write files to HDD after changes (watch mode)
@@ -113,7 +119,6 @@ markupCompiler(
     dist: 'dist',
     src: 'src/index',
     url: '/',
-    cssModules: false,
     debug: false, // Activate debug mode in all plugins or loaders
     stats: false, // Generate stats webpack file
     write: false, // Write files to HDD after changes (watch mode)

@@ -21,7 +21,6 @@ function babelOpts(isNodejs = false, framework = false) {
         babelrc: false,
         presets: [
             [require.resolve('@babel/preset-env'), Object.assign({
-                useBuiltIns: 'usage',
                 modules: false,
                 loose: true,
             }, isNodejs ? {
@@ -35,7 +34,8 @@ function babelOpts(isNodejs = false, framework = false) {
                     ]
                 }
             }, isString(corejs) ? {
-                corejs
+                corejs,
+                useBuiltIns: 'usage'
             } : {})]
         ],
         plugins: [],
@@ -180,34 +180,66 @@ function getModules(conf = {}, mode, root) {
             ]
         },
 
+        cssModules: {
+            test: /\.modules\.css$/,
+            use: [
+                extractStyles ? MiniCssExtractPlugin.loader : { loader: require.resolve('style-loader'), options: { sourceMap: debug } },
+                { loader: require.resolve('css-loader'), options: { sourceMap: debug, modules: true } },
+                { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(root), sourceMap: debug } }
+            ],
+            exclude: /\.async\.css$/
+        },
+
+        scssModules: {
+            test: /\.modules\.scss$/,
+            use: [
+                extractStyles ? MiniCssExtractPlugin.loader : { loader: require.resolve('style-loader'), options: { sourceMap: debug } },
+                { loader: require.resolve('css-loader'), options: { sourceMap: debug, modules: true } },
+                { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(root), sourceMap: debug } },
+                { loader: require.resolve('sass-loader'), options: { sourceMap: debug } }
+            ]
+        },
+
+        lessModules: {
+            test: /\.modules\.less$/,
+            use: [
+                extractStyles ? MiniCssExtractPlugin.loader : { loader: require.resolve('style-loader'), options: { sourceMap: debug } },
+                { loader: require.resolve('css-loader'), options: { sourceMap: debug, modules: true } },
+                { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(root), sourceMap: debug } },
+                { loader: require.resolve('less-loader'), options: { sourceMap: debug } }
+            ]
+        },
+
         css: {
             test: /\.css$/,
             use: [
                 extractStyles ? MiniCssExtractPlugin.loader : { loader: require.resolve('style-loader'), options: { sourceMap: debug } },
-                { loader: require.resolve('css-loader'), options: { sourceMap: debug, modules: conf.cssModules } },
+                { loader: require.resolve('css-loader'), options: { sourceMap: debug } },
                 { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(root), sourceMap: debug } }
             ],
-            exclude: /\.async\.(html|css)$/
+            exclude: /(\.async\.css$)|(\.modules\.css$)/
         },
 
         scss: {
             test: /\.scss$/,
             use: [
                 extractStyles ? MiniCssExtractPlugin.loader : { loader: require.resolve('style-loader'), options: { sourceMap: debug } },
-                { loader: require.resolve('css-loader'), options: { sourceMap: debug, modules: conf.cssModules } },
+                { loader: require.resolve('css-loader'), options: { sourceMap: debug } },
                 { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(root), sourceMap: debug } },
                 { loader: require.resolve('sass-loader'), options: { sourceMap: debug } }
-            ]
+            ],
+            exclude: /\.modules\.scss$/
         },
 
         less: {
             test: /\.less/,
             use: [
                 extractStyles ? MiniCssExtractPlugin.loader : { loader: require.resolve('style-loader'), options: { sourceMap: debug } },
-                { loader: require.resolve('css-loader'), options: { sourceMap: debug, modules: conf.cssModules } },
+                { loader: require.resolve('css-loader'), options: { sourceMap: debug } },
                 { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(root), sourceMap: debug } },
                 { loader: require.resolve('less-loader'), options: { sourceMap: debug } }
-            ]
+            ],
+            exclude: /\.modules\.less$/
         },
 
         jsx: {
