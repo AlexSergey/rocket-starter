@@ -99,6 +99,7 @@ const getPlugins = async (conf, mode, root, packageJson, webpack, version) => {
     if (conf._liveReload && mode === 'development') {
         const liveReloadPort = await fpPromise(35729);
         conf._liveReloadPort = liveReloadPort;
+        process.env.__LIVE_RELOAD__ = liveReloadPort;
         plugins.liveReload = new LiveReloadPlugin({ port: liveReloadPort });
 
         const errors = ['unhandledRejection', 'uncaughtException'];
