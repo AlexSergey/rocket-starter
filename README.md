@@ -7,7 +7,7 @@ This config-generator include modules and features:
 - Support React, Angular 2+, Vue 
 - TypeScript support
 - Babel 7, Babel-preset-env (> 5%)
-- Support build nodejs scripts with nodemon
+- Support build nodejs scripts with nodemon and livereload
 - Dotenv support
 - React optimizations
 - Flow
@@ -59,6 +59,11 @@ backendCompiler(options || {
     });
 });
 ```
+if you need to use live-reload in nodejs project you should add
+```html
+<script src="http://localhost:35729/livereload.js"></script>
+```
+
 ### libraryCompiler(libraryName[needed], options[optional], callback[optional]);
 can compile UMD library
 ```jsx

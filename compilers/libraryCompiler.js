@@ -15,6 +15,9 @@ async function libraryCompiler(libraryName, options = {}, cb) {
     }, (mode === 'production' ? {
         html: !options.html ? false : options.html
     } : {}));
+    if ((process.env.NODE_ENV || 'development') === 'development') {
+        options._liveReload = true;
+    }
     if (options.nodejs) {
         return await backendCompiler(options, cb);
     }

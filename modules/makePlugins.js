@@ -21,7 +21,7 @@ const NodemonPlugin = require('nodemon-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const imageminMozjpeg = require('imagemin-mozjpeg');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-
+const LiveReloadPlugin = require('webpack-livereload-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const fpPromise = require('../utils/findFreePort');
@@ -33,7 +33,6 @@ function getTitle(packageJson) {
 
 const getPlugins = async (conf, mode, root, packageJson, webpack, version) => {
     let plugins = {};
-
     /**
      * COMMON
      * */
@@ -97,6 +96,30 @@ const getPlugins = async (conf, mode, root, packageJson, webpack, version) => {
         plugins.NodemonPlugin = isString(conf.nodemon) ? new NodemonPlugin({script: conf.nodemon}) : new NodemonPlugin();
     }
 
+    if (conf._liveReload && mode === 'development') {
+        const liveReloadPort = await fpPromise(35729);
+        conf._liveReloadPort = liveReloadPort;
+        plugins.liveReload = new LiveReloadPlugin({ port: liveReloadPort });
+
+        const errors = ['unhandledRejection', 'uncaughtException'];
+
+        errors.map(error => {
+            process.on(error, () => {
+                plugins.liveReload.server.close();
+                process.exit(1);
+            });
+        });
+
+        const signals = ['SIGTERM', 'SIGINT', 'SIGUSR2'];
+
+        signals.map(signal => {
+            process.once(signal, () => {
+                plugins.liveReload.server.close();
+                process.exit(0);
+            });
+        });
+    }
+
     let pages = [];
     let HTMLProcessing = true;
 
@@ -109,19 +132,23 @@ const getPlugins = async (conf, mode, root, packageJson, webpack, version) => {
         }
         else {
             pages = [
-                {
+                Object.assign({
                     title: (conf.html && conf.html.title) || getTitle(packageJson),
                     code: (conf.html && conf.html.code) ? conf.html.code : null,
                     favicon: (conf.html && conf.html.favicon) ? conf.html.favicon : null,
                     template: (conf.html && conf.html.template) || path.resolve(__dirname, '..', './index.ejs')
-
-                }
+                }, conf._liveReloadPort ? {
+                    liveReloadPort: conf._liveReloadPort
+                } : {})
             ];
         }
 
         pages = pages.map(page => {
             if (version) {
                 page.version = version;
+            }
+            if (conf._liveReloadPort) {
+                page.liveReloadPort = conf._liveReloadPort;
             }
             if (!page.template) {
                 page.template = path.resolve(__dirname, '..', './index.ejs');

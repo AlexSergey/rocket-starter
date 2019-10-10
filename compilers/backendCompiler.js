@@ -6,6 +6,9 @@ async function backendCompiler(options, cb) {
         html: false,
         nodejs: true,
     });
+    if ((process.env.NODE_ENV || 'development') === 'development') {
+        options._liveReload = true;
+    }
     return await _compile(options, cb);
 }
 

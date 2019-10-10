@@ -10,7 +10,9 @@ const getAppStrategy = (webpack, webpackConfig, conf) => {
             let compiler = webpack(webpackConfig);
             compiler.run((err, stats) => {
                 log(err, stats);
-
+                if (isNumber(conf._liveReloadPort)) {
+                    console.log(`LiveReload server on http://localhost:${conf._liveReloadPort}`);
+                }
                 process.exit(err ? 1 : 0);
             });
         },
@@ -28,6 +30,9 @@ const getAppStrategy = (webpack, webpackConfig, conf) => {
                 let server = new WebpackDevServer(compiler, webpackConfig.devServer);
 
                 server.listen(webpackConfig.devServer.port, webpackConfig.devServer.host, () => {
+                    if (isNumber(conf._liveReloadPort)) {
+                        console.log(`LiveReload server on http://localhost:${conf._liveReloadPort}`);
+                    }
                     console.log(`Starting server on http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}/`);
                     if (!!conf.analyzerPort) {
                         console.log(`Bundle analyzer ran http://localhot:${conf.analyzerPort}/`);
@@ -39,6 +44,9 @@ const getAppStrategy = (webpack, webpackConfig, conf) => {
                 let server = new WebpackDevServer(compiler, webpackConfig.devServer);
 
                 server.listen(webpackConfig.devServer.port, webpackConfig.devServer.host, () => {
+                    if (isNumber(conf._liveReloadPort)) {
+                        console.log(`LiveReload server on http://localhost:${conf._liveReloadPort}`);
+                    }
                     console.log(`Starting server on http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}/`);
                     if (!!conf.analyzerPort) {
                         console.log(`Bundle analyzer ran http://localhot:${conf.analyzerPort}/`);
