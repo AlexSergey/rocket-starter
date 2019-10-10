@@ -4,6 +4,7 @@ const { existsSync } = require('fs');
 const makeMode = require('../modules/makeMode');
 const makeEntry = require('../modules/makeEntry');
 const makeOutput = require('../modules/makeOutput');
+const makeNode = require('../modules/makeNode');
 const makeVersion = require('../modules/makeVersion');
 const mergeConfWithDefault = require('../modules/mergeConfWithDefault');
 const makeDevtool = require('../modules/makeDevtool');
@@ -37,6 +38,7 @@ const _make = async (conf, post) => {
     };
 
     if (conf.nodejs) {
+        finalConfig.node = makeNode();
         finalConfig.target = 'node';
 
         if (mode === 'development') {
@@ -47,9 +49,15 @@ const _make = async (conf, post) => {
     if (isFunction(post)) {
         post(finalConfig, modules, plugins);
     }
-    let webpackConfig = compileWebpackConfig(finalConfig, conf, mode, root, modules, plugins);
 
-    return webpackConfig;
+    return compileWebpackConfig(
+        finalConfig,
+        conf,
+        mode,
+        root,
+        modules,
+        plugins
+    );
 };
 
 module.exports = _make;
