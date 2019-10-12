@@ -1,5 +1,5 @@
 {
-  "name": "@micro/app",
+  "name": "isomorphic",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,10 +10,5 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "express": "4.17.1",
-    "react-meta-tags": "0.7.4",
-    "@monorepo/web": "^1.0.0",
-    "rocket-starter": "1.8.1"
-  }
+  "dependencies": {}
 }
