@@ -26,6 +26,8 @@ This config-generator include modules and features:
 - Generate stats.json (in production mode)
 - SEO Optimizations
 - Bundle Analyzer
+- Isomorphic compile supported
+- Multi compile supported
 
 ## How it works
 You have 4 compilers for your scripts
@@ -95,6 +97,64 @@ compile your application and run webpack-bundle-analyzer
 const { analyzerCompiler } = require('rocket-starter');
 
 analyzerCompiler(options); //analyzerPort by default 8888
+```
+### multiCompiler(configArray[needed]);
+Multi compilation
+```jsx
+let { multiCompiler, frontendCompiler, libraryCompiler, backendCompiler } = require('rocket-starter');
+
+multiCompiler([
+    {
+        compiler: backendCompiler,
+        config: {
+            src: './backend/src/index.js',
+            dist: './backend/dist'
+        }
+    },
+    {
+        compiler: frontendCompiler,
+        config: {
+            src: './client/src/index.jsx',
+            dist: './client/dist',
+            banner: true,
+            styles: 'style.css'
+        }
+    },
+    {
+        compiler: libraryCompiler,
+        libraryName: 'MyLib',
+        config: {
+            src: './library/src/index.js',
+            dist: './library/dist',
+            write: true,
+            html: false
+        }
+    }
+]);
+```
+### isomorphicCompiler(configArray[needed]);
+Compile isomorphic app
+```jsx
+const { isomorphicCompiler, backendCompiler, frontendCompiler } = require('rocket-starter');
+
+isomorphicCompiler([
+    {
+        compiler: backendCompiler,
+        config: {
+            src: 'backend/src/index.jsx'
+        }
+    },
+    {
+        compiler: frontendCompiler,
+        config: {
+            src: 'client/src/index.jsx',
+            dist: 'backend/dist',
+            write: true,
+            html: false,
+            onlyWatch: true
+        }
+    }
+]);
 ```
 
 #### Default Options:

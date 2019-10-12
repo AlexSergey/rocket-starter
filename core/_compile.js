@@ -10,7 +10,7 @@ const _compile = async (conf = {}, post, withoutRun = false) => {
     conf.progress = true;
     const webpackConfig = await _make(conf, post);
     if (withoutRun) {
-        return webpackConfig;
+        return { webpackConfig, conf };
     }
     run(webpackConfig, mode, webpack, conf);
 };

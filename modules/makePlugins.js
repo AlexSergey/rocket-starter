@@ -1,7 +1,7 @@
 const { existsSync } = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Collection = require('../utils/Collection');
-const { isString, isBoolean, isArray, isObject, isNumber } = require('valid-types');
+const { isString, isBoolean, isArray, isObject, isNumber, isFunction } = require('valid-types');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const path = require('path');
 const makeBanner = require('./makeBanner');
@@ -25,7 +25,7 @@ const LiveReloadPlugin = require('webpack-livereload-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const fpPromise = require('../utils/findFreePort');
-const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 function getTitle(packageJson) {
     return `${packageJson.name.split('_').join(' ')}`;
@@ -97,7 +97,7 @@ const getPlugins = async (conf, mode, root, packageJson, webpack, version) => {
     }
 
     if (conf._liveReload && mode === 'development') {
-        const liveReloadPort = await fpPromise(35729);
+        const liveReloadPort = await fpPromise(isNumber(conf.liveReload) ? conf.liveReload : 35729);
         conf._liveReloadPort = liveReloadPort;
         process.env.__LIVE_RELOAD__ = liveReloadPort;
         plugins.liveReload = new LiveReloadPlugin({ port: liveReloadPort });
@@ -106,7 +106,9 @@ const getPlugins = async (conf, mode, root, packageJson, webpack, version) => {
 
         errors.map(error => {
             process.on(error, () => {
-                plugins.liveReload.server.close();
+                if (plugins.liveReload && plugins.liveReload.server && isFunction(plugins.liveReload.server.close)) {
+                    plugins.liveReload.server.close();
+                }
                 process.exit(1);
             });
         });
@@ -115,7 +117,9 @@ const getPlugins = async (conf, mode, root, packageJson, webpack, version) => {
 
         signals.map(signal => {
             process.once(signal, () => {
-                plugins.liveReload.server.close();
+                if (plugins.liveReload && plugins.liveReload.server && isFunction(plugins.liveReload.server.close)) {
+                    plugins.liveReload.server.close();
+                }
                 process.exit(0);
             });
         });

@@ -4,7 +4,7 @@ const { isString } = require('valid-types');
 const makeMode = require('../modules/makeMode');
 const deepExtend = require('deep-extend');
 
-async function libraryCompiler(libraryName, options = {}, cb) {
+async function libraryCompiler(libraryName, options = {}, cb, configOnly = false) {
     if (!isString(libraryName)) {
         console.error('libraryName mus\'t be a string!');
         return process.exit(1);
@@ -19,9 +19,9 @@ async function libraryCompiler(libraryName, options = {}, cb) {
         options._liveReload = true;
     }
     if (options.nodejs) {
-        return await backendCompiler(options, cb);
+        return await backendCompiler(options, cb, configOnly);
     }
-    return await frontendCompiler(options, cb);
+    return await frontendCompiler(options, cb, configOnly);
 }
 
 module.exports = libraryCompiler;
