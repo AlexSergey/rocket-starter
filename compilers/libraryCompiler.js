@@ -3,10 +3,11 @@ const backendCompiler = require('./backendCompiler');
 const { isString } = require('valid-types');
 const makeMode = require('../modules/makeMode');
 const deepExtend = require('deep-extend');
+const errors = require('../errors/libraryCompiler');
 
 async function libraryCompiler(libraryName, options = {}, cb, configOnly = false) {
     if (!isString(libraryName)) {
-        console.error('libraryName mus\'t be a string!');
+        console.error(errors.MUST_BE_STRING);
         return process.exit(1);
     }
     let mode = makeMode();

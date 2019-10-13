@@ -11,10 +11,7 @@ isomorphicCompiler([
         compiler: frontendCompiler,
         config: {
             src: 'client/src/index.jsx',
-            dist: 'backend/dist',
-            write: true,
-            html: false,
-            onlyWatch: true
+            dist: 'backend/dist'
         }
     }
 ]);

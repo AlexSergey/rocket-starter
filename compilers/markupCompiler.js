@@ -2,15 +2,16 @@ const deepExtend = require('deep-extend');
 const { isDefined, isUndefined, isArray } = require('valid-types');
 const _compile = require('../core/_compile');
 const glob = require('glob');
+const errors = require('../errors/markupCompiler');
 
-function _getOptions(pth, options, cb, configOnly) {
+function _getOptions(pth, options) {
     return new Promise((resolve, reject) => {
         glob(pth, {absolute: true}, async function (err, files) {
             if (err) {
                 return reject(err);
             }
             if (files.length === 0) {
-                console.error('Invalid path');
+                console.error(errors.INVALID_PATH);
                 return process.exit(1);
             }
             let html = isUndefined(options.html) ? [] : options.html;
@@ -29,7 +30,7 @@ function _getOptions(pth, options, cb, configOnly) {
 
 async function markupCompiler(pth, options = {}, cb, configOnly = false) {
     if (!pth) {
-        console.error('Path can\'t be empty!');
+        console.error(errors.PATH_CANT_BE_EMPTY);
         return process.exit(1);
     }
     if ((process.env.NODE_ENV || 'development') === 'development') {
