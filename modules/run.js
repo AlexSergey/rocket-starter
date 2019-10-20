@@ -1,42 +1,36 @@
 const log = require('../utils/log');
-const { isNumber, isArray } = require('valid-types');
+const { isNumber, isArray, isFunction } = require('valid-types');
 const WebpackDevServer = require('webpack-dev-server');
-const open = require("open");
-const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
-
-function runDevServer(compiler, webpackConfig, conf) {
-    let server = new WebpackDevServer(compiler, webpackConfig.devServer);
-
-    server.listen(webpackConfig.devServer.port, webpackConfig.devServer.host, () => {
-        if (isNumber(conf._liveReloadPort)) {
-            console.log(`LiveReload server on http://localhost:${conf._liveReloadPort}`);
-        }
-        console.log(`Starting server on http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}/`);
-        if (!!conf.analyzerPort) {
-            console.log(`Bundle analyzer ran http://localhot:${conf.analyzerPort}/`);
-        }
-        if (conf.html) {
-            open(`http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}/`);
-        }
-    });
-}
+const open = require('open');
 
 const runAppStrategy = (compiler, webpack, webpackConfig, conf) => {
     return {
         simple: () => {
-            compiler.run((err, stats) => {
-                log(err, stats);
+            return new Promise((resolve, reject) => {
+                compiler.run((err, stats) => {
+                    log(err, stats);
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve(stats);
+                });
+            });
+        },
+        'dev-server': () => {
+            let server = new WebpackDevServer(compiler, webpackConfig.devServer);
+
+            server.listen(webpackConfig.devServer.port, webpackConfig.devServer.host, () => {
                 if (isNumber(conf._liveReloadPort)) {
                     console.log(`LiveReload server on http://localhost:${conf._liveReloadPort}`);
                 }
-                process.exit(err ? 1 : 0);
+                console.log(`Starting server on http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}/`);
+                if (!!conf.analyzerPort) {
+                    console.log(`Bundle analyzer ran http://localhot:${conf.analyzerPort}/`);
+                }
+                if (conf.html) {
+                    open(`http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}/`);
+                }
             });
-        },
-        'browser-sync': () => {
-            runDevServer(compiler, webpackConfig, conf);
-        },
-        'dev-server': () => {
-            runDevServer(compiler, webpackConfig, conf);
         },
         'watch': () => {
             compiler.watch({}, (err, stats) => {
@@ -45,6 +39,9 @@ const runAppStrategy = (compiler, webpack, webpackConfig, conf) => {
                     colors: true,
                     children: false
                 }));
+                if (isNumber(conf._liveReloadPort)) {
+                    console.log(`LiveReload server on http://localhost:${conf._liveReloadPort}`);
+                }
             });
         }
     };
@@ -53,10 +50,14 @@ const runAppStrategy = (compiler, webpack, webpackConfig, conf) => {
 const runNodeStrategy = (compiler) => {
     return {
         simple: () => {
-            compiler.run((err, stats) => {
-                log(err, stats);
-
-                process.exit(err ? 1 : 0);
+            return new Promise((resolve, reject) => {
+                compiler.run((err, stats) => {
+                    log(err, stats);
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve(stats);
+                });
             });
         },
         'node-watch': () => {
@@ -71,7 +72,7 @@ const runNodeStrategy = (compiler) => {
     }
 };
 
-const _getStrategy = (mode, conf) => {
+const getStrategy = (mode, conf) => {
     if (conf.onlyWatch) {
         return conf.nodejs ? 'node-watch' : 'watch';
     }
@@ -80,9 +81,6 @@ const _getStrategy = (mode, conf) => {
             if (conf.nodejs) {
                 return 'node-watch';
             }
-            else if (conf.server && isNumber(conf.server.browserSyncPort)) {
-                return 'browser-sync';
-            }
             return 'dev-server';
 
         default:
@@ -90,76 +88,45 @@ const _getStrategy = (mode, conf) => {
     }
 };
 
-const run = (webpackConfig, mode, webpack, conf) => {
+const run = async (webpackConfig, mode, webpack, configs) => {
     process.env.NODE_ENV = mode;
     process.env.BABEL_ENV = mode;
 
-    if (isArray(webpackConfig)) {
-        webpackConfig.forEach((webpackConfig, index) => {
-            conf[index].strategy = _getStrategy(mode, conf[index]);
-        });
+    let isMultiCompile = isArray(webpackConfig);
 
-        conf.forEach((conf, index) => {
-            if (conf.strategy === 'browser-sync') {
-                webpackConfig[index].plugins.push(new BrowserSyncPlugin(
-                    {
-                        port: conf.server.browserSyncPort,
-                        proxy: `http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}`
-                    },
-                    { reload: false }
-                ));
-            }
-        });
+    webpackConfig = isMultiCompile ? webpackConfig : [webpackConfig];
+    configs = isMultiCompile ? configs : [configs];
 
-        let compiler = webpack(webpackConfig);
+    webpackConfig.forEach((webpackConfig, index) => {
+        configs[index].strategy = getStrategy(mode, configs[index]);
+    });
 
-        conf.forEach((conf, index) => {
-            let compileStrategy;
+    let compiler = isMultiCompile ? webpack(webpackConfig) : webpack(webpackConfig[0]);
 
-            if (conf.nodejs) {
-                compileStrategy = runNodeStrategy(compiler.compilers[index], webpack, webpackConfig[index], conf)[conf.strategy];
-            }
-            else {
-                compileStrategy = runAppStrategy(compiler.compilers[index], webpack, webpackConfig[index], conf)[conf.strategy];
-            }
-
-            compileStrategy();
-        });
-    }
-    else {
+    for (let i = 0, l = configs.length; i < l; i++) {
+        let config = configs[i];
         let compileStrategy;
+        let runner = config.nodejs ? runNodeStrategy : runAppStrategy;
 
-        let strategy = _getStrategy(mode, conf);
+        try {
+            compileStrategy = runner(isMultiCompile ?
+                compiler.compilers[i] :
+                compiler,
+                webpack,
+                webpackConfig[i],
+                config
+            )[config.strategy];
 
-        if (strategy === 'browser-sync') {
-            webpackConfig.plugins.push(new BrowserSyncPlugin(
-                {
-                    port: conf.server.browserSyncPort,
-                    proxy: `http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}`
-                },
-                { reload: false }
-            ));
+            await compileStrategy();
         }
-        let compiler = webpack(webpackConfig);
-
-        if (!strategy) {
-            console.log('strategy is empty');
-            return false;
+        catch (e) {
+            console.error(e);
+            process.exit(1);
         }
+    }
 
-        if (conf.nodejs) {
-            compileStrategy = runNodeStrategy(compiler, webpack, webpackConfig, conf)[strategy];
-        }
-        else {
-            compileStrategy = runAppStrategy(compiler, webpack, webpackConfig, conf)[strategy];
-        }
-
-        if (!compileStrategy) {
-            console.log('compileStrategy is empty');
-            return false;
-        }
-
-        compileStrategy();
+    if (configs.length === configs.filter(c => c.strategy === 'simple').length) {
+        process.exit(0);
     }
 };
 

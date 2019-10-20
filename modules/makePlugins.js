@@ -26,6 +26,8 @@ const CircularDependencyPlugin = require('circular-dependency-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const fpPromise = require('../utils/findFreePort');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
+const LoadablePlugin = require('@loadable/webpack-plugin');
 
 function getTitle(packageJson) {
     return `${packageJson.name.split('_').join(' ')}`;
@@ -91,9 +93,19 @@ const getPlugins = async (conf, mode, root, packageJson, webpack, version) => {
             entryOnly: true
         });
     }
-
-    if (conf.nodejs) {
-        plugins.NodemonPlugin = isString(conf.nodemon) ? new NodemonPlugin({script: conf.nodemon}) : new NodemonPlugin();
+    if (mode === 'development') {
+        if (conf.nodejs) {
+            let opts = {
+                watch: path.resolve(conf.dist),
+                verbose: true,
+                ignore: ['*.map', '*.hot-update.json', '*.hot-update.js'],
+                script: './dist/index.js'
+            };
+            if (isString(conf.nodemon)) {
+                opts.script = conf.nodemon;
+            }
+            plugins.NodemonPlugin = new NodemonPlugin(opts);
+        }
     }
 
     if (conf._liveReload && mode === 'development') {
@@ -162,6 +174,12 @@ const getPlugins = async (conf, mode, root, packageJson, webpack, version) => {
                 page.filename = page.template.slice(page.template.lastIndexOf('/') + 1, page.template.lastIndexOf('.'));
                 page.filename += '.html';
             }
+            page.inject = false;
+
+            page.minify = {
+                collapseWhitespace: true
+            };
+
             return page;
         });
 
@@ -232,6 +250,18 @@ const getPlugins = async (conf, mode, root, packageJson, webpack, version) => {
      * DEVELOPMENT
      * */
     if (mode === 'development') {
+        if (conf.server && isNumber(conf.server.browserSyncPort)) {
+            conf.server.browserSyncPort = await fpPromise(conf.server.browserSyncPort);
+
+            plugins.BrowserSyncPlugin = new BrowserSyncPlugin(
+                {
+                    port: conf.server.browserSyncPort,
+                    proxy: `http://${conf.server.host}:${conf.server.port}`
+                },
+                { reload: false }
+            );
+        }
+
         plugins.HotModuleReplacementPlugin = new webpack.HotModuleReplacementPlugin();
 
         plugins.NamedChunksPlugin = new webpack.NamedChunksPlugin();
@@ -263,8 +293,12 @@ const getPlugins = async (conf, mode, root, packageJson, webpack, version) => {
         plugins.ModuleConcatenationPlugin = new webpack.optimize.ModuleConcatenationPlugin();
 
         plugins.MiniCssExtractPlugin = new MiniCssExtractPlugin({
-            filename: styleName
+            filename: styleName,
+            insertAt: {
+                after: 'title'
+            }
         });
+
         plugins.ImageminPlugin = new ImageminPlugin({
             disable: false,
             optipng: {
@@ -334,9 +368,18 @@ const getPlugins = async (conf, mode, root, packageJson, webpack, version) => {
 
     if (isNumber(conf.analyzerPort)) {
         conf.analyzerPort = await fpPromise(8888);
-        plugins.BundleAnalyzerPlugin = new BundleAnalyzerPlugin({
+
+        plugins.BundleAnalyzerPlugin = new BundleAnalyzerPlugin(mode === 'development' ? {
             analyzerPort: conf.analyzerPort
+        } : {
+            analyzerMode: 'static',
+            reportFilename: 'webpack-report.html',
+            openAnalyzer: false,
         });
+    }
+
+    if (conf.nodejs && conf.__isIsomorphicLoader) {
+        plugins.LoadablePlugin = new LoadablePlugin({ filename: 'stats.json', writeToDisk: true });
     }
 
     return plugins;

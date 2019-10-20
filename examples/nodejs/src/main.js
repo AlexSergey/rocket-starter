@@ -20,7 +20,6 @@ const render = (message) => {
 };
 
 const requestHandler = (request, response) => {
-    console.log(request.url)
     response.writeHeader(200, {"Content-Type": "text/html"});
     response.write(render(text));
     response.end();

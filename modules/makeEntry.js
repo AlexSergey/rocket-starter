@@ -6,7 +6,7 @@ const _getSrc = (src, root) => {
         return src.map(p => path.resolve(root, p));
     }
     else if (isObject(src)) {
-        Object.keys(key => {
+        Object.keys(src).forEach(key => {
             src[key] = path.resolve(root, src[key]);
         });
         return src;

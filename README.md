@@ -16,7 +16,7 @@ This config-generator include modules and features:
 - ESLint
 - Templates: HTML/Jade/Handlebars,nunjucks
 - CSS: CSS/SASS/LESS + Postcss
-- Postcss: Autoprefixer, Mqpacker, Lost, Instagram filters, Autoprefixer, Rucksack
+- Postcss: Autoprefixer, Mqpacker, Lost, Instagram filters, Rucksack
 - CSS Modules support
 - Imagemin
 - File import support: Markdown, Video, Audio, Fonts, SVG, Script, Shaders etc
@@ -26,7 +26,7 @@ This config-generator include modules and features:
 - Generate stats.json (in production mode)
 - SEO Optimizations
 - Bundle Analyzer
-- Isomorphic compile supported
+- Isomorphic compile supported (include isomorphic styles, isomorphic dynamic imports, @loadable)
 - Multi compile supported
 
 ## How it works
@@ -193,7 +193,7 @@ isomorphicCompiler([
         browserSyncPort: false, // run with browser-sync
         port: 3000,
         host: 'localhost'
-    }
+    },
     // secondary properties
     nodemon: path to nodemon run file (only for backendCompiler)
     dotenv: 'path_to_dotend or put .env file to your project',

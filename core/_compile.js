@@ -12,7 +12,7 @@ const _compile = async (conf = {}, post, withoutRun = false) => {
     if (withoutRun) {
         return { webpackConfig, conf };
     }
-    run(webpackConfig, mode, webpack, conf);
+    await run(webpackConfig, mode, webpack, conf);
 };
 
 module.exports = _compile;

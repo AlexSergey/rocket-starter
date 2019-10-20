@@ -1,7 +1,7 @@
 const getNode = () => {
     return {
-        __dirname: true,
-        __filename: true,
+        __dirname: false,
+        __filename: false,
         console: true
     }
 };
