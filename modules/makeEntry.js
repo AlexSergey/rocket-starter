@@ -7,7 +7,12 @@ const _getSrc = (src, root) => {
     }
     else if (isObject(src)) {
         Object.keys(src).forEach(key => {
-            src[key] = path.resolve(root, src[key]);
+            if (key === 'vendor') {
+                src[key] = src[key];
+            }
+            else {
+                src[key] = path.resolve(root, src[key]);
+            }
         });
         return src;
     }
@@ -15,6 +20,22 @@ const _getSrc = (src, root) => {
 };
 
 const makeEntry = (conf, root, mode) => {
+    if (isArray(conf.vendor)) {
+        if (isObject(conf.src)) {
+            conf.src.vendor = conf.vendor;
+        }
+        else {
+            let src = conf.src;
+            conf.src = {};
+            conf.src.index = src;
+            conf.src.vendor = conf.vendor;
+        }
+    }
+    if (!isObject(conf.src)) {
+        let src = conf.src;
+        conf.src = {};
+        conf.src.index = src;
+    }
     let s = _getSrc(conf.src, root);
 
     if (!conf.onlyWatch) {

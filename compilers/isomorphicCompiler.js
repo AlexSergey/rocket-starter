@@ -1,6 +1,6 @@
 const commonMultiValidators = require('../utils/commonMultiValidators');
 const multiCompiler = require('./multiCompiler');
-const { isDefined, isUndefined } = require('valid-types');
+const { isDefined, isUndefined, isArray } = require('valid-types');
 const errors = require('../errors/isomorphicCompiler');
 const makeMode = require('../modules/makeMode');
 
@@ -10,9 +10,9 @@ async function isomorphicCompiler(props = []) {
 
     let backend = props.find(p => p.compiler.name === 'backendCompiler');
 
-    let compilers = props.filter(p => p.compiler.name === 'frontendCompiler');
+    let frontendCompiler = props.find(p => p.compiler.name === 'frontendCompiler');
 
-    if (!compilers.length) {
+    if (!frontendCompiler) {
         console.error(errors.SUPPORT);
         return process.exit(1);
     }
@@ -36,6 +36,11 @@ async function isomorphicCompiler(props = []) {
         });
     });
 
+    if (isArray(frontendCompiler.config.vendor)) {
+        //backend.config.vendor = frontendCompiler.config.vendor.map(v => v);
+        backend.config.__frontendHasVendor = true;
+    }
+
     if (mode === 'development') {
         props.forEach(prop => {
             prop.config.__isIsomorphicStyles = true;
@@ -49,13 +54,12 @@ async function isomorphicCompiler(props = []) {
         prop.config.__isIsomorphicLoader = true;
     });
 
-    compilers.forEach(prop => {
-        prop.config.write = isDefined(prop.config.write) ? prop.config.write : true;
-        prop.config.html = isDefined(prop.config.html) ? prop.config.html : false;
-        if (mode === 'development') {
-            prop.config.onlyWatch = isDefined(prop.config.onlyWatch) ? prop.config.onlyWatch : true;
-        }
-    });
+    frontendCompiler.config.write = isDefined(frontendCompiler.config.write) ? frontendCompiler.config.write : true;
+    frontendCompiler.config.html = isDefined(frontendCompiler.config.html) ? frontendCompiler.config.html : false;
+
+    if (mode === 'development') {
+        frontendCompiler.config.onlyWatch = isDefined(frontendCompiler.config.onlyWatch) ? frontendCompiler.config.onlyWatch : true;
+    }
 
     return await multiCompiler(props);
 }

@@ -13,6 +13,7 @@ const makePlugins = require('../modules/makePlugins');
 const makeResolve = require('../modules/makeResolve');
 const makeDevServer = require('../modules/makeDevServer');
 const compileWebpackConfig = require('../modules/compileWebpackConfig');
+const makeOptimization = require('../modules/makeOptimization');
 const { isFunction } = require('valid-types');
 
 const _make = async (conf, post) => {
@@ -25,6 +26,7 @@ const _make = async (conf, post) => {
     let output = makeOutput(conf, root, version);
     let devtool = makeDevtool(mode, conf);
     let devServer = makeDevServer(conf, root);
+    let optimization = makeOptimization(conf);
     let modules = makeModules(conf, root, packageJson, mode);
     let plugins = await makePlugins(conf, root, packageJson, mode, webpack, version);
     let resolve = makeResolve();
@@ -34,7 +36,8 @@ const _make = async (conf, post) => {
         output,
         devtool,
         devServer,
-        resolve
+        resolve,
+        optimization
     };
 
     if (conf.nodejs) {

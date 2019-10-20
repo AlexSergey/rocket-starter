@@ -177,7 +177,7 @@ const getPlugins = async (conf, mode, root, packageJson, webpack, version) => {
             page.inject = false;
 
             page.minify = {
-                collapseWhitespace: true
+                collapseWhitespace: mode === 'production'
             };
 
             return page;
@@ -213,6 +213,9 @@ const getPlugins = async (conf, mode, root, packageJson, webpack, version) => {
     }
 
     let env = conf.global || {};
+    if (!!conf.__frontendHasVendor) {
+        env.FRONTEND_HAS_VENDOR = true;
+    }
     let definePluginOpts = Object.assign(
         {},
         {

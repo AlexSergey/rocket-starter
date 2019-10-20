@@ -19,6 +19,7 @@ const defaultProps = {
     * dotenv: 'path_to_dotend or put .env file to your project',
     * version: true,
     * styles: String,
+    * vendor: Array, // Array of dependency libraries
     * html: { // You can also add array for multi-pages support
     *     title: String,
     *     favicon: ...,

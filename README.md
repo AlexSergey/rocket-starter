@@ -28,6 +28,7 @@ This config-generator include modules and features:
 - Bundle Analyzer
 - Isomorphic compile supported (include isomorphic styles, isomorphic dynamic imports, @loadable)
 - Multi compile supported
+- Vendor array splitting supported (You can set dependency libraries to this array to split it on separate vendor.js file)
 
 ## How it works
 You have 4 compilers for your scripts
@@ -189,6 +190,7 @@ isomorphicCompiler([
     write: false, // Write files to HDD after changes (watch mode)
     base64: true, // Convert images to base64 in your CSS
     analyzerPort: false, //port number, for example: 8888
+    vendor: ['react', 'react-dom'],
     server: {
         browserSyncPort: false, // run with browser-sync
         port: 3000,
