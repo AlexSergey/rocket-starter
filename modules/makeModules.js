@@ -235,6 +235,20 @@ function getModules(conf = {}, mode, root) {
             ]
         },
 
+        mdx: {
+            test: /\.mdx?$/,
+            exclude: /(node_modules|bower_components)/,
+            use: [
+                {
+                    loader: require.resolve('babel-loader'),
+                    query: babelOpts(!!conf.nodejs, 'react', conf.__isIsomorphicLoader)
+                },
+                {
+                    loader: require.resolve('@mdx-js/loader')
+                }
+            ]
+        },
+
         nunjucks: {
             test: /\.(njk|nunjucks)$/,
             use: [

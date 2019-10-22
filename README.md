@@ -26,9 +26,10 @@ This config-generator include modules and features:
 - Generate stats.json (in production mode)
 - SEO Optimizations
 - Bundle Analyzer
-- Isomorphic compile supported (include isomorphic styles, isomorphic dynamic imports, @loadable)
-- Multi compile supported
-- Vendor array splitting supported (You can set dependency libraries to this array to split it on separate vendor.js file)
+- Isomorphic compile support (include isomorphic styles, isomorphic dynamic imports, @loadable)
+- Multi compile support
+- Vendor array splitting support (You can set dependency libraries to this array to split it on separate vendor.js file)
+- MDX files support
 
 ## How it works
 You have 4 compilers for your scripts

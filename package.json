@@ -1,6 +1,6 @@
 {
   "name": "rocket-starter",
-  "version": "1.11.0",
+  "version": "1.11.5",
   "description": "",
   "main": "index.js",
   "author": "Aleksandrov Sergey <gooddev.sergey@gmail.com> (https://github.com/AlexSergey/rocket-starter)",
@@ -19,6 +19,7 @@
     "@babel/preset-react": "7.6.3",
     "@becklyn/typescript-error-formatter": "1.0.4",
     "@loadable/webpack-plugin": "5.7.1",
+    "@mdx-js/loader": "1.5.1",
     "autoprefixer": "9.6.4",
     "babel-eslint": "10.0.3",
     "babel-loader": "8.0.6",
@@ -74,7 +75,6 @@
     "nodemon-webpack-plugin": "4.1.1",
     "nunjucks": "3.2.0",
     "nunjucks-isomorphic-loader": "2.0.2",
-    "open": "6.4.0",
     "optimize-css-assets-webpack-plugin": "5.0.3",
     "postcss-instagram": "1.0.0",
     "postcss-loader": "3.0.0",

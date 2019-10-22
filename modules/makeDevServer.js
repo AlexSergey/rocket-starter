@@ -19,6 +19,7 @@ const makeDevServer = (conf, root) => {
         overlay: {
             errors: true
         },
+        open: true,
         watchOptions: {
             poll: true,
             aggregateTimeout: 50,

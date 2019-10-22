@@ -1,7 +1,6 @@
 const log = require('../utils/log');
-const { isNumber, isArray, isFunction } = require('valid-types');
+const { isNumber, isArray } = require('valid-types');
 const WebpackDevServer = require('webpack-dev-server');
-const open = require('open');
 
 const runAppStrategy = (compiler, webpack, webpackConfig, conf) => {
     return {
@@ -26,9 +25,6 @@ const runAppStrategy = (compiler, webpack, webpackConfig, conf) => {
                 console.log(`Starting server on http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}/`);
                 if (!!conf.analyzerPort) {
                     console.log(`Bundle analyzer ran http://localhot:${conf.analyzerPort}/`);
-                }
-                if (conf.html) {
-                    open(`http://${webpackConfig.devServer.host}:${webpackConfig.devServer.port}/`);
                 }
             });
         },
