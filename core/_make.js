@@ -29,7 +29,7 @@ const _make = async (conf, post) => {
     let optimization = makeOptimization(conf);
     let modules = makeModules(conf, root, packageJson, mode);
     let plugins = await makePlugins(conf, root, packageJson, mode, webpack, version);
-    let resolve = makeResolve(root);
+    let resolve = makeResolve();
 
     let finalConfig = {
         entry,

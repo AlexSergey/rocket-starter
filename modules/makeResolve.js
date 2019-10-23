@@ -1,6 +1,4 @@
-const path = require('path');
-
-const makeResolve = (root) => {
+const makeResolve = () => {
     return {
         extensions: [
             '.ts',
@@ -8,9 +6,6 @@ const makeResolve = (root) => {
             '.js',
             '.jsx',
             '.vue'
-        ],
-        modules: [
-            path.resolve(root, 'node_modules')
         ]
     };
 };
