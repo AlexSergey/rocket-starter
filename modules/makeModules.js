@@ -5,7 +5,11 @@ const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const formatter = require("@becklyn/typescript-error-formatter");
 
-function babelOpts(isNodejs = false, framework = false, loadable = false) {
+function babelOpts({
+   isNodejs = false,
+   framework = false,
+   loadable = false
+}) {
     const root = path.dirname(require.main.filename);
     const packageJson = existsSync(path.resolve(root, 'package.json')) ? require(path.resolve(root, 'package.json')) : {};
     let corejs = false;
@@ -75,6 +79,25 @@ function babelOpts(isNodejs = false, framework = false, loadable = false) {
         );
     }
 
+    return opts;
+}
+
+function babelOptsForTS({
+   isNodejs = false,
+   framework = false,
+   loadable = false
+}) {
+    var opts = {
+        plugins: [],
+        env: {
+            production: {}
+        }
+    };
+    if (loadable) {
+        opts.plugins.push(
+            require.resolve('@loadable/babel-plugin')
+        );
+    }
     return opts;
 }
 
@@ -241,10 +264,29 @@ function getModules(conf = {}, mode, root) {
             use: [
                 {
                     loader: require.resolve('babel-loader'),
-                    query: babelOpts(!!conf.nodejs, 'react', conf.__isIsomorphicLoader)
+                    query: babelOpts({
+                        isNodejs: !!conf.nodejs,
+                        framework: 'react',
+                        loadable: conf.__isIsomorphicLoader
+                    })
                 },
                 {
                     loader: require.resolve('@mdx-js/loader')
+                }
+            ]
+        },
+
+        graphql: {
+            test: /\.graphql?$/,
+            use: [
+                {
+                    loader: require.resolve('webpack-graphql-loader'),
+                    options: {
+                        // validate: true,
+                        // schema: "./path/to/schema.json",
+                        // removeUnusedFragments: true
+                        // etc. See "Loader Options" below
+                    }
                 }
             ]
         },
@@ -323,7 +365,11 @@ function getModules(conf = {}, mode, root) {
             use: [
                 {
                     loader: require.resolve('babel-loader'),
-                    query: babelOpts(!!conf.nodejs, 'react', conf.__isIsomorphicLoader)
+                    query: babelOpts({
+                        isNodejs: !!conf.nodejs,
+                        framework: 'react',
+                        loadable: conf.__isIsomorphicLoader
+                    })
                 }
             ]
         },
@@ -334,7 +380,9 @@ function getModules(conf = {}, mode, root) {
             use: [
                 {
                     loader: require.resolve('babel-loader'),
-                    query: babelOpts(!!conf.nodejs)
+                    query: babelOpts({
+                        isNodejs: !!conf.nodejs
+                    })
                 }
             ]
         },
