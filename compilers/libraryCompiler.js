@@ -13,15 +13,15 @@ async function libraryCompiler(libraryName, options = {}, cb, configOnly = false
     let mode = makeMode();
     options = deepExtend({}, options, {
         library: libraryName
-    }, (mode === 'production' ? {
+    }, {
         html: !options.html ? false : options.html
-    } : {}));
+    });
 
     if (!options.html) {
         options.onlyWatch = true;
     }
     else {
-        if ((process.env.NODE_ENV || 'development') === 'development') {
+        if (mode === 'development') {
             options._liveReload = true;
         }
     }
