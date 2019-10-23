@@ -16,8 +16,14 @@ async function libraryCompiler(libraryName, options = {}, cb, configOnly = false
     }, (mode === 'production' ? {
         html: !options.html ? false : options.html
     } : {}));
-    if ((process.env.NODE_ENV || 'development') === 'development') {
-        options._liveReload = true;
+
+    if (!options.html) {
+        options.onlyWatch = true;
+    }
+    else {
+        if ((process.env.NODE_ENV || 'development') === 'development') {
+            options._liveReload = true;
+        }
     }
     if (options.nodejs) {
         return await backendCompiler(options, cb, configOnly);
