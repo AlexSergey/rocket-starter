@@ -18,7 +18,9 @@ async function libraryCompiler(libraryName, options = {}, cb, configOnly = false
     });
 
     if (!options.html) {
-        options.onlyWatch = true;
+        if (mode === 'development') {
+            options.onlyWatch = true;
+        }
     }
     else {
         if (mode === 'development') {
