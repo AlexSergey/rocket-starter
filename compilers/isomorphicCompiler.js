@@ -37,7 +37,6 @@ async function isomorphicCompiler(props = []) {
     });
 
     if (isArray(frontendCompiler.config.vendor)) {
-        //backend.config.vendor = frontendCompiler.config.vendor.map(v => v);
         backend.config.__frontendHasVendor = true;
     }
 

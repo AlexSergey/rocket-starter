@@ -82,25 +82,6 @@ function babelOpts({
     return opts;
 }
 
-function babelOptsForTS({
-   isNodejs = false,
-   framework = false,
-   loadable = false
-}) {
-    var opts = {
-        plugins: [],
-        env: {
-            production: {}
-        }
-    };
-    if (loadable) {
-        opts.plugins.push(
-            require.resolve('@loadable/babel-plugin')
-        );
-    }
-    return opts;
-}
-
 const getPostcssConfig = (root) => {
     const pth = existsSync(path.resolve(root, './postcss.config.js')) ? path.resolve(root, './postcss.config.js') : path.resolve(__dirname, '../configs/postcss.config.js');
 
@@ -121,7 +102,9 @@ function getModules(conf = {}, mode, root) {
         debug = true;
     }
 
-    let tsConfig = path.resolve(__dirname, '../configs/tsconfig.json');
+    let tsConfig = conf.__isIsomorphicLoader ?
+        path.resolve(__dirname, '../configs/tsconfig.for.isomorphic.json') :
+        path.resolve(__dirname, '../configs/tsconfig.json');
 
     if (existsSync(path.resolve(root, './tsconfig.js'))) {
         tsConfig = path.resolve(root, './tsconfig.js');
@@ -303,9 +286,54 @@ function getModules(conf = {}, mode, root) {
             ]
         },
 
+        tsx: {
+            test: /\.tsx/,
+            use: conf.__isIsomorphicLoader ? [
+                {
+                    loader: require.resolve('babel-loader'),
+                    query: babelOpts({
+                        isNodejs: !!conf.nodejs,
+                        framework: 'react',
+                        loadable: true
+                    })
+                },
+                {
+                    loader: require.resolve('ts-loader'),
+                    options: {
+                        configFile: tsConfig,
+                        errorFormatter: (message, colors) => formatter(message, colors, process.cwd())
+                    }
+                }
+            ] : [
+                {
+                    loader: require.resolve('ts-loader'),
+                    options: {
+                        configFile: tsConfig,
+                        errorFormatter: (message, colors) => formatter(message, colors, process.cwd())
+                    }
+                }
+            ]
+        },
+
         ts: {
-            test: /\.ts$|\.tsx$/,
-            use: [
+            test: /\.ts/,
+            use: conf.__isIsomorphicLoader ? [
+                {
+                    loader: require.resolve('babel-loader'),
+                    query: babelOpts({
+                        isNodejs: !!conf.nodejs,
+                        framework: false,
+                        loadable: true
+                    })
+                },
+                {
+                    loader: require.resolve('ts-loader'),
+                    options: {
+                        configFile: tsConfig,
+                        errorFormatter: (message, colors) => formatter(message, colors, process.cwd())
+                    }
+                }
+            ] : [
                 {
                     loader: require.resolve('ts-loader'),
                     options: {
