@@ -242,7 +242,7 @@ function getModules(conf = {}, mode, root) {
         },
 
         mdx: {
-            test: /\.mdx?$/,
+            test: /\.mdx$/,
             exclude: /(node_modules|bower_components)/,
             use: [
                 {
@@ -287,7 +287,7 @@ function getModules(conf = {}, mode, root) {
         },
 
         tsx: {
-            test: /\.tsx/,
+            test: /\.tsx$/,
             use: conf.__isIsomorphicLoader ? [
                 {
                     loader: require.resolve('babel-loader'),
@@ -316,7 +316,7 @@ function getModules(conf = {}, mode, root) {
         },
 
         ts: {
-            test: /\.ts/,
+            test: /\.ts$/,
             use: conf.__isIsomorphicLoader ? [
                 {
                     loader: require.resolve('babel-loader'),
@@ -382,7 +382,7 @@ function getModules(conf = {}, mode, root) {
         },
 
         less: {
-            test: /\.less/,
+            test: /\.less$/,
             use: less,
             exclude: /\.modules\.less$/
         },
@@ -486,7 +486,7 @@ function getModules(conf = {}, mode, root) {
         },
 
         html: {
-            test: /\.(html)$/,
+            test: /\.html$/,
             use: {
                 loader: require.resolve('html-loader')
             },
