@@ -301,7 +301,8 @@ function getModules(conf = {}, mode, root) {
                     loader: require.resolve('ts-loader'),
                     options: {
                         configFile: tsConfig,
-                        errorFormatter: (message, colors) => formatter(message, colors, process.cwd())
+                        errorFormatter: (message, colors) => formatter(message, colors, process.cwd()),
+                        onlyCompileBundledFiles: true
                     }
                 }
             ] : [
@@ -309,7 +310,8 @@ function getModules(conf = {}, mode, root) {
                     loader: require.resolve('ts-loader'),
                     options: {
                         configFile: tsConfig,
-                        errorFormatter: (message, colors) => formatter(message, colors, process.cwd())
+                        errorFormatter: (message, colors) => formatter(message, colors, process.cwd()),
+                        onlyCompileBundledFiles: true
                     }
                 }
             ]
@@ -330,7 +332,8 @@ function getModules(conf = {}, mode, root) {
                     loader: require.resolve('ts-loader'),
                     options: {
                         configFile: tsConfig,
-                        errorFormatter: (message, colors) => formatter(message, colors, process.cwd())
+                        errorFormatter: (message, colors) => formatter(message, colors, process.cwd()),
+                        onlyCompileBundledFiles: true
                     }
                 }
             ] : [
@@ -338,7 +341,8 @@ function getModules(conf = {}, mode, root) {
                     loader: require.resolve('ts-loader'),
                     options: {
                         configFile: tsConfig,
-                        errorFormatter: (message, colors) => formatter(message, colors, process.cwd())
+                        errorFormatter: (message, colors) => formatter(message, colors, process.cwd()),
+                        onlyCompileBundledFiles: true
                     }
                 }
             ]
