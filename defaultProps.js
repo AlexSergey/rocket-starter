@@ -15,6 +15,7 @@ const defaultProps = {
     }
     /*
     Other Props:
+    * tsconfig: path to tsconfig
     * nodemon: path to nodemon run file
     * dotenv: 'path_to_dotend or put .env file to your project',
     * version: true,

@@ -102,9 +102,7 @@ function getModules(conf = {}, mode, root) {
         debug = true;
     }
 
-    let tsConfig = conf.__isIsomorphicLoader ?
-        path.resolve(__dirname, '../configs/tsconfig.for.isomorphic.json') :
-        path.resolve(__dirname, '../configs/tsconfig.json');
+    let tsConfig = false;
 
     if (existsSync(path.resolve(root, './tsconfig.js'))) {
         tsConfig = path.resolve(root, './tsconfig.js');
@@ -123,6 +121,14 @@ function getModules(conf = {}, mode, root) {
             }
         }
     }
+
+    if (isString(conf.tsconfig)) {
+        if (existsSync(path.resolve(root, conf.tsconfig))) {
+            tsConfig = path.resolve(root, conf.tsconfig);
+        }
+    }
+
+    let isTypeScriptStylesModules = !!tsConfig;
 
     let cssModules;
     let scssModules;
@@ -207,6 +213,53 @@ function getModules(conf = {}, mode, root) {
         ];
     }
 
+    if (isTypeScriptStylesModules) {
+        if (conf.__isIsomorphicStyles) {
+            cssModules = [
+                extractStyles ? MiniCssExtractPlugin.loader : { loader: require.resolve('isomorphic-style-loader'), options: { sourceMap: debug } },
+                { loader: require.resolve('@teamsupercell/typings-for-css-modules-loader') },
+                { loader: require.resolve('css-loader'), options: { sourceMap: debug, modules: true } },
+                { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(root), sourceMap: debug } }
+            ];
+            scssModules = [
+                extractStyles ? MiniCssExtractPlugin.loader : { loader: require.resolve('isomorphic-style-loader'), options: { sourceMap: debug } },
+                { loader: require.resolve('@teamsupercell/typings-for-css-modules-loader') },
+                { loader: require.resolve('css-loader'), options: { sourceMap: debug, modules: true } },
+                { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(root), sourceMap: debug } },
+                { loader: require.resolve('sass-loader'), options: { sourceMap: debug } }
+            ];
+            lessModules = [
+                extractStyles ? MiniCssExtractPlugin.loader : { loader: require.resolve('isomorphic-style-loader'), options: { sourceMap: debug } },
+                { loader: require.resolve('@teamsupercell/typings-for-css-modules-loader') },
+                { loader: require.resolve('css-loader'), options: { sourceMap: debug, modules: true } },
+                { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(root), sourceMap: debug } },
+                { loader: require.resolve('less-loader'), options: { sourceMap: debug } }
+            ];
+        }
+        else {
+            cssModules = [
+                extractStyles ? MiniCssExtractPlugin.loader : { loader: require.resolve('style-loader'), options: { sourceMap: debug } },
+                { loader: require.resolve('@teamsupercell/typings-for-css-modules-loader') },
+                { loader: require.resolve('css-loader'), options: { sourceMap: debug, modules: true } },
+                { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(root), sourceMap: debug } }
+            ];
+            scssModules = [
+                extractStyles ? MiniCssExtractPlugin.loader : { loader: require.resolve('style-loader'), options: { sourceMap: debug } },
+                { loader: require.resolve('@teamsupercell/typings-for-css-modules-loader') },
+                { loader: require.resolve('css-loader'), options: { sourceMap: debug, modules: true } },
+                { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(root), sourceMap: debug } },
+                { loader: require.resolve('sass-loader'), options: { sourceMap: debug } }
+            ];
+            lessModules = [
+                extractStyles ? MiniCssExtractPlugin.loader : { loader: require.resolve('style-loader'), options: { sourceMap: debug } },
+                { loader: require.resolve('@teamsupercell/typings-for-css-modules-loader') },
+                { loader: require.resolve('css-loader'), options: { sourceMap: debug, modules: true } },
+                { loader: require.resolve('postcss-loader'), options: { config: getPostcssConfig(root), sourceMap: debug } },
+                { loader: require.resolve('less-loader'), options: { sourceMap: debug } }
+            ];
+        }
+    }
+
     let finalConf = {
         handlebars: {
             test: /\.(hbs|handlebars)$/,
@@ -259,6 +312,12 @@ function getModules(conf = {}, mode, root) {
             ]
         },
 
+        mjs: {
+            test: /\.mjs$/,
+            include: /node_modules/,
+            type: 'javascript/auto'
+        },
+
         graphql: {
             test: /\.graphql?$/,
             use: [
@@ -300,7 +359,9 @@ function getModules(conf = {}, mode, root) {
                 {
                     loader: require.resolve('ts-loader'),
                     options: {
-                        configFile: tsConfig,
+                        configFile: isString(tsConfig) ?
+                            tsConfig :
+                            path.resolve(__dirname, '../configs/tsconfig.for.isomorphic.json'),
                         errorFormatter: (message, colors) => formatter(message, colors, process.cwd()),
                         onlyCompileBundledFiles: true
                     }
@@ -309,7 +370,9 @@ function getModules(conf = {}, mode, root) {
                 {
                     loader: require.resolve('ts-loader'),
                     options: {
-                        configFile: tsConfig,
+                        configFile: isString(tsConfig) ?
+                            tsConfig :
+                            path.resolve(__dirname, '../configs/tsconfig.json'),
                         errorFormatter: (message, colors) => formatter(message, colors, process.cwd()),
                         onlyCompileBundledFiles: true
                     }
@@ -331,7 +394,9 @@ function getModules(conf = {}, mode, root) {
                 {
                     loader: require.resolve('ts-loader'),
                     options: {
-                        configFile: tsConfig,
+                        configFile: isString(tsConfig) ?
+                            tsConfig :
+                            path.resolve(__dirname, '../configs/tsconfig.for.isomorphic.json'),
                         errorFormatter: (message, colors) => formatter(message, colors, process.cwd()),
                         onlyCompileBundledFiles: true
                     }
@@ -340,7 +405,9 @@ function getModules(conf = {}, mode, root) {
                 {
                     loader: require.resolve('ts-loader'),
                     options: {
-                        configFile: tsConfig,
+                        configFile: isString(tsConfig) ?
+                            tsConfig :
+                            path.resolve(__dirname, '../configs/tsconfig.json'),
                         errorFormatter: (message, colors) => formatter(message, colors, process.cwd()),
                         onlyCompileBundledFiles: true
                     }

@@ -9,6 +9,7 @@ const backendCompiler = require('./compilers/backendCompiler');
 const analyzerCompiler = require('./compilers/analyzerCompiler');
 const multiCompiler = require('./compilers/multiCompiler');
 const isomorphicCompiler = require('./compilers/isomorphicCompiler');
+const tsSourceCompiler = require('./compilers/tsSourceCompiler');
 
 function getArgs() {
     return argv;
@@ -29,5 +30,6 @@ module.exports = {
     libraryCompiler,
     frontendCompiler,
     backendCompiler,
-    analyzerCompiler
+    analyzerCompiler,
+    tsSourceCompiler
 };
