@@ -1,5 +1,3 @@
-const { frontendCompiler } = require('../../');
+const { libraryCompiler } = require('../../');
 
-frontendCompiler({
-    src: './example'
-});
+libraryCompiler('Lib');

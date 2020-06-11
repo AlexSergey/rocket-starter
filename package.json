@@ -1,6 +1,6 @@
 {
   "name": "rocket-starter",
-  "version": "1.15.5",
+  "version": "1.15.6",
   "description": "",
   "main": "index.js",
   "author": "Aleksandrov Sergey <gooddev.sergey@gmail.com> (https://github.com/AlexSergey/rocket-starter)",
@@ -72,7 +72,7 @@
     "mini-css-extract-plugin": "0.8.0",
     "moment": "2.24.0",
     "node-loader": "0.6.0",
-    "node-sass": "4.13.1",
+    "node-sass": "4.14.1",
     "cross-env": "^7.0.2",
     "nodemon-webpack-plugin": "4.1.1",
     "nunjucks": "3.2.0",

@@ -4,10 +4,10 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "start": "NODE_ENV=development node build",
-    "build": "NODE_ENV=production node build",
-    "lib:cjs": "node build.source.cjs",
-    "lib:esm": "node build.source.esm"
+    "start": "cross-env NODE_ENV=development node build",
+    "build": "cross-env NODE_ENV=production node build",
+    "lib:cjs": "cross-env node build.source.cjs",
+    "lib:esm": "cross-env node build.source.esm"
   },
   "keywords": [],
   "author": "",

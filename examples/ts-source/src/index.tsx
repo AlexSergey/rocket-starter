@@ -15,3 +15,5 @@ export default class ColorString extends Component<ClockState> {
         return <p style={{backgroundColor: colorMiddleware(this.props.color)}} className={css.block}>{renderText()}</p>
     }
 }
+
+export { renderText };
