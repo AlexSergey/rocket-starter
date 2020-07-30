@@ -6,35 +6,39 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const formatter = require("@becklyn/typescript-error-formatter");
 
 function babelOpts({
-   isNodejs = false,
-   framework = false,
-   loadable = false
+    isNodejs = false,
+    framework = false,
+    loadable = false,
+    isProduction = false,
+    modules = false,
 }) {
     const root = path.dirname(require.main.filename);
-    const packageJson = existsSync(path.resolve(root, 'package.json')) ? require(path.resolve(root, 'package.json')) : {};
+    const packageJsonPath = path.resolve(root, 'package.json');
+    // eslint-disable-next-line global-require
+    const packageJson = existsSync(packageJsonPath) ? require(packageJsonPath) : {};
     let corejs = false;
 
-    if (packageJson && isObject(packageJson.dependencies)) {
-        if (isString(packageJson.dependencies['core-js'])) {
-            corejs = packageJson.dependencies['core-js'];
-        }
+    if (packageJson &&
+        isObject(packageJson.dependencies) &&
+        isString(packageJson.dependencies['core-js'])
+    ) {
+        corejs = packageJson.dependencies['core-js'];
     }
 
-    var opts = {
-        cacheDirectory: true,
+    const opts = {
         babelrc: false,
         presets: [
             [require.resolve('@babel/preset-env'), Object.assign({
-                modules: false,
+                modules,
                 loose: true,
             }, isNodejs ? {
                 targets: {
-                    node: "current"
+                    node: 'current'
                 }
             } : {
                 targets: {
                     browsers: [
-                        "> 5%"
+                        '> 5%'
                     ]
                 }
             }, isString(corejs) ? {
@@ -42,26 +46,38 @@ function babelOpts({
                 useBuiltIns: 'usage'
             } : {})]
         ],
-        plugins: [],
+        plugins: [
+            [
+                require.resolve('@babel/plugin-proposal-pipeline-operator'),
+                { proposal: 'minimal' }
+            ],
+            require.resolve('@babel/plugin-proposal-do-expressions'),
+            require.resolve('@babel/plugin-proposal-logical-assignment-operators'),
+            [
+                require.resolve('@babel/plugin-proposal-optional-chaining'),
+                { loose: false }
+            ],
+            require.resolve('@babel/plugin-proposal-nullish-coalescing-operator'),
+            require.resolve('@babel/plugin-syntax-dynamic-import'),
+            require.resolve('@babel/plugin-transform-flow-comments'),
+            [
+                require.resolve('@babel/plugin-proposal-decorators'),
+                { legacy: true }
+            ],
+            require.resolve('@babel/plugin-proposal-class-properties'),
+            require.resolve('@babel/plugin-proposal-object-rest-spread')
+        ],
         env: {
             production: {}
         }
     };
 
-    switch (framework) {
-        case 'react':
-            opts.presets.push(
-                require.resolve('@babel/preset-react')
-            );
+    if (framework === 'react') {
+        opts.presets.push(
+            [require.resolve('@babel/preset-react'), { useBuiltIns: true }]
+        );
 
-            opts.plugins = opts.plugins.concat([
-                require.resolve('@babel/plugin-syntax-dynamic-import'),
-                require.resolve('@babel/plugin-transform-flow-comments'),
-                [require.resolve('@babel/plugin-proposal-decorators'), { "legacy": true }],
-                require.resolve('@babel/plugin-proposal-class-properties'),
-                require.resolve('@babel/plugin-proposal-object-rest-spread')
-            ]);
-
+        if (isProduction) {
             opts.env.production = Object.assign({}, opts.env.production, {
                 plugins: [
                     require.resolve('@babel/plugin-transform-react-constant-elements'),
@@ -70,7 +86,7 @@ function babelOpts({
                     require.resolve('babel-plugin-transform-react-remove-prop-types')
                 ]
             });
-            break;
+        }
     }
 
     if (loadable) {
@@ -303,7 +319,8 @@ function getModules(conf = {}, mode, root) {
                     query: babelOpts({
                         isNodejs: !!conf.nodejs,
                         framework: 'react',
-                        loadable: conf.__isIsomorphicLoader
+                        loadable: conf.__isIsomorphicLoader,
+                        isProduction: mode === 'production'
                     })
                 },
                 {
@@ -353,7 +370,8 @@ function getModules(conf = {}, mode, root) {
                     query: babelOpts({
                         isNodejs: !!conf.nodejs,
                         framework: 'react',
-                        loadable: true
+                        loadable: true,
+                        isProduction: mode === 'production'
                     })
                 },
                 {
@@ -388,7 +406,8 @@ function getModules(conf = {}, mode, root) {
                     query: babelOpts({
                         isNodejs: !!conf.nodejs,
                         framework: false,
-                        loadable: true
+                        loadable: true,
+                        isProduction: mode === 'production'
                     })
                 },
                 {
@@ -467,7 +486,8 @@ function getModules(conf = {}, mode, root) {
                     query: babelOpts({
                         isNodejs: !!conf.nodejs,
                         framework: 'react',
-                        loadable: conf.__isIsomorphicLoader
+                        loadable: conf.__isIsomorphicLoader,
+                        isProduction: mode === 'production'
                     })
                 }
             ]
@@ -480,7 +500,8 @@ function getModules(conf = {}, mode, root) {
                 {
                     loader: require.resolve('babel-loader'),
                     query: babelOpts({
-                        isNodejs: !!conf.nodejs
+                        isNodejs: !!conf.nodejs,
+                        isProduction: mode === 'production'
                     })
                 }
             ]
