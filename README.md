@@ -1,3 +1,5 @@
+# This module has been deprecated. Please use [Rockpack](https://github.com/AlexSergey/rockpack)
+
 # Rocket Starter
 
 This is the simplest way to make webpack config with many default settings.
